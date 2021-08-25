@@ -1,0 +1,11 @@
+name: Man10ShopV2
+version: '${project.version}'
+main: com.shojabon.man10shopv2.Man10ShopV2
+api-version: 1.17
+authors: [ Sho0 ]
+depend:
+  - Vault
+  - Man10Bank
+commands:
+  test:
+  man10shopv2:

@@ -1,0 +1,9 @@
+mysql:
+  host: 192.168.1.4
+  port: 3306
+  user: root
+  pass: password
+  db: man10_shop
+
+prefix: "§6[§eMan10Shop§dV2§6]"
+server: main
