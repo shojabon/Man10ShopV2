@@ -23,7 +23,7 @@ public class TargetItemSelectorMenu {
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
-        inventory = new SInventory(new SStringBuilder().aqua().text("変更したいアイテムをクリックしてください").build(), 3, plugin);
+        inventory = new SInventory(new SStringBuilder().aqua().text("アイテムをクリックしてください").build(), 3, plugin);
         renderMenu();
         registerEvents();
 

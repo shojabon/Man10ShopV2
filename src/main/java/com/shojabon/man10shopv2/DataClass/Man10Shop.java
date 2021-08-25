@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.DataClass;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -148,6 +149,14 @@ public class Man10Shop {
         return actualPerm == permission;
     }
 
+    public int ownerCount(){
+        int result = 0;
+        for(Man10ShopModerator mod: moderators.values()){
+            if(mod.permission == Man10ShopPermission.OWNER) result ++;
+        }
+        return result;
+    }
+
     private int calculatePermissionLevel(Man10ShopPermission permission){
         int permissionLevel = 0;
         switch (permission){
@@ -159,23 +168,39 @@ public class Man10Shop {
         return permissionLevel;
     }
 
-    public boolean addModerator(Player p, Man10ShopPermission permissionType){
-        Man10ShopModerator permission = new Man10ShopModerator(p.getName(), p.getUniqueId(), permissionType);
-        moderators.put(p.getUniqueId(), permission);
-        Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + p.getUniqueId() + "'");
+    public boolean addModerator(Man10ShopModerator moderator){
+        Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
 
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("name", p.getName());
-        payload.put("uuid", p.getUniqueId().toString());
-        payload.put("shop_id", shopId);
-        payload.put("permission", Man10ShopPermission.OWNER.name());
-        return Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"));
+        payload.put("name", moderator.name);
+        payload.put("uuid", moderator.uuid.toString());
+        payload.put("shop_id", shopId.toString());
+        payload.put("permission", moderator.permission.name());
+        if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
+        moderators.put(moderator.uuid, moderator);
+        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
+        return true;
     }
 
-    public boolean removeModerator(Player p){
-        boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + p.getUniqueId() + "'");
+    public boolean setModerator(Man10ShopModerator moderator){
+        Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
+
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("name", moderator.name);
+        payload.put("uuid", moderator.uuid.toString());
+        payload.put("shop_id", shopId.toString());
+        payload.put("permission", moderator.permission.name());
+        if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
+        moderators.put(moderator.uuid, moderator);
+        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
+        return true;
+    }
+
+    public boolean removeModerator(Man10ShopModerator moderator){
+        boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
         if(!result) return false;
-        moderators.remove(p.getUniqueId());
+        moderators.remove(moderator.uuid);
+        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
         return true;
     }
 

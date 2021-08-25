@@ -89,7 +89,7 @@ public class Man10ShopV2API {
         payload.put("target_item_count", 1);
         payload.put("shop_type", shop.shopType.name());
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
-        return shop.addModerator(p, Man10ShopPermission.OWNER);
+        return shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER));
     }
 
     public ArrayList<Man10Shop> getShopsWithPermission(UUID uuid){

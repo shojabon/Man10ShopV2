@@ -40,7 +40,7 @@ public class PermissionSettingsMainMenu {
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
             item.setEvent(e -> {
-                renderedCore.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, mod, plugin).renderInventory());
+                renderedCore.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, mod, plugin).getInventory());
             });
             items.add(item);
 
