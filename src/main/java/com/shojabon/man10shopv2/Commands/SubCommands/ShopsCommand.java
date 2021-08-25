@@ -46,7 +46,8 @@ public class ShopsCommand {
             items.add(item);
         }
 
-        menu.open(p, items);
+        menu.setItems(items);
+        menu.open(p);
 
 
     }

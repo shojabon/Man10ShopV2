@@ -1,9 +1,12 @@
 package com.shojabon.man10shopv2.Utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
@@ -16,6 +19,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SItemStack {
 
@@ -188,4 +192,14 @@ public class SItemStack {
     public int getAmount(){
         return this.item.getAmount();
     }
+
+    public SItemStack setHeadOwner(UUID uuid){
+        if(getType() != Material.PLAYER_HEAD) return this;
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        SkullMeta skullMeta = (SkullMeta) this.item.getItemMeta();
+        skullMeta.setOwningPlayer(player);
+        this.item.setItemMeta(skullMeta);
+        return this;
+    }
+
 }

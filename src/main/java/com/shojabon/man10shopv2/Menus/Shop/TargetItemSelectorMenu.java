@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.Menus;
+package com.shojabon.man10shopv2.Menus.Shop;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -49,6 +49,7 @@ public class TargetItemSelectorMenu {
     public void registerEvents(){
         inventory.setOnClickEvent(e -> {
             e.setCancelled(true);
+            if(e.getCurrentItem() == null) return;
             ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem();
             if(newTargetItem == null) return;
 

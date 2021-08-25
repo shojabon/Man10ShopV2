@@ -25,14 +25,27 @@ public class LargeSInventoryMenu {
         inventory = new SInventory(title, rows+1, plugin);
     }
 
+    public LargeSInventoryMenu(String title, ArrayList<SInventoryItem> items, int rows, JavaPlugin plugin){
+        this.rows = rows;
+        if(rows < 1 ) rows = 1;
+        if(rows > 5) rows = 5;
+        this.items = items;
+        inventory = new SInventory(title, rows+1, plugin);
+    }
+
     public SInventory getInventory(){
+        renderInventory(currentPage);
         return inventory;
     }
 
-    public void open(Player p, ArrayList<SInventoryItem> items){
-        this.items = items;
+    public void open(Player p){
         renderInventory(currentPage);
         getInventory().open(p);
+    }
+
+    public LargeSInventoryMenu setItems(ArrayList<SInventoryItem> items){
+        this.items = items;
+        return this;
     }
 
     public void renderControlBar(){
