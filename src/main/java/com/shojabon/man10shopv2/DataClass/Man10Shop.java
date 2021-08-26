@@ -20,7 +20,6 @@ public class Man10Shop {
     public String name;
     public UUID shopId;
     public int storageSize;
-    public int storageCap;
     public int itemCount;
     public int price;
 
@@ -33,11 +32,11 @@ public class Man10Shop {
 
     public HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
     public ArrayList<Man10ShopSign> signs = new ArrayList<>();
+    public Man10ShopSettings settings;
 
     public Man10Shop(UUID shopId,
                      String name,
                      int storageSize,
-                     int storageCap,
                      int itemCount,
                      int price,
                      int money,
@@ -53,12 +52,12 @@ public class Man10Shop {
         this.shopId = shopId;
         this.name = name;
         this.itemCount = itemCount;
-        this.storageCap = storageCap;
         this.storageSize = storageSize;
         this.targetItem = targetItem;
         this.targetItemCount = targetItemCount;
         this.icon = new ItemStack(targetItem.getType());
         this.shopType = shopType;
+        this.settings = new Man10ShopSettings(this.shopId);
 
         loadPermissions();
     }
@@ -254,7 +253,8 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "を" + amount*item.getAmount() + "個購入しました");
 
         }else if(shopType == Man10ShopType.SELL){
-            if(itemCount > storageCap){
+            //if item storage hits storage cap
+            if(itemCount > settings.getStorageCap() && settings.getStorageCap() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }

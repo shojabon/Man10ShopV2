@@ -33,7 +33,7 @@ public final class Man10ShopV2 extends JavaPlugin {
         prefix = getConfig().getString("prefix");
         bank = new BankAPI(this);
         vault = new VaultAPI();
-        getCommand("man10shopv2").setExecutor(new Man10ShopV2Command(this));
+        getCommand("mshop").setExecutor(new Man10ShopV2Command(this));
     }
 
     @Override

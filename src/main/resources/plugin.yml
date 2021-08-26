@@ -7,5 +7,4 @@ depend:
   - Vault
   - Man10Bank
 commands:
-  test:
-  man10shopv2:
+  mshop:

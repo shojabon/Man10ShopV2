@@ -73,6 +73,18 @@ public class SInventory implements Listener {
         return this;
     }
 
+    public SInventory removeItem(int[] slots){
+        for(int slot: slots){
+            items.remove(slot);
+        }
+        return this;
+    }
+
+    public SInventory removeItem(int slot){
+        removeItem(new int[]{slot});
+        return this;
+    }
+
     public SInventoryItem getItem(int slot){
         return items.get(slot);
     }

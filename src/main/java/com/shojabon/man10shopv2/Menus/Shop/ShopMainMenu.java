@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
+import com.shojabon.man10shopv2.Menus.Shop.Settings.SettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Storage.StorageTypeSelector;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
@@ -24,10 +25,10 @@ public class ShopMainMenu {
         this.shop = shop;
         this.plugin = plugin;
         inventory = new SInventory(new SStringBuilder().green().text(shop.name + "設定").build(), 3, plugin);
-        renderMenu();
     }
 
     public SInventory getInventory() {
+        renderMenu();
         return inventory;
     }
 
@@ -89,7 +90,7 @@ public class ShopMainMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            player.sendMessage("clicked 設定");
+            inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
         });
 
 

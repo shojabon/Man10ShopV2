@@ -31,10 +31,10 @@ public class BannerDictionary {
     }
 
     public ItemStack getItem(int id){
-        return banner.get(id);
+        return banner.get(id).clone();
     }
 
     public ItemStack getSymbol(String id){
-        return symbol.get(id);
+        return symbol.get(id).clone();
     }
 }

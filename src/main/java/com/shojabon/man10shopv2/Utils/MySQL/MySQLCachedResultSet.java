@@ -29,6 +29,10 @@ public class MySQLCachedResultSet{
         return (Double) result.get(colName);
     }
 
+    public Object getObject(String colName) {
+        return result.get(colName);
+    }
+
 
     public Set<String> getKeys(){
         return result.keySet();

@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class MySQLAPI {
@@ -114,11 +115,14 @@ public class MySQLAPI {
                 }else if (obj instanceof String){
                     values.append("\"").append(escapeString((String) obj)).append("\"");
                     values.append(",");
+                }else if (obj instanceof UUID){
+                    values.append("\"").append(escapeString(obj.toString())).append("\"");
+                    values.append(",");
                 }else{
                     continue;
                 }
                 if(!fieldsDone){
-                    fields.append(key).append(",");
+                    fields.append("`").append(key).append("`").append(",");
                 }
             }
             fieldsDone = true;
@@ -137,6 +141,53 @@ public class MySQLAPI {
         List<HashMap<String, Object>> lis = new ArrayList<>();
         lis.add(object);
         return buildInsertQuery(lis, table);
+    }
+
+    public static String buildReplaceQuery(List<HashMap<String, Object>> objects, String table){
+        if(objects.size() == 0){
+            return "";
+        }
+        String query = "REPLACE INTO " + table;
+        StringBuilder fields = new StringBuilder("(");
+        StringBuilder finalValues = new StringBuilder();
+        boolean fieldsDone = false;
+
+        for(HashMap<String, Object> object: objects){
+            StringBuilder values = new StringBuilder("(");
+            for(String key : object.keySet()){
+                Object obj = object.get(key);
+                if(obj instanceof Integer){
+                    values.append(obj);
+                    values.append(",");
+                }else if (obj instanceof String){
+                    values.append("\"").append(escapeString((String) obj)).append("\"");
+                    values.append(",");
+                }else if (obj instanceof UUID){
+                    values.append("\"").append(escapeString(obj.toString())).append("\"");
+                    values.append(",");
+                }else{
+                    continue;
+                }
+                if(!fieldsDone){
+                    fields.append("`").append(key).append("`").append(",");
+                }
+            }
+            fieldsDone = true;
+            values.deleteCharAt(values.length()-1);
+            values.append("),");
+            finalValues.append(values);
+        }
+        fields.deleteCharAt(fields.length()-1);
+        fields.append(")");
+
+        finalValues.deleteCharAt(finalValues.length()-1);
+        return query + " " + fields + " VALUES " + finalValues;
+    }
+
+    public static String buildReplaceQuery(HashMap<String, Object> object, String table) {
+        List<HashMap<String, Object>> lis = new ArrayList<>();
+        lis.add(object);
+        return buildReplaceQuery(lis, table);
     }
 
     public static String escapeString(String value) {

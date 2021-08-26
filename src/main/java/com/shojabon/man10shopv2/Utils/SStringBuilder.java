@@ -137,6 +137,11 @@ public class SStringBuilder {
         return this;
     }
 
+    public SStringBuilder text(int number){
+        stringBuilder.append(number);
+        return this;
+    }
+
     public SStringBuilder hex(String hex){
         stringBuilder.append(hexColor(hex));
         return this;

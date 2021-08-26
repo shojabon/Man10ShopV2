@@ -35,7 +35,6 @@ public class Man10ShopV2API {
             shop = new Man10Shop(UUID.fromString(rs.getString("shop_id")),
                     rs.getString("name"),
                     rs.getInt("storage_size"),
-                    rs.getInt("storage_cap"),
                     rs.getInt("item_count"),
                     rs.getInt("price"),
                     rs.getInt("money"),
@@ -74,13 +73,12 @@ public class Man10ShopV2API {
 
     public boolean createShop(Player p, String name, int storageSize, int price, SItemStack targetItem, Man10ShopType shopType){
         UUID shopId = UUID.randomUUID();
-        Man10Shop shop = new Man10Shop(shopId, name, storageSize, 0,0, price, 0, targetItem, 1, shopType);
+        Man10Shop shop = new Man10Shop(shopId, name, storageSize, 0, price, 0, targetItem, 1, shopType);
 
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shop.shopId);
         payload.put("name", shop.name);
         payload.put("storage_size", shop.storageSize);
-        payload.put("storage_cap", shop.storageCap);
         payload.put("item_count", shop.itemCount);
         payload.put("price", shop.price);
         payload.put("money", shop.money);
