@@ -3,6 +3,8 @@ package com.shojabon.man10shopv2.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -116,6 +118,33 @@ public class SItemStack {
     }
 
     //utils
+
+    public SItemStack addFlag(ItemFlag itemFlag){
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.addItemFlags(itemFlag);
+        item.setItemMeta(itemMeta);
+        return this;
+    }
+
+    public SItemStack addEnchantment(Enchantment enchant, int level){
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.addEnchant(enchant, level, true);
+        item.setItemMeta(itemMeta);
+        return this;
+    }
+
+    public SItemStack setGlowingEffect(boolean enabled) {
+        if(enabled){
+            this.addFlag(ItemFlag.HIDE_ENCHANTS);
+            this.addEnchantment(Enchantment.LURE, 1);
+        }else{
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+            itemMeta.removeEnchant(Enchantment.LURE);
+            item.setItemMeta(itemMeta);
+        }
+        return this;
+    }
 
     public Material getType(){
         return this.item.getType();

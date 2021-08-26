@@ -28,7 +28,7 @@ public class Man10ShopV2API {
         if(shopCache.containsKey(shopId)){
             return shopCache.get(shopId);
         }
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_shops WHERE shop_id = '" + shopId + "' LIMIT 1;");
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_shops WHERE shop_id = '" + shopId + "' AND deleted = 0 LIMIT 1;");
         if(result == null) return null;
         Man10Shop shop = null;
         for(MySQLCachedResultSet rs: result){
@@ -65,7 +65,9 @@ public class Man10ShopV2API {
     public ArrayList<Man10Shop> getShops(ArrayList<UUID> ids){
         ArrayList<Man10Shop> shops = new ArrayList<>();
         for(UUID shopId: ids){
-            shops.add(getShop(shopId));
+            Man10Shop shop = getShop(shopId);
+            if(shop == null) continue;
+            shops.add(shop);
         }
         return shops;
     }
@@ -84,6 +86,7 @@ public class Man10ShopV2API {
         payload.put("target_item_hash", shop.targetItem.getItemTypeMD5());
         payload.put("target_item_count", 1);
         payload.put("shop_type", shop.shopType.name());
+        payload.put("deleted", 0);
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
         return shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER));
     }
@@ -95,7 +98,7 @@ public class Man10ShopV2API {
         }
 
         ArrayList<UUID> ids = new ArrayList<>();
-        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE UUID ='" + uuid.toString() + "' ");
+        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE UUID ='" + uuid.toString() + "'");
         for(MySQLCachedResultSet rs: results){
             ids.add(UUID.fromString(rs.getString("shop_id")));
         }

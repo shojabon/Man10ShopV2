@@ -39,6 +39,7 @@ public class SettingsMainMenu {
         items.add(setNameItem());
         items.add(buyStorageItem());
         items.add(sellCapItem());
+        items.add(setDeleteShopItem());
 
         renderedCore.setItems(items);
 
@@ -115,6 +116,30 @@ public class SettingsMainMenu {
             });
             inventory.moveToMenu(player, menu.getInventory());
 
+        });
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem setDeleteShopItem(){
+        SItemStack item = new SItemStack(Material.LAVA_BUCKET).setDisplayName(new SStringBuilder().yellow().obfuscated().text("OO")
+                .darkRed().bold().text("ショップを削除")
+                .yellow().obfuscated().text("OO")
+                .build());
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setEvent(e -> {
+            //confirmation menu
+            ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
+            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnConfirm(ee -> {
+                //delete shop
+                shop.deleteShop();
+                player.closeInventory();
+            });
+
+            inventory.moveToMenu(player, menu.getInventory());
         });
 
         return inventoryItem;

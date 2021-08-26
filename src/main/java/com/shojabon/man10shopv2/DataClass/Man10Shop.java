@@ -257,7 +257,12 @@ public class Man10Shop {
             return false;
         }
         Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice());
-        return settings.setBoughtStorageUnits(boughtCurrentStorageCount+units);
+        return buyStorageSpace(units);
+    }
+
+    public boolean buyStorageSpace(int units){
+        return settings.setBoughtStorageUnits(settings.getBoughtStorageUnits()+units);
+
     }
 
     //actions
@@ -337,6 +342,11 @@ public class Man10Shop {
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
+    }
+
+    public void deleteShop(){
+        Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET `deleted` = 1 WHERE shop_id = '" + shopId + "'");
+        Man10ShopV2API.shopCache.remove(shopId);
     }
 
 
