@@ -173,7 +173,7 @@ public class SItemStack {
         return this;
     }
 
-    public int getStackAmount(){
+    public int getMaxStackSize(){
         return this.item.getMaxStackSize();
     }
 

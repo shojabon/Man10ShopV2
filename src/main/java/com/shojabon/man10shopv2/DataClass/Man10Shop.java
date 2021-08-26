@@ -162,7 +162,7 @@ public class Man10Shop {
         switch (permission){
             case OWNER: permissionLevel = 10; break;
             case MODERATOR: permissionLevel = 9; break;
-            case ACCOUNTANT: permissionLevel = 8; break;
+            case ACCOUNTANT: permissionLevel = 7; break;
             case STORAGE_ACCESS: permissionLevel = 7; break;
         }
         return permissionLevel;

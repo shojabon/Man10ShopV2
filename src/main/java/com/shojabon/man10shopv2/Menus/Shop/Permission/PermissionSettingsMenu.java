@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.Menus.Shop;
+package com.shojabon.man10shopv2.Menus.Shop.Permission;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class PermissionSettingsMenu {

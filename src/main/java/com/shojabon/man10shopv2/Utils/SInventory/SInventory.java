@@ -38,6 +38,8 @@ public class SInventory implements Listener {
         this.title = title;
         this.rows = inventoryRows;
         this.plugin = plugin;
+
+        activeInventory = plugin.getServer().createInventory(null, this.rows*9, title);
     }
 
     public SInventory(String title, int inventoryRows){
@@ -69,6 +71,10 @@ public class SInventory implements Listener {
             items.put(slot, new SInventoryItem(data));
         }
         return this;
+    }
+
+    public SInventoryItem getItem(int slot){
+        return items.get(slot);
     }
 
     public SInventory fillItem(SInventoryItem data){
@@ -108,7 +114,6 @@ public class SInventory implements Listener {
     }
 
     public void open(Player p){
-        activeInventory = plugin.getServer().createInventory(null, this.rows*9, title);
         renderInventory();
         p.openInventory(activeInventory);
 

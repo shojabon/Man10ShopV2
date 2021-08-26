@@ -3,6 +3,8 @@ package com.shojabon.man10shopv2.Menus.Shop;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
+import com.shojabon.man10shopv2.Menus.Shop.Storage.StorageTypeSelector;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -105,7 +107,7 @@ public class ShopMainMenu {
 
         SItemStack icon = new SItemStack(Material.CHEST).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -119,7 +121,7 @@ public class ShopMainMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            player.sendMessage("clicked 倉庫");
+            inventory.moveToMenu(player, new StorageTypeSelector(player, shop, plugin).getInventory());
         });
 
 
