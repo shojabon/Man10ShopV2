@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.Menus.Shop.Settings;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMenu;
@@ -59,11 +60,29 @@ public class SettingsMainMenu {
 
     public SInventoryItem buyStorageItem(){
         SItemStack item = new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().gray().text("ショップの倉庫を拡張する").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在設定: ").yellow().text(shop.storageSize).build());
-
+        item.addLore(new SStringBuilder().lightPurple().text("現在の倉庫サイズ: ").yellow().text(shop.storageSize).text("個").build());
+        item.addLore("");
+        if(shop.calculateNextUnitPrice() != -1){
+            item.addLore(new SStringBuilder().red().text("次のサイズ: ").text(shop.calculateCurrentStorageSize(1)).text("個").build());
+            item.addLore(new SStringBuilder().yellow().text("価格: ").text(shop.calculateNextUnitPrice()).text("円").build());
+            item.addLore(new SStringBuilder().white().bold().text("左クリックで購入").build());
+        }
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-        inventoryItem.setEvent(null);
+        inventoryItem.setEvent(e -> {
+            //confirmation menu
+            ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
+            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnConfirm(ee -> {
+                shop.buyStorageSpace(player, 1);
+                menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+            });
+
+            inventory.moveToMenu(player, menu.getInventory());
+
+        });
+
 
         return inventoryItem;
     }

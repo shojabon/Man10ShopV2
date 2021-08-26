@@ -7,3 +7,13 @@ mysql:
 
 prefix: "§6[§eMan10Shop§dV2§6]"
 server: main
+
+itemStorage:
+  unitDefinition: 64
+  maxStorageUnits: 54
+  defaultUnits: 1
+  prices:
+    0: 100
+    10: 185
+    30: 250
+    50: 300

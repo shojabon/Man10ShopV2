@@ -4,15 +4,19 @@ import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2API;
+import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 public class Man10Shop {
@@ -36,7 +40,6 @@ public class Man10Shop {
 
     public Man10Shop(UUID shopId,
                      String name,
-                     int storageSize,
                      int itemCount,
                      int price,
                      int money,
@@ -52,7 +55,6 @@ public class Man10Shop {
         this.shopId = shopId;
         this.name = name;
         this.itemCount = itemCount;
-        this.storageSize = storageSize;
         this.targetItem = targetItem;
         this.targetItemCount = targetItemCount;
         this.icon = new ItemStack(targetItem.getType());
@@ -60,6 +62,7 @@ public class Man10Shop {
         this.settings = new Man10ShopSettings(this.shopId);
 
         loadPermissions();
+        storageSize = calculateCurrentStorageSize(0);
     }
 
 
@@ -210,6 +213,51 @@ public class Man10Shop {
             Man10ShopModerator permission = new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")));
             moderators.put(uuid, permission);
         }
+    }
+
+    //storage space
+
+    public int calculateCurrentStorageSize(int addedUnits){
+        int boughtCurrentStorageCount = settings.getBoughtStorageUnits();
+        int defaultUnit = Man10ShopV2.config.getInt("itemStorage.unitDefinition");
+        if(defaultUnit == 0) defaultUnit = 1;
+        return (addedUnits+boughtCurrentStorageCount)*defaultUnit;
+    }
+
+    public int calculateNextUnitPrice(){
+        int nextUnit = settings.getBoughtStorageUnits()+1;
+        MemorySection section = ((MemorySection)Man10ShopV2.config.get("itemStorage.prices"));
+        if(section == null) return -1;
+        if(nextUnit > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) return -1;
+
+        String currentRangeKey = null;
+        for(String key : section.getKeys(false)){
+            if(!BaseUtils.isInt(key)) continue;
+            if(Integer.parseInt(key) <= nextUnit){
+                currentRangeKey = key;
+            }else{
+                break;
+            }
+        }
+        if(currentRangeKey == null){
+            return 0;
+        }
+        return section.getInt(currentRangeKey);
+    }
+
+    public boolean buyStorageSpace(Player p, int units){
+        int boughtCurrentStorageCount = settings.getBoughtStorageUnits();
+        if(boughtCurrentStorageCount+units > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l倉庫ユニットの上限を超えました");
+            return false;
+        }
+        storageSize = calculateCurrentStorageSize(0);
+        if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < calculateNextUnitPrice()){
+            p.sendMessage(Man10ShopV2.prefix + "§c§lお金が足りません");
+            return false;
+        }
+        Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice());
+        return settings.setBoughtStorageUnits(boughtCurrentStorageCount+units);
     }
 
     //actions

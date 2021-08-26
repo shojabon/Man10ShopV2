@@ -9,6 +9,7 @@ import com.shojabon.man10shopv2.Utils.VaultAPI;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,7 @@ public final class Man10ShopV2 extends JavaPlugin {
     public static String prefix;
     public static BankAPI bank;
     public static VaultAPI vault;
+    public static FileConfiguration config;
 
     @Override
     public void onEnable() {
@@ -33,6 +35,7 @@ public final class Man10ShopV2 extends JavaPlugin {
         prefix = getConfig().getString("prefix");
         bank = new BankAPI(this);
         vault = new VaultAPI();
+        config = getConfig();
         getCommand("mshop").setExecutor(new Man10ShopV2Command(this));
     }
 

@@ -22,7 +22,7 @@ public class Man10ShopSettings {
         this.shopId = shopId;
     }
 
-    public String calculateUniquePermissionHash(String key){
+    public String calculateUniqueSettingsHash(String key){
         try {
             byte[] result = new byte[0];
             result = MessageDigest.getInstance("MD5")
@@ -37,7 +37,7 @@ public class Man10ShopSettings {
     public boolean setSetting(String key, String value){
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shopId);
-        payload.put("unique_setting_hash", calculateUniquePermissionHash(key));
+        payload.put("unique_setting_hash", calculateUniqueSettingsHash(key));
         payload.put("key", key);
         payload.put("value", value);
 
@@ -55,12 +55,14 @@ public class Man10ShopSettings {
         if(settings.containsKey(key)){
             return settings.get(key);
         }
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE shop_id = '" + shopId + "' AND key = '" + key + "' LIMIT 1;");
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_settings WHERE shop_id = '" + shopId + "' AND `key` = '" + key + "' LIMIT 1;");
         for(MySQLCachedResultSet rs: result){
             settings.put(rs.getString("key"), rs.getString("value"));
         }
         return settings.get(key);
     }
+
+    //-------------------- storage cap ------------------
 
     public int getStorageCap(){
         String currentSetting = getSetting("storage.sell.cap");
@@ -69,9 +71,23 @@ public class Man10ShopSettings {
     }
 
     public boolean setStorageCap(int storageCap){
-        if(getStorageCap() == storageCap) return false;
+        if(getStorageCap() == storageCap) return true;
         return setSetting("storage.sell.cap", storageCap);
     }
+
+    //--------------------- storage size -----------------
+
+    public int getBoughtStorageUnits(){
+        String currentSetting = getSetting("storage.bought");
+        if(!BaseUtils.isInt(currentSetting)) return 1;
+        return Integer.parseInt(currentSetting);
+    }
+
+    public boolean setBoughtStorageUnits(int units){
+        if(getBoughtStorageUnits() == units) return true;
+        return setSetting("storage.bought", units);
+    }
+
 
 
 
