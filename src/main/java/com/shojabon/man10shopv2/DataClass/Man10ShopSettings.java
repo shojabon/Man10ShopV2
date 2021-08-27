@@ -41,6 +41,8 @@ public class Man10ShopSettings {
         payload.put("key", key);
         payload.put("value", value);
 
+        System.out.println("DEBUGGER " + MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
+
         boolean result = Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
         if(!result) return false;
         settings.put(key, value);
@@ -48,6 +50,10 @@ public class Man10ShopSettings {
     }
 
     public boolean setSetting(String key, int value){
+        return setSetting(key, String.valueOf(value));
+    }
+
+    public boolean setSetting(String key, boolean value){
         return setSetting(key, String.valueOf(value));
     }
 
@@ -88,6 +94,19 @@ public class Man10ShopSettings {
         return setSetting("storage.bought", units);
     }
 
+    //----------------------- shop enabled for trade -----
+
+
+    public boolean getShopEnabled(){
+        String currentSetting = getSetting("shop.enabled");
+        if(!BaseUtils.isBoolean(currentSetting)) return true;
+        return Boolean.parseBoolean(currentSetting);
+    }
+
+    public boolean setShopEnabled(boolean enabled){
+        if(getShopEnabled() == enabled) return true;
+        return setSetting("shop.enabled", enabled);
+    }
 
 
 

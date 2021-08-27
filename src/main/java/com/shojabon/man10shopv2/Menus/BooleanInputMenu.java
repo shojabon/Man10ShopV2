@@ -66,6 +66,7 @@ public class BooleanInputMenu {
             current = true;
             renderButtons();
         });
+        inventory.setItem(new int[]{10,11,19,20}, t);
 
         SInventoryItem f = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().darkRed().bold().text("false").build()).setGlowingEffect(!current).build());
         f.clickable(false);
@@ -73,7 +74,8 @@ public class BooleanInputMenu {
             current = false;
             renderButtons();
         });
-
+        inventory.setItem(new int[]{15,16,24,25}, f);
+        inventory.renderInventory();
     }
 
     public void renderMenu(){
@@ -89,9 +91,10 @@ public class BooleanInputMenu {
             inventory.setItem(13, invItem);
         }
 
-        SInventoryItem f = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
-        f.clickable(false);
-        f.setEvent(e-> onConfirm.accept(current));
+        SInventoryItem confirm = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
+        confirm.clickable(false);
+        confirm.setEvent(e-> onConfirm.accept(current));
+        inventory.setItem(40, confirm);
 
 
     }

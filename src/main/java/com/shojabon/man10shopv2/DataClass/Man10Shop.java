@@ -257,12 +257,22 @@ public class Man10Shop {
             return false;
         }
         Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice());
+        p.sendMessage(Man10ShopV2.prefix + "§a§l倉庫スペースを購入しました");
         return buyStorageSpace(units);
     }
 
     public boolean buyStorageSpace(int units){
         return settings.setBoughtStorageUnits(settings.getBoughtStorageUnits()+units);
 
+    }
+
+    //shop type
+    public boolean setShopType(Man10ShopType type){
+        if(!Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET shop_type ='" + type.name() + "' WHERE shop_id = '" + shopId + "'")){
+            return false;
+        }
+        shopType = type;
+        return true;
     }
 
     //actions

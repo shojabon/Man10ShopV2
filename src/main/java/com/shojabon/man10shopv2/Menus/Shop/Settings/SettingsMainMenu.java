@@ -2,12 +2,16 @@ package com.shojabon.man10shopv2.Menus.Shop.Settings;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.BooleanInputMenu;
 import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMenu;
+import com.shojabon.man10shopv2.Menus.Shop.Settings.InnerSettings.ShopTypeSelectorMenu;
 import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
+import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -36,6 +40,8 @@ public class SettingsMainMenu {
 
         //define items here
 
+        items.add(shopEnabledItem());
+        items.add(shopTypeSelectItem());
         items.add(setNameItem());
         items.add(buyStorageItem());
         items.add(sellCapItem());
@@ -50,7 +56,7 @@ public class SettingsMainMenu {
 
     public SInventoryItem setNameItem(){
         SItemStack item = new SItemStack(Material.NAME_TAG).setDisplayName(new SStringBuilder().gold().text("ショップの名前を変更する").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在設定: ").yellow().text(shop.name).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.name).build());
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
@@ -90,7 +96,7 @@ public class SettingsMainMenu {
 
     public SInventoryItem sellCapItem(){
         SItemStack item = new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().green().text("購入数制限").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在設定: ").yellow().text(shop.settings.getStorageCap()).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getStorageCap()).build());
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
@@ -130,6 +136,10 @@ public class SettingsMainMenu {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setEvent(e -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
             menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
@@ -145,4 +155,47 @@ public class SettingsMainMenu {
         return inventoryItem;
     }
 
+    public SInventoryItem shopEnabledItem(){
+        SItemStack item = new SItemStack(Material.LEVER).setDisplayName(new SStringBuilder().gray().text("ショップ取引有効").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.settings.getShopEnabled())).build());
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setEvent(e -> {
+            //confirmation menu
+            BooleanInputMenu menu = new BooleanInputMenu(shop.settings.getShopEnabled(), "ショップ有効か設定", plugin);
+            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnConfirm(bool -> {
+                player.sendMessage(String.valueOf(bool));
+                shop.settings.setShopEnabled(bool);
+                menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+            });
+
+            inventory.moveToMenu(player, menu.getInventory());
+
+        });
+
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem shopTypeSelectItem(){
+        SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.shopType.name()).build());
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+
+        inventoryItem.setEvent(e -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
+            //confirmation menu
+            inventory.moveToMenu(player, new ShopTypeSelectorMenu(player, shop, plugin).getInventory());
+
+        });
+
+
+        return inventoryItem;
+    }
 }
