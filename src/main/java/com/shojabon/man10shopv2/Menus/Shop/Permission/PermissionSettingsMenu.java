@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
+import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -51,7 +52,7 @@ public class PermissionSettingsMenu {
                     return;
                 }
 
-                //permission change confrimation
+                //permission change confirmation
                 ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
                 int finalI = i;
                 menu.setOnConfirm(ee -> {

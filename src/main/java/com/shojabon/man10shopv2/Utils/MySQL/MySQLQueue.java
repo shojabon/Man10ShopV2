@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MySQLQueue {
@@ -71,7 +72,7 @@ public class MySQLQueue {
     public synchronized boolean execute(String query){
         String responseId = UUID.randomUUID().toString();
         ThreadedQueryRequest request = new ThreadedQueryRequest(query, responseId);
-        executeQueue.get(nextExecuteThread).add(new ThreadedQueryRequest(query, responseId));
+        executeQueue.get(nextExecuteThread).add(request);
         nextExecuteThread += 1;
         if(nextExecuteThread > executePool-1){
             nextExecuteThread = 0;

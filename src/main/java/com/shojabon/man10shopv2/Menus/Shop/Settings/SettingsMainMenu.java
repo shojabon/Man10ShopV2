@@ -41,6 +41,7 @@ public class SettingsMainMenu {
         //define items here
 
         items.add(shopEnabledItem());
+        items.add(sellPriceItem());
         items.add(shopTypeSelectItem());
         items.add(setNameItem());
         items.add(buyStorageItem());
@@ -61,6 +62,30 @@ public class SettingsMainMenu {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setEvent(null);
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem sellPriceItem(){
+        SItemStack item = new SItemStack(Material.EMERALD).setDisplayName(new SStringBuilder().green().text("取引価格設定").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.price).text("円").build());
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setEvent(e -> {
+
+            //number input menu
+            NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引値段設定").build(), plugin);
+            menu.setOnClose(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnCancel(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnConfirm(newValue -> {
+
+                shop.setPrice(newValue);
+                menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+            });
+            inventory.moveToMenu(player, menu.getInventory());
+
+        });
 
         return inventoryItem;
     }
@@ -95,7 +120,7 @@ public class SettingsMainMenu {
     }
 
     public SInventoryItem sellCapItem(){
-        SItemStack item = new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().green().text("購入数制限").build());
+        SItemStack item = new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("購入数制限").build());
         item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getStorageCap()).build());
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());

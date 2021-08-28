@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.Commands.SubCommands;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
+import com.shojabon.man10shopv2.Menus.Shop.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
@@ -28,27 +29,9 @@ public class ShopsCommand {
 
         Player p = ((Player)sender);
 
-        ArrayList<SInventoryItem> items = new ArrayList<>();
-        LargeSInventoryMenu menu = new LargeSInventoryMenu(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), 5, plugin);
-
-        SInventory inventory = menu.getInventory();
-        ArrayList<Man10Shop> shops = plugin.api.getShopsWithPermission(p.getUniqueId());
-        for(Man10Shop shop: shops){
-
-            SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
-            icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name).build());
-            icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(String.valueOf(shop.getPermission(p.getUniqueId()))).build());
-
-            SInventoryItem item = new SInventoryItem(icon.build());
-            item.clickable(false);
-            item.setEvent(e -> inventory.moveToMenu(p, new ShopMainMenu(p, plugin.api.getShop(shop.shopId), plugin).getInventory()));
-
-            items.add(item);
-        }
-
-        menu.setItems(items);
-        menu.open(p);
-
+        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, plugin);
+        menu.setOnClick(shop -> menu.getInventory().moveToMenu(p, new ShopMainMenu(p, plugin.api.getShop(shop.shopId), plugin).getInventory()));
+        menu.getInventory().open(p);
 
     }
 

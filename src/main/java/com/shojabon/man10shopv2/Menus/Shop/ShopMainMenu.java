@@ -1,17 +1,22 @@
 package com.shojabon.man10shopv2.Menus.Shop;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
+import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Settings.SettingsMainMenu;
-import com.shojabon.man10shopv2.Menus.Shop.Storage.StorageTypeSelector;
+import com.shojabon.man10shopv2.Menus.Shop.Storage.ItemStorageMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.function.Consumer;
 
 public class ShopMainMenu {
 
@@ -49,10 +54,13 @@ public class ShopMainMenu {
         //permission settings
         inventory.setItem(16, getPermissionSettingsItem());
 
+        inventory.setItem(22, getMoneySelectorMenu());
+
         //target item setting settings
         SInventoryItem targetItemSetting = new SInventoryItem(new SItemStack(Material.BELL).setDisplayName(new SStringBuilder().darkRed().bold().text("取引アイテム設定").build()).build());
         targetItemSetting.clickable(false);
         inventory.setItem(10, getTargetItemSettingsItem());
+        inventory.renderInventory();
     }
 
     public SInventoryItem getShopInfoItem(){
@@ -60,6 +68,8 @@ public class ShopMainMenu {
         SItemStack icon = new SItemStack(Material.OAK_SIGN).setDisplayName(iconName);
         SInventoryItem shopInfo = new SInventoryItem(icon.build());
         shopInfo.clickable(false);
+        shopInfo.setEvent(e -> {
+        });
 
         return shopInfo;
     }
@@ -118,11 +128,19 @@ public class ShopMainMenu {
         item.clickable(false);
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            inventory.moveToMenu(player, new StorageTypeSelector(player, shop, plugin).getInventory());
+
+            InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
+            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, false).getInventory()));
+            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, true).getInventory()));
+            menu.setInText("倉庫にアイテムを入れる");
+            menu.setOutText("倉庫からアイテムを出す");
+
+            inventory.moveToMenu(player, menu.getInventory());
         });
 
 
@@ -194,5 +212,81 @@ public class ShopMainMenu {
 
 
         return item;
+    }
+
+    public SInventoryItem getMoneySelectorMenu(){
+        SStringBuilder iconName = new SStringBuilder();
+
+        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+            iconName.green().bold().text("現金出し入れ").build();
+        }else{
+            iconName.gray().bold().strike().text("現金出し入れ");
+        }
+
+        SItemStack icon = new SItemStack(Material.EMERALD).setDisplayName(iconName.build());
+
+        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+            icon.addLore(new SStringBuilder().red().text("権限がありません").build());
+            icon.addLore("");
+        }
+        icon.addLore(new SStringBuilder().white().text("現金出し入れを行うことができます").build());
+        SInventoryItem item = new SInventoryItem(icon.build());
+
+        item.clickable(false);
+
+        item.setEvent(e -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
+                return;
+            }
+
+            InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
+            menu.setInText("口座に入金する");
+            menu.setOutText("口座から出金をする");
+
+            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, generateMoneyEvent(true)));
+            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, generateMoneyEvent(false)));
+
+            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+
+
+            inventory.moveToMenu(player, menu.getInventory());
+        });
+
+
+
+        return item;
+    }
+
+    public SInventory generateMoneyEvent(boolean deposit) {
+
+        NumericInputMenu menu = new NumericInputMenu("入金額を入力してください", plugin);
+        if (deposit) {
+            menu.setMaxValue((int) Man10ShopV2.vault.getBalance(player.getUniqueId()));
+        }
+        menu.setAllowZero(false);
+        menu.setOnCancel(e -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+        menu.setOnClose(e -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+        menu.setOnConfirm(integer -> {
+            if (deposit) {
+                if (Man10ShopV2.vault.getBalance(player.getUniqueId()) < integer) {
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
+                    return;
+                }
+                Man10ShopV2.vault.withdraw(player.getUniqueId(), integer);
+                shop.addMoney(integer);
+                player.sendMessage(Man10ShopV2.prefix + "§a§l" + integer + "円入金しました");
+            } else {
+                if (shop.money < integer) {
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
+                    return;
+                }
+                Man10ShopV2.vault.deposit(player.getUniqueId(), integer);
+                shop.removeMoney(integer);
+                player.sendMessage(Man10ShopV2.prefix + "§a§l" + integer + "円出金しました");
+            }
+            menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory());
+        });
+        return menu.getInventory();
     }
 }

@@ -1,0 +1,114 @@
+package com.shojabon.man10shopv2.Listeners;
+
+import com.shojabon.man10shopv2.DataClass.Man10Shop;
+import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Enums.Man10ShopType;
+import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.Shop.EditableShopSelectorMenu;
+import com.shojabon.man10shopv2.Menus.Shop.ShopActionMenu;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+public class SignListeners implements @NotNull Listener {
+
+    Man10ShopV2 plugin;
+
+    public SignListeners(Man10ShopV2 plugin){
+        this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onSignUpdate(SignChangeEvent e){
+        if(e.getLine(0) == null) return;
+        if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")) return;
+
+        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
+        menu.setOnClick(shop -> {
+
+            Sign sign = ((Sign) e.getBlock().getState());
+
+            if(shop.shopType == Man10ShopType.BUY){
+                sign.setLine(0, "§a§l販売ショップ");
+            }else{
+                sign.setLine(0, "§c§l買取ショップ");
+            }
+            if(!containsPrice(sign.getLine(1)) && !containsPrice(sign.getLine(2)) && !containsPrice(sign.getLine(3))){
+                e.getBlock().breakNaturally();
+                e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l看板には{price}が入ってなければいけません");
+                e.getPlayer().closeInventory();
+                return;
+            }
+            sign.setLine(1, formatSignString(sign.getLine(1), shop));
+            sign.setLine(2, formatSignString(sign.getLine(2), shop));
+            sign.setLine(3, formatSignString(sign.getLine(3), shop));
+
+            sign.update(true);
+
+            Location l = e.getBlock().getLocation();
+            plugin.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を作成しました");
+            e.getPlayer().closeInventory();
+        });
+
+        menu.getInventory().open(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onSignDestroy(BlockBreakEvent e){
+        if(!(e.getBlock().getState() instanceof Sign)){
+            return;
+        }
+        Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
+        if(sign == null) return;
+        Man10Shop shop = plugin.api.getShop(sign.shopId);
+        if(shop == null) {
+            plugin.api.deleteSign(sign);
+            return;
+        }
+        if(!shop.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR)){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l看板を破壊する権限を持っていません");
+            e.setCancelled(true);
+            return;
+        }
+        plugin.api.deleteSign(sign);
+        e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を破壊しました");
+    }
+
+    @EventHandler
+    public void onSignInteract(PlayerInteractEvent e){
+        if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if(e.getClickedBlock() == null) return;
+        if(!(e.getClickedBlock().getState() instanceof Sign)) return;
+        Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
+        if(sign == null) return;
+        Man10Shop shop = plugin.api.getShop(sign.shopId);
+        if(shop == null) return;
+        ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+        menu.getInventory().open(e.getPlayer());
+    }
+
+    public boolean containsPrice(String original){
+        return original.contains("{price}");
+    }
+
+    public String formatSignString(String original, Man10Shop shop){
+        return original.replace("{price}", String.valueOf(shop.price))
+                .replace("{iName}", shop.targetItem.getDisplayName())
+                .replace("{sName}", shop.name)
+                .replace("&", "§");
+    }
+
+
+
+}

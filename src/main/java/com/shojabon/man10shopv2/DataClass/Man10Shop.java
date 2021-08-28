@@ -35,7 +35,7 @@ public class Man10Shop {
     public Man10ShopType shopType;
 
     public HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
-    public ArrayList<Man10ShopSign> signs = new ArrayList<>();
+    public HashMap<String, Man10ShopSign> signs = new HashMap<>();
     public Man10ShopSettings settings;
 
     public Man10Shop(UUID shopId,
@@ -275,6 +275,14 @@ public class Man10Shop {
         return true;
     }
 
+    //price
+
+    public boolean setPrice(int value){
+        if(value < 0) return false;
+        price = value;
+        return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET price = " + value + " WHERE shop_id = '" + shopId + "'");
+    }
+
     //actions
 
     public void performAction(Player p, int amount){
@@ -313,7 +321,7 @@ public class Man10Shop {
                 p.getInventory().addItem(item.build());
             }
 
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "を" + amount*item.getAmount() + "個購入しました");
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
@@ -348,7 +356,7 @@ public class Man10Shop {
                 p.getInventory().removeItemAnySlot(item.build());
             }
 
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "を" + amount*item.getAmount() + "個売却しました");
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }

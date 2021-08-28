@@ -183,6 +183,7 @@ public class SInventory implements Listener {
         }
         SInventoryItem item = items.get(e.getRawSlot());
         item.activateClick(e);
+
     }
 
     @EventHandler

@@ -2,11 +2,15 @@ package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
+import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.man10shopv2.Utils.SItemStack;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ public class Man10ShopV2API {
 
     public static HashMap<UUID, Man10Shop> shopCache = new HashMap<>();
     public static HashMap<UUID, ArrayList<UUID>> userModeratingShopList = new HashMap<>();
+    public static HashMap<String, Man10ShopSign> signs = new HashMap<>();
 
     public Man10ShopV2API(Man10ShopV2 plugin){
         this.plugin = plugin;
@@ -104,5 +109,64 @@ public class Man10ShopV2API {
         }
         userModeratingShopList.put(uuid, ids);
         return getShops(ids);
+    }
+
+    //sign
+
+    public String generateLocationId(Location l){
+        return l.getWorld().getName() + "|" + l.getBlockX() + "|" + l.getBlockY() + "|" + l.getBlockZ();
+    }
+    public boolean createSign(Man10ShopSign sign){
+        Man10Shop shop = getShop(sign.shopId);
+        if(shop == null){
+            return false;
+        }
+        signs.put(sign.generateLocationId(), sign);
+        shop.signs.put(sign.generateLocationId(), sign);
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("shop_id", shop.shopId);
+        payload.put("location_id", sign.generateLocationId());
+        payload.put("world", sign.world);
+        payload.put("x", sign.x);
+        payload.put("y", sign.y);
+        payload.put("z", sign.z);
+        return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_signs"));
+    }
+
+    public Man10ShopSign getSign(Location location){
+        Block b = location.getBlock();
+        if(!(b.getState() instanceof Sign)) return null;
+        String locationId = generateLocationId(location);
+        if(signs.containsKey(locationId)) return signs.get(locationId);
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE location_id = '" + locationId + "' LIMIT 1;");
+        if(result.size() == 0){
+            signs.put(locationId, null);
+            return null;
+        }
+        for(MySQLCachedResultSet rs: result){
+            Man10Shop shop = getShop(UUID.fromString(rs.getString("shop_id")));
+            if(shop == null) continue;
+            Man10ShopSign sign = new Man10ShopSign(shop.shopId,
+                    rs.getString("world"),
+                    rs.getInt("x"),
+                    rs.getInt("y"),
+                    rs.getInt("z"));
+            shop.signs.put(locationId, sign);
+            signs.put(locationId, sign);
+            return signs.get(locationId);
+        }
+        return null;
+    }
+
+    public boolean deleteSign(Man10ShopSign sign){
+
+        boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_signs WHERE location_id = '" + sign.generateLocationId() + "'");
+        if(!result) return false;
+
+        signs.remove(sign.generateLocationId());
+        Man10Shop shop = getShop(sign.shopId);
+        if(shop == null) return false;
+        shop.signs.remove(sign.generateLocationId());
+        return true;
     }
 }

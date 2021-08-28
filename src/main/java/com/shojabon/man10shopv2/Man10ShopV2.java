@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.Commands.Man10ShopV2Command;
+import com.shojabon.man10shopv2.Listeners.SignListeners;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLQueue;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
@@ -36,6 +37,7 @@ public final class Man10ShopV2 extends JavaPlugin {
         bank = new BankAPI(this);
         vault = new VaultAPI();
         config = getConfig();
+        getServer().getPluginManager().registerEvents(new SignListeners(this), this);
         getCommand("mshop").setExecutor(new Man10ShopV2Command(this));
     }
 

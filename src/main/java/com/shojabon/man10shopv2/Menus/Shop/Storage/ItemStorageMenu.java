@@ -2,6 +2,8 @@ package com.shojabon.man10shopv2.Menus.Shop.Storage;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.Shop.InOutSelectorMenu;
+import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
@@ -59,8 +61,8 @@ public class ItemStorageMenu {
         int result = 0;
         for(int i = 0; i < 6*9; i++){
             ItemStack item = inventory.activeInventory.getItem(i);
-            if(!new SItemStack(item).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) continue;
             if(item == null) continue;
+            if(!new SItemStack(item).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) continue;
             result += item.getAmount();
         }
         return result;
@@ -103,7 +105,13 @@ public class ItemStorageMenu {
                 }
             }
             //diff range excludes 0 (no change)
-            inventory.moveToMenu(player, new StorageTypeSelector(player, shop, plugin).getInventory());
+            InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
+            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, false).getInventory()));
+            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, true).getInventory()));
+            menu.setInText("倉庫にアイテムを入れる");
+            menu.setOutText("倉庫からアイテムを出す");
+            inventory.moveToMenu(player, menu.getInventory());
         });
     }
 
