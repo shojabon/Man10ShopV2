@@ -95,6 +95,10 @@ public class SignListeners implements @NotNull Listener {
         Man10Shop shop = plugin.api.getShop(sign.shopId);
         if(shop == null) return;
         ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+        if(!shop.settings.getShopEnabled()){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
+            return;
+        }
         menu.getInventory().open(e.getPlayer());
     }
 

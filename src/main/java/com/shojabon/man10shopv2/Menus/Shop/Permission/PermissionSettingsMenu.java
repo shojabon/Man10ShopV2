@@ -41,7 +41,6 @@ public class PermissionSettingsMenu {
         renderInventory();
     }
 
-
     public Consumer<InventoryClickEvent> generateClickChangePermissionEvent(){
         return e -> {
             for(int i = 0; i < slots.length; i++){

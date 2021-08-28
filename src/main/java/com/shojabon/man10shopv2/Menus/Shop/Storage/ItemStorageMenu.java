@@ -87,7 +87,7 @@ public class ItemStorageMenu {
             }
         });
 
-        inventory.setOnCloseEvent(e -> {
+        inventory.setOnForcedCloseEvent(e -> {
             int diff = countItems() - showingCount;
             if(diff < 0){
                 //if item taken
@@ -105,6 +105,8 @@ public class ItemStorageMenu {
                 }
             }
             //diff range excludes 0 (no change)
+        });
+        inventory.setOnCloseEvent(e -> {
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
             menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
             menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, false).getInventory()));

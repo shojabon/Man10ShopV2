@@ -61,7 +61,12 @@ public class SettingsMainMenu {
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-        inventoryItem.setEvent(null);
+        inventoryItem.setThreadedEvent(e -> {
+            player.sendMessage("start");
+            Man10ShopV2.mysql.execute("SELECT SLEEP(5)");
+            player.sendMessage("finish");
+            inventory.moveToMenu(player, new SInventory("title", 1, plugin));
+        });
 
         return inventoryItem;
     }
@@ -191,7 +196,6 @@ public class SettingsMainMenu {
             menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
             menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
             menu.setOnConfirm(bool -> {
-                player.sendMessage(String.valueOf(bool));
                 shop.settings.setShopEnabled(bool);
                 menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
             });

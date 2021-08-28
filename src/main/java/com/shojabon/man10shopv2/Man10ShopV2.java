@@ -2,12 +2,9 @@ package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.Commands.Man10ShopV2Command;
 import com.shojabon.man10shopv2.Listeners.SignListeners;
-import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLQueue;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.man10shopv2.Utils.MySQL.ThreadedMySQLAPI;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.VaultAPI;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,11 +13,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import red.man10.man10bank.BankAPI;
 
-import java.util.ArrayList;
+import java.util.UUID;
 
 public final class Man10ShopV2 extends JavaPlugin {
 
-    public static MySQLQueue mysql;
+    public static ThreadedMySQLAPI mysql;
     public Man10ShopV2API api;
     public static String prefix;
     public static BankAPI bank;
@@ -31,7 +28,7 @@ public final class Man10ShopV2 extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         saveDefaultConfig();
-        mysql = new MySQLQueue(1, 1, this);
+        mysql = new ThreadedMySQLAPI(this);
         this.api = new Man10ShopV2API(this);
         prefix = getConfig().getString("prefix");
         bank = new BankAPI(this);
@@ -44,6 +41,10 @@ public final class Man10ShopV2 extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        for(UUID uuid: SInventory.playersInInventoryGlobal){
+            Player p = getServer().getPlayer(uuid);
+            if(p != null) p.closeInventory();
+        }
     }
 
     @Override

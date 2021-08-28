@@ -21,7 +21,9 @@ public class SInventory implements Listener {
     HashMap<String, Consumer<Object>> events = new HashMap<>();
     HashMap<Integer, SInventoryItem> items = new HashMap<>();
     Consumer<InventoryCloseEvent> onCloseEvent = null;
+    Consumer<InventoryCloseEvent> onForcedCloseEvent = null;
     ArrayList<Consumer<InventoryClickEvent>> clickEvents = new ArrayList<>();
+    public static ArrayList<UUID> playersInInventoryGlobal = new ArrayList<>();
 
 
     public Inventory activeInventory = null;
@@ -32,7 +34,7 @@ public class SInventory implements Listener {
     String title;
 
     ArrayList<UUID> playerInMenu = new ArrayList<>();
-    public ArrayList<UUID> movingPlayer = new ArrayList<>();
+    public static ArrayList<UUID> movingPlayer = new ArrayList<>();
 
     public SInventory(String title, int inventoryRows, JavaPlugin plugin){
         this.title = title;
@@ -127,6 +129,7 @@ public class SInventory implements Listener {
 
     public void open(Player p){
         renderInventory();
+        playersInInventoryGlobal.add(p.getUniqueId());
         p.openInventory(activeInventory);
 
         if(plugin != null){
@@ -144,9 +147,11 @@ public class SInventory implements Listener {
     }
 
     public void moveToMenu(Player p, SInventory inv){
-        movingPlayer.add(p.getUniqueId());
-        inv.open(p);
-        movingPlayer.remove(p.getUniqueId());
+        plugin.getServer().getScheduler().runTask(plugin, ()->{
+            movingPlayer.add(p.getUniqueId());
+            inv.open(p);
+            movingPlayer.remove(p.getUniqueId());
+        });
     }
 
 
@@ -164,6 +169,10 @@ public class SInventory implements Listener {
         clickEvents.add(event);
     }
 
+    public void setOnForcedCloseEvent(Consumer<InventoryCloseEvent> event){
+        this.onForcedCloseEvent = event;
+    }
+
     public void activateEvent(String eventName, Object data){
         if(!events.containsKey(eventName)){
             return;
@@ -174,6 +183,7 @@ public class SInventory implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e){
+        e.getWhoClicked().sendMessage(title);
         if(!playerInMenu.contains(e.getWhoClicked().getUniqueId())) return;
         for(Consumer<InventoryClickEvent> clickEvents: clickEvents){
             clickEvents.accept(e);
@@ -191,6 +201,7 @@ public class SInventory implements Listener {
         if(!playerInMenu.contains(e.getPlayer().getUniqueId())) return;
         playerInMenu.remove(e.getPlayer().getUniqueId());
         HandlerList.unregisterAll(this);
+        playersInInventoryGlobal.remove(e.getPlayer().getUniqueId());
         if(onCloseEvent != null){
             if(!movingPlayer.contains(e.getPlayer().getUniqueId())){
                 plugin.getServer().getScheduler().runTaskLater(plugin,()->{onCloseEvent.accept(e);}, 1);
@@ -198,6 +209,7 @@ public class SInventory implements Listener {
                 movingPlayer.remove(e.getPlayer().getUniqueId());
             }
         }
+        if(onForcedCloseEvent != null) this.onForcedCloseEvent.accept(e);
     }
 
 }

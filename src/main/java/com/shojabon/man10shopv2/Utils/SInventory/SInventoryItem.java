@@ -40,11 +40,11 @@ public class SInventoryItem {
     }
 
     public void activateClick(InventoryClickEvent e){
-        for(Consumer<InventoryClickEvent> event: events){
-            event.accept(e);
-        }
         for(Consumer<InventoryClickEvent> event: threadedEvents){
             threadPool.execute(() -> event.accept(e));
+        }
+        for(Consumer<InventoryClickEvent> event: events){
+            event.accept(e);
         }
     }
 
