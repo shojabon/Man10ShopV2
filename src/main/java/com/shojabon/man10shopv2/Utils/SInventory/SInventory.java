@@ -13,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class SInventory implements Listener {
@@ -20,10 +22,17 @@ public class SInventory implements Listener {
 
     HashMap<String, Consumer<Object>> events = new HashMap<>();
     HashMap<Integer, SInventoryItem> items = new HashMap<>();
-    Consumer<InventoryCloseEvent> onCloseEvent = null;
-    Consumer<InventoryCloseEvent> onForcedCloseEvent = null;
+
+    ArrayList<Consumer<InventoryCloseEvent>> onCloseEvents = new ArrayList<>();
+    ArrayList<Consumer<InventoryCloseEvent>> onForcedCloseEvents = new ArrayList<>();
     ArrayList<Consumer<InventoryClickEvent>> clickEvents = new ArrayList<>();
+
+    ArrayList<Consumer<InventoryCloseEvent>> asyncOnCloseEvents = new ArrayList<>();
+    ArrayList<Consumer<InventoryCloseEvent>> asyncOnForcedCloseEvents = new ArrayList<>();
+    ArrayList<Consumer<InventoryClickEvent>> asyncClickEvents = new ArrayList<>();
+
     public static ArrayList<UUID> playersInInventoryGlobal = new ArrayList<>();
+    private static Executor threadPool = Executors.newCachedThreadPool();
 
 
     public Inventory activeInventory = null;
@@ -138,14 +147,6 @@ public class SInventory implements Listener {
         }
     }
 
-    public Inventory buildInventory(){
-        Inventory inv = plugin.getServer().createInventory(null, this.rows*9, title);
-        for(int key: items.keySet()){
-            inv.setItem(key, items.get(key).getItemStack());
-        }
-        return inv;
-    }
-
     public void moveToMenu(Player p, SInventory inv){
         plugin.getServer().getScheduler().runTask(plugin, ()->{
             movingPlayer.add(p.getUniqueId());
@@ -155,22 +156,10 @@ public class SInventory implements Listener {
     }
 
 
-    //======== event =====
-
-    public void setOnCloseEvent(Consumer<InventoryCloseEvent> event){
-        this.onCloseEvent = event;
-    }
+    //======== custom event =====
 
     public void setEvent(String eventName, Consumer<Object> event){
         events.put(eventName, event);
-    }
-
-    public void setOnClickEvent(Consumer<InventoryClickEvent> event){
-        clickEvents.add(event);
-    }
-
-    public void setOnForcedCloseEvent(Consumer<InventoryCloseEvent> event){
-        this.onForcedCloseEvent = event;
     }
 
     public void activateEvent(String eventName, Object data){
@@ -181,13 +170,44 @@ public class SInventory implements Listener {
 
     }
 
+    //======== synced events ====
+    public void setOnCloseEvent(Consumer<InventoryCloseEvent> event){
+        this.onCloseEvents.add(event);
+    }
+
+    public void setOnClickEvent(Consumer<InventoryClickEvent> event){
+        clickEvents.add(event);
+    }
+
+    public void setOnForcedCloseEvent(Consumer<InventoryCloseEvent> event){
+        this.onForcedCloseEvents.add(event);
+    }
+
+    //======== async events ====
+
+    public void setAsyncOnCloseEvent(Consumer<InventoryCloseEvent> event){
+        this.asyncOnCloseEvents.add(event);
+    }
+
+    public void setAsyncOnClickEvent(Consumer<InventoryClickEvent> event){
+        asyncClickEvents.add(event);
+    }
+
+    public void setAsyncOnForcedCloseEvent(Consumer<InventoryCloseEvent> event){
+        this.asyncOnForcedCloseEvents.add(event);
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent e){
-        e.getWhoClicked().sendMessage(title);
         if(!playerInMenu.contains(e.getWhoClicked().getUniqueId())) return;
-        for(Consumer<InventoryClickEvent> clickEvents: clickEvents){
-            clickEvents.accept(e);
+        for(Consumer<InventoryClickEvent> clickEvent: clickEvents){
+            clickEvent.accept(e);
         }
+
+        for(Consumer<InventoryClickEvent> clickEvent: asyncClickEvents){
+            threadPool.execute(() -> clickEvent.accept(e));
+        }
+
         if(!items.containsKey(e.getRawSlot())){
             return;
         }
@@ -202,14 +222,24 @@ public class SInventory implements Listener {
         playerInMenu.remove(e.getPlayer().getUniqueId());
         HandlerList.unregisterAll(this);
         playersInInventoryGlobal.remove(e.getPlayer().getUniqueId());
-        if(onCloseEvent != null){
-            if(!movingPlayer.contains(e.getPlayer().getUniqueId())){
-                plugin.getServer().getScheduler().runTaskLater(plugin,()->{onCloseEvent.accept(e);}, 1);
-            }else{
-                movingPlayer.remove(e.getPlayer().getUniqueId());
+
+        //execute events
+        if(!movingPlayer.contains(e.getPlayer().getUniqueId())){
+            for(Consumer<InventoryCloseEvent> event: onCloseEvents){
+                event.accept(e);
             }
+            for(Consumer<InventoryCloseEvent> event: asyncOnCloseEvents){
+                threadPool.execute(() -> event.accept(e));
+            }
+        }else{
+            movingPlayer.remove(e.getPlayer().getUniqueId());
         }
-        if(onForcedCloseEvent != null) this.onForcedCloseEvent.accept(e);
+        for(Consumer<InventoryCloseEvent> event: onForcedCloseEvents){
+            event.accept(e);
+        }
+        for(Consumer<InventoryCloseEvent> event: asyncOnForcedCloseEvents){
+            threadPool.execute(() -> event.accept(e));
+        }
     }
 
 }

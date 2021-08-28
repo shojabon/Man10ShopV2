@@ -14,7 +14,7 @@ public class SInventoryItem {
 
     private ItemStack item;
     ArrayList<Consumer<InventoryClickEvent>> events = new ArrayList<>();
-    ArrayList<Consumer<InventoryClickEvent>> threadedEvents = new ArrayList<>();
+    ArrayList<Consumer<InventoryClickEvent>> asyncEvents = new ArrayList<>();
     public static Executor threadPool = Executors.newCachedThreadPool();
 
     boolean clickable = true;
@@ -29,8 +29,8 @@ public class SInventoryItem {
         return this;
     }
 
-    public SInventoryItem setThreadedEvent(Consumer<InventoryClickEvent> consumer){
-        threadedEvents.add(consumer);
+    public SInventoryItem setAsyncEvent(Consumer<InventoryClickEvent> consumer){
+        asyncEvents.add(consumer);
         return this;
     }
 
@@ -40,7 +40,7 @@ public class SInventoryItem {
     }
 
     public void activateClick(InventoryClickEvent e){
-        for(Consumer<InventoryClickEvent> event: threadedEvents){
+        for(Consumer<InventoryClickEvent> event: asyncEvents){
             threadPool.execute(() -> event.accept(e));
         }
         for(Consumer<InventoryClickEvent> event: events){

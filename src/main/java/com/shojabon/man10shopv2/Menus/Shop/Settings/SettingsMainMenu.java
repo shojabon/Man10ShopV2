@@ -61,7 +61,7 @@ public class SettingsMainMenu {
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-        inventoryItem.setThreadedEvent(e -> {
+        inventoryItem.setAsyncEvent(e -> {
             player.sendMessage("start");
             Man10ShopV2.mysql.execute("SELECT SLEEP(5)");
             player.sendMessage("finish");
