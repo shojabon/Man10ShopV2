@@ -14,29 +14,21 @@ import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.function.Consumer;
 
-public class ShopTypeSelectorMenu {
+public class ShopTypeSelectorMenu extends SInventory{
 
     Man10Shop shop;
     Man10ShopV2 plugin;
-    SInventory inventory;
     Player player;
 
     public ShopTypeSelectorMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super("ショップタイプ選択",4, plugin);
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
 
-        inventory = new SInventory("ショップタイプ選択",4, plugin);
-    }
-
-    public SInventory getInventory() {
-        renderInventory();
-        return inventory;
     }
 
     public void renderButtons(){
@@ -50,7 +42,7 @@ public class ShopTypeSelectorMenu {
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
             renderButtons();
         });
-        inventory.setItem(21, buyMode);
+        setItem(21, buyMode);
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
         sellMode.clickable(false);
@@ -62,35 +54,35 @@ public class ShopTypeSelectorMenu {
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
             renderButtons();
         });
-        inventory.setItem(23, sellMode);
+        setItem(23, sellMode);
 
 
 
         SInventoryItem current = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().text("現在の設定").build()).build());
         current.clickable(false);
         if(shop.shopType == Man10ShopType.BUY){
-            inventory.setItem(21, current);
+            setItem(21, current);
         }else{
-            inventory.setItem(23, current);
+            setItem(23, current);
         }
 
-        inventory.renderInventory();
+        renderInventory();
 
     }
 
-    public void renderInventory(){
+    public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.DROPPER).setDisplayName(new SStringBuilder().green().text("販売モード").build()).build());
         sellMode.clickable(false);
-        inventory.setItem(12, sellMode);
+        setItem(12, sellMode);
 
         SInventoryItem buyMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("買取モード").build()).build());
         buyMode.clickable(false);
-        inventory.setItem(14, buyMode);
-        inventory.setOnCloseEvent(e -> inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+        setItem(14, buyMode);
+        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
 
         renderButtons();
     }

@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Settings.SettingsMainMenu;
@@ -18,49 +19,43 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.function.Consumer;
 
-public class ShopMainMenu {
-
-    SInventory inventory;
+public class ShopMainMenu extends SInventory {
+    
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
 
     public ShopMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super(new SStringBuilder().green().text(shop.name + "設定").build(), 3, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
-        inventory = new SInventory(new SStringBuilder().green().text(shop.name + "設定").build(), 3, plugin);
-    }
-
-    public SInventory getInventory() {
-        renderMenu();
-        return inventory;
     }
 
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         //shop info
-        inventory.setItem(13, getShopInfoItem());
+        setItem(13, getShopInfoItem());
 
         //shop settings
-        inventory.setItem(12, getShopSettingsItem());
+        setItem(12, getShopSettingsItem());
 
         //storage
-        inventory.setItem(14, getStorageSettingsItem());
+        setItem(14, getStorageSettingsItem());
 
         //permission settings
-        inventory.setItem(16, getPermissionSettingsItem());
+        setItem(16, getPermissionSettingsItem());
 
-        inventory.setItem(22, getMoneySelectorMenu());
+        setItem(22, getMoneySelectorMenu());
 
         //target item setting settings
         SInventoryItem targetItemSetting = new SInventoryItem(new SItemStack(Material.BELL).setDisplayName(new SStringBuilder().darkRed().bold().text("取引アイテム設定").build()).build());
         targetItemSetting.clickable(false);
-        inventory.setItem(10, getTargetItemSettingsItem());
-        inventory.renderInventory();
+        setItem(10, getTargetItemSettingsItem());
+        renderInventory();
     }
 
     public SInventoryItem getShopInfoItem(){
@@ -100,7 +95,7 @@ public class ShopMainMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+            moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
         });
 
 
@@ -134,13 +129,13 @@ public class ShopMainMenu {
             }
 
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, false).getInventory()));
-            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, true).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            menu.setOnInClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin)));
+            menu.setOnOutClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin)));
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
 
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
         });
 
 
@@ -174,7 +169,7 @@ public class ShopMainMenu {
                 return;
             }
             PermissionSettingsMainMenu menu = new PermissionSettingsMainMenu(player, shop, plugin);
-            inventory.moveToMenu(player, menu.renderInventory());
+            moveToMenu(player, menu.renderInventory());
         });
 
 
@@ -207,7 +202,7 @@ public class ShopMainMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            inventory.moveToMenu(player, new TargetItemSelectorMenu(player, shop, plugin).getInventory());
+            moveToMenu(player, new TargetItemSelectorMenu(player, shop, plugin));
         });
 
 
@@ -244,13 +239,13 @@ public class ShopMainMenu {
             menu.setInText("口座に入金する");
             menu.setOutText("口座から出金をする");
 
-            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, generateMoneyEvent(true)));
-            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, generateMoneyEvent(false)));
+            menu.setOnInClicked(ee -> menu.moveToMenu(player, generateMoneyEvent(true)));
+            menu.setOnOutClicked(ee -> menu.moveToMenu(player, generateMoneyEvent(false)));
 
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
 
 
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
         });
 
 
@@ -265,8 +260,8 @@ public class ShopMainMenu {
             menu.setMaxValue((int) Man10ShopV2.vault.getBalance(player.getUniqueId()));
         }
         menu.setAllowZero(false);
-        menu.setOnCancel(e -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
-        menu.setOnClose(e -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+        menu.setOnCancel(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        menu.setOnClose(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
         menu.setOnConfirm(integer -> {
             if (deposit) {
                 if (Man10ShopV2.vault.getBalance(player.getUniqueId()) < integer) {
@@ -285,8 +280,8 @@ public class ShopMainMenu {
                 shop.removeMoney(integer);
                 player.sendMessage(Man10ShopV2.prefix + "§a§l" + integer + "円出金しました");
             }
-            menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory());
+            menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin));
         });
-        return menu.getInventory();
+        return menu;
     }
 }

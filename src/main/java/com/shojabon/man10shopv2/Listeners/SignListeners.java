@@ -61,7 +61,7 @@ public class SignListeners implements @NotNull Listener {
             e.getPlayer().closeInventory();
         });
 
-        menu.getInventory().open(e.getPlayer());
+        menu.open(e.getPlayer());
     }
 
     @EventHandler
@@ -99,7 +99,7 @@ public class SignListeners implements @NotNull Listener {
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return;
         }
-        menu.getInventory().open(e.getPlayer());
+        menu.open(e.getPlayer());
     }
 
     public boolean containsPrice(String original){

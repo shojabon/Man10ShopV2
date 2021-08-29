@@ -17,7 +17,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class SInventory implements Listener {
+public abstract class SInventory implements Listener {
 
 
     HashMap<String, Consumer<Object>> events = new HashMap<>();
@@ -51,11 +51,6 @@ public class SInventory implements Listener {
         this.plugin = plugin;
 
         activeInventory = plugin.getServer().createInventory(null, this.rows*9, title);
-    }
-
-    public SInventory(String title, int inventoryRows){
-        this.title = title;
-        this.rows = inventoryRows;
     }
 
     //set items
@@ -137,6 +132,9 @@ public class SInventory implements Listener {
     }
 
     public void open(Player p){
+        registerEvents();
+        renderMenu();
+        afterRenderMenu();
         renderInventory();
         playersInInventoryGlobal.add(p.getUniqueId());
         p.openInventory(activeInventory);
@@ -153,6 +151,20 @@ public class SInventory implements Listener {
             inv.open(p);
             movingPlayer.remove(p.getUniqueId());
         });
+    }
+
+    //abstract ish functions
+
+    public void renderMenu(){
+
+    }
+
+    public void afterRenderMenu(){
+
+    }
+
+    public void registerEvents(){
+
     }
 
 

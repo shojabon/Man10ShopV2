@@ -16,29 +16,23 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class EditableShopSelectorMenu {
+public class EditableShopSelectorMenu extends LargeSInventoryMenu{
 
     Man10ShopV2 plugin;
     Player player;
-    public LargeSInventoryMenu inventory;
     Consumer<Man10Shop> onClick = null;
 
     public EditableShopSelectorMenu(Player p, Man10ShopV2 plugin){
+        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), plugin);
         this.player = p;
         this.plugin = plugin;
-        inventory = new LargeSInventoryMenu(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), 5, plugin);;
     }
 
     public void setOnClick(Consumer<Man10Shop> event){
         this.onClick = event;
     }
 
-    public SInventory getInventory(){
-        render();
-        return inventory.getInventory();
-    }
-
-    public void render(){
+    public void renderMenu(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
 
         ArrayList<Man10Shop> shops = plugin.api.getShopsWithPermission(player.getUniqueId());
@@ -56,8 +50,10 @@ public class EditableShopSelectorMenu {
 
             items.add(item);
         }
-        inventory.setItems(items);
+        setItems(items);
     }
 
-
+    public void afterRenderMenu() {
+        renderInventory(0);
+    }
 }

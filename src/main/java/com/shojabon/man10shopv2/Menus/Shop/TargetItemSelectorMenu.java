@@ -12,42 +12,35 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class TargetItemSelectorMenu {
-
-    SInventory inventory;
+public class TargetItemSelectorMenu extends SInventory{
+    
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
 
     public TargetItemSelectorMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super(new SStringBuilder().aqua().text("アイテムをクリックしてください").build(), 3, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
-        inventory = new SInventory(new SStringBuilder().aqua().text("アイテムをクリックしてください").build(), 3, plugin);
-        renderMenu();
-        registerEvents();
 
 
-    }
-
-    public SInventory getInventory() {
-        return inventory;
     }
 
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
 
         SInventoryItem target = new SInventoryItem(shop.targetItem.build());
         target.clickable(false);
-        inventory.setItem(13, target);
-        inventory.renderInventory();
+        setItem(13, target);
+        renderInventory();
     }
 
     public void registerEvents(){
-        inventory.setOnClickEvent(e -> {
+        setOnClickEvent(e -> {
             e.setCancelled(true);
             if(e.getCurrentItem() == null) return;
             ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem();
@@ -60,7 +53,7 @@ public class TargetItemSelectorMenu {
 
         });
 
-        inventory.setOnCloseEvent(e -> inventory.moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
+        setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
     }
 
 }

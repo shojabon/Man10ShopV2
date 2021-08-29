@@ -30,8 +30,8 @@ public class ShopsCommand {
         Player p = ((Player)sender);
 
         EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, plugin);
-        menu.setOnClick(shop -> menu.getInventory().moveToMenu(p, new ShopMainMenu(p, plugin.api.getShop(shop.shopId), plugin).getInventory()));
-        menu.getInventory().open(p);
+        menu.setOnClick(shop -> menu.moveToMenu(p, new ShopMainMenu(p, plugin.api.getShop(shop.shopId), plugin)));
+        menu.open(p);
 
     }
 

@@ -10,42 +10,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 
-public class LargeSInventoryMenu {
+public class LargeSInventoryMenu extends SInventory{
 
     ArrayList<SInventoryItem> items = new ArrayList<>();
-    SInventory inventory;
-    int rows = 1;
+    int rows = 5;
     int currentPage = 0;
 
-
-    public LargeSInventoryMenu(String title, int rows, JavaPlugin plugin){
-        this.rows = rows;
-        if(rows < 1 ) rows = 1;
-        if(rows > 5) rows = 5;
-        inventory = new SInventory(title, rows+1, plugin);
+    public LargeSInventoryMenu(String title, JavaPlugin plugin) {
+        super(title, 6, plugin);
     }
 
-    public LargeSInventoryMenu(String title, ArrayList<SInventoryItem> items, int rows, JavaPlugin plugin){
-        this.rows = rows;
-        if(rows < 1 ) rows = 1;
-        if(rows > 5) rows = 5;
+    public void setItems(ArrayList<SInventoryItem> items){
         this.items = items;
-        inventory = new SInventory(title, rows+1, plugin);
-    }
-
-    public SInventory getInventory(){
-        renderInventory(currentPage);
-        return inventory;
-    }
-
-    public void open(Player p){
-        renderInventory(currentPage);
-        getInventory().open(p);
-    }
-
-    public LargeSInventoryMenu setItems(ArrayList<SInventoryItem> items){
-        this.items = items;
-        return this;
     }
 
     public void renderControlBar(){
@@ -56,7 +32,7 @@ public class LargeSInventoryMenu {
 
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.setItem(slots, background);
+        setItem(slots, background);
 
         //buttons
 
@@ -76,21 +52,23 @@ public class LargeSInventoryMenu {
             renderInventory(currentPage);
         });
 
-        if(currentPage != 0) inventory.setItem(slots[0], left);        //has left
-        if((currentPage+1)*rows*9 <= items.size()-1) inventory.setItem(slots[8], right);    //has right
+        if(currentPage != 0) setItem(slots[0], left);        //has left
+        if((currentPage+1)*rows*9 <= items.size()-1) setItem(slots[8], right);    //has right
     }
 
     public void renderInventory(int page){
-        inventory.clear();
+        clear();
         renderControlBar();
         int startingIndex = page*rows*9;
         int ending = items.size() - startingIndex;
         if(ending> rows*9) ending = rows*9;
         for(int i = 0; i < ending; i++){
-            inventory.setItem(i, items.get(startingIndex+i));
+            setItem(i, items.get(startingIndex+i));
         }
-        inventory.renderInventory();
+        renderInventory();
     }
 
-
+    public void afterRenderMenu() {
+        renderInventory(0);
+    }
 }

@@ -15,11 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import javax.naming.InterruptedNamingException;
 import java.util.function.Consumer;
 
-public class NumericInputMenu {
-
-    String title;
-    public SInventory inventory;
-    JavaPlugin plugin;
+public class NumericInputMenu extends SInventory{
 
     Consumer<Integer> onConfirm;
     Consumer<InventoryClickEvent> onCancel;
@@ -37,11 +33,9 @@ public class NumericInputMenu {
     int[] numberPad = new int[]{46, 37, 38, 39, 28, 29, 30, 19, 20, 21};
 
     public NumericInputMenu(String title, JavaPlugin plugin){
-        this.plugin = plugin;
-        this.title = title;
-
-        inventory = new SInventory(title, 6, plugin);
+        super(title, 6, plugin);
     }
+
 
     public void setInformation(ItemStack item){
         information = item;
@@ -65,10 +59,6 @@ public class NumericInputMenu {
         allowZero = value;
     }
 
-    public SInventory getInventory() {
-        renderMenu();
-        return inventory;
-    }
 
     public void setOnConfirm(Consumer<Integer> event){
         this.onConfirm = event;
@@ -82,9 +72,10 @@ public class NumericInputMenu {
         this.onClose = event;
     }
 
+
     public void renderNumberDisplay(){
         for(int i = 0; i < maxDigits; i++){
-            inventory.setItem(numberDisplay[i], new ItemStack(Material.AIR));
+            setItem(numberDisplay[i], new ItemStack(Material.AIR));
         }
 
         int lengthOfCurrentValue = String.valueOf(currentValue).length();
@@ -92,10 +83,10 @@ public class NumericInputMenu {
             int nextCharacter = Integer.parseInt(String.valueOf(String.valueOf(currentValue).charAt(i)));
             SItemStack itemStack = new SItemStack(dictionary.getItem(nextCharacter));
             itemStack.setDisplayName(new SStringBuilder().aqua().bold().text(currentValue).build());
-            inventory.setItem(numberDisplay[lengthOfCurrentValue-1-i], itemStack.build());
+            setItem(numberDisplay[lengthOfCurrentValue-1-i], itemStack.build());
         }
         renderConfirmButton();
-        inventory.renderInventory();
+        renderInventory();
     }
 
     public void renderNumberPad(){
@@ -143,7 +134,7 @@ public class NumericInputMenu {
                 renderNumberDisplay();
             });
 
-            inventory.setItem(numberPad[i], item);
+            setItem(numberPad[i], item);
         }
 
         SItemStack deleteItem = new SItemStack(Material.TNT).setDisplayName(new SStringBuilder().red().bold().text("クリア").build());
@@ -153,7 +144,7 @@ public class NumericInputMenu {
             currentValue = 0;
             renderNumberDisplay();
         });
-        inventory.setItem(48, deleteInventoryItem);
+        setItem(48, deleteInventoryItem);
     }
 
     public void renderConfirmButton(){
@@ -161,27 +152,27 @@ public class NumericInputMenu {
         background.clickable(false);
         if(!allowZero){
             if(currentValue == 0){
-                inventory.setItem(41, background);
+                setItem(41, background);
                 return;
             }
         }
         SInventoryItem confirm = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
         confirm.clickable(false);
         if(onConfirm != null) confirm.setEvent(e -> {onConfirm.accept(currentValue);});
-        inventory.setItem(41, confirm);
+        setItem(41, confirm);
     }
 
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         SInventoryItem cancel = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().bold().text("キャンセル").build()).build());
         cancel.clickable(false);
         if(onCancel != null) cancel.setEvent(onCancel);
-        inventory.setItem(43, cancel);
+        setItem(43, cancel);
 
-        if(onClose != null) inventory.setOnCloseEvent(onClose);
+        if(onClose != null) setOnCloseEvent(onClose);
 
         renderNumberDisplay();
         renderNumberPad();
@@ -189,7 +180,7 @@ public class NumericInputMenu {
         if(information != null){
             SInventoryItem invItem = new SInventoryItem(information);
             invItem.clickable(false);
-            inventory.setItem(24, invItem);
+            setItem(24, invItem);
         }
 
 

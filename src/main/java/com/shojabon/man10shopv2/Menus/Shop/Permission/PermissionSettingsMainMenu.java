@@ -29,7 +29,7 @@ public class PermissionSettingsMainMenu {
     public SInventory renderInventory(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
 
-        LargeSInventoryMenu renderedCore = new LargeSInventoryMenu(new SStringBuilder().darkRed().text("権限設定").build(), 5, plugin);
+        LargeSInventoryMenu renderedCore = new LargeSInventoryMenu(new SStringBuilder().darkRed().text("権限設定").build(), plugin);
 
         for(UUID modUUID: shop.moderators.keySet()){
             Man10ShopModerator mod = shop.moderators.get(modUUID);
@@ -41,7 +41,7 @@ public class PermissionSettingsMainMenu {
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
             item.setEvent(e -> {
-                renderedCore.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, mod, plugin).getInventory());
+                renderedCore.moveToMenu(player, new PermissionSettingsMenu(player, shop, mod, plugin));
             });
             items.add(item);
 
@@ -49,9 +49,8 @@ public class PermissionSettingsMainMenu {
 
         renderedCore.setItems(items);
 
-        SInventory finalInventory = renderedCore.getInventory();
-        finalInventory.setOnCloseEvent(e -> finalInventory.moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
-        return finalInventory;
+        renderedCore.setOnCloseEvent(e -> renderedCore.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        return renderedCore;
     }
 
 }

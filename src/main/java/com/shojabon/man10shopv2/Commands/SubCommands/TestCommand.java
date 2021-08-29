@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -30,13 +31,7 @@ public class TestCommand {
         }
         Player p = ((Player)sender);
 
-        new Thread(()->{
-            plugin.getServer().getScheduler().runTaskLater(plugin, ()-> {
-                p.sendMessage("a");
-                Man10ShopV2.mysql.execute("SELECT SLEEP(5);");
-                p.sendMessage("b");
-            }, 0);
-        }).start();
+        new ConfirmationMenu("", plugin).open(p);
 
 
 

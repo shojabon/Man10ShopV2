@@ -14,15 +14,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+
 import java.util.function.Consumer;
 
-public class PermissionSettingsMenu {
+public class PermissionSettingsMenu extends SInventory{
 
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
     Man10ShopModerator target;
-    SInventory inventory;
 
     Man10ShopPermission[] permissions = new Man10ShopPermission[]{Man10ShopPermission.OWNER,
             Man10ShopPermission.MODERATOR,
@@ -33,12 +33,10 @@ public class PermissionSettingsMenu {
     int deleteUserSlot = 25;
 
     public PermissionSettingsMenu(Player p, Man10Shop shop, Man10ShopModerator target, Man10ShopV2 plugin){
+        super(new SStringBuilder().red().text(target.name).text("の権限設定").build(), 4, plugin);
         this.player = p;
-        this.shop = shop;
-        this.plugin = plugin;
         this.target = target;
-
-        renderInventory();
+        this.shop = shop;
     }
 
     public Consumer<InventoryClickEvent> generateClickChangePermissionEvent(){
@@ -61,14 +59,14 @@ public class PermissionSettingsMenu {
                     }
                     target.permission = permissions[finalI];
                     player.sendMessage(Man10ShopV2.prefix + "§a§l権限を設定しました");
-                    menu.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin).getInventory());
+                    menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin));
                 });
 
-                menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin).getInventory()));
-                menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin).getInventory()));
+                menu.setOnCancel(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
+                menu.setOnClose(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
 
                 //open confirmation
-                inventory.moveToMenu(player, menu.getInventory());
+                moveToMenu(player, menu);
                 return;
             }
         };
@@ -81,19 +79,19 @@ public class PermissionSettingsMenu {
                     //has permission and is current permission
                     SInventoryItem current = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("現在の権限").build()).build());
                     current.clickable(false);
-                    inventory.setItem(slots[i], current);
+                    setItem(slots[i], current);
                 }else{
                     //has permission but not this permission
                     SInventoryItem background = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().bold().text("この権限に設定する").build()).build());
                     background.clickable(false);
                     background.setEvent(generateClickChangePermissionEvent());
-                    inventory.setItem(slots[i], background);
+                    setItem(slots[i], background);
                 }
             }else{
                 // no permission
                 SInventoryItem notAllowed = new SInventoryItem(new SItemStack(Material.BARRIER).setDisplayName(new SStringBuilder().gray().bold().text("この権限に設定することはできません").build()).build());
                 notAllowed.clickable(false);
-                inventory.setItem(slots[i], notAllowed);
+                setItem(slots[i], notAllowed);
             }
         }
 
@@ -103,19 +101,19 @@ public class PermissionSettingsMenu {
 
         SInventoryItem owner = new SInventoryItem(new SItemStack(Material.DIAMOND_BLOCK).setDisplayName(new SStringBuilder().aqua().bold().text("オーナー権限").build()).build());
         owner.clickable(false);
-        inventory.setItem(slots[0]-9, owner);
+        setItem(slots[0]-9, owner);
 
         SInventoryItem moderator = new SInventoryItem(new SItemStack(Material.GOLD_BLOCK).setDisplayName(new SStringBuilder().gold().bold().text("管理者権限").build()).build());
         moderator.clickable(false);
-        inventory.setItem(slots[1]-9, moderator);
+        setItem(slots[1]-9, moderator);
 
         SInventoryItem accountant = new SInventoryItem(new SItemStack(Material.EMERALD_BLOCK).setDisplayName(new SStringBuilder().green().bold().text("会計権限").build()).build());
         accountant.clickable(false);
-        inventory.setItem(slots[2]-9, accountant);
+        setItem(slots[2]-9, accountant);
 
         SInventoryItem storageAccess = new SInventoryItem(new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().yellow().bold().text("倉庫編集権限").build()).build());
         storageAccess.clickable(false);
-        inventory.setItem(slots[3]-9, storageAccess);
+        setItem(slots[3]-9, storageAccess);
 
 
 
@@ -142,38 +140,33 @@ public class PermissionSettingsMenu {
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
-                menu.getInventory().moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory());
+                menu.moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory());
                 player.sendMessage(Man10ShopV2.prefix + "§c§a" + target.name + "を消去しました");
             });
 
-            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin).getInventory()));
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin).getInventory()));
-            inventory.moveToMenu(player, menu.getInventory());
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
+            moveToMenu(player, menu);
 
 
         });
 
         deleteUser.clickable(false);
-        inventory.setItem(deleteUserSlot, deleteUser);
+        setItem(deleteUserSlot, deleteUser);
 
 
     }
 
-    public SInventory getInventory() {
-        return inventory;
-    }
-
-    public void renderInventory(){
-        inventory = new SInventory(new SStringBuilder().red().text(target.name).text("の権限設定").build(), 4, plugin);
+    public void renderMenu(){
 
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         renderSelector();
         renderIcons();
 
-        inventory.setOnCloseEvent(e -> inventory.moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory()));
+        setOnCloseEvent(e -> moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory()));
     }
 
 }

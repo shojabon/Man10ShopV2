@@ -15,8 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.function.Consumer;
 
-public class ShopActionMenu {
-    SInventory inventory;
+public class ShopActionMenu extends SInventory{
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
@@ -24,6 +23,7 @@ public class ShopActionMenu {
     BannerDictionary dictionary = new BannerDictionary();
 
     public ShopActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super("", 6, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
@@ -33,25 +33,19 @@ public class ShopActionMenu {
         }else{
             builder.text("§c§lを売る");
         }
-        inventory = new SInventory(builder.build(), 6, plugin);
+        setTitle(builder.toString());
 
     }
 
-    public SInventory getInventory(){
-        renderInventory();
-        return inventory;
-    }
 
-
-    public void renderInventory(){
+    public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
+
         renderConfirmButton();
         renderDisplay();
         renderButtons();
-
-        inventory.renderInventory();
 
     }
 
@@ -72,7 +66,7 @@ public class ShopActionMenu {
             player.closeInventory();
         });
 
-        inventory.setItem(new int[]{30,31,32,39,40,41,48,49,50}, confirm);
+        setItem(new int[]{30,31,32,39,40,41,48,49,50}, confirm);
     }
 
     public Consumer<InventoryClickEvent> createEvent(boolean add){
@@ -96,9 +90,7 @@ public class ShopActionMenu {
                     itemCount = 1;
                 }
             }
-            renderConfirmButton();
-            renderDisplay();
-            inventory.renderInventory();
+            renderInventory();
         };
     }
 
@@ -106,17 +98,17 @@ public class ShopActionMenu {
         SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone()).setDisplayName("§a§l購入数を増やす").build());
         increase.clickable(false);
         increase.setEvent(createEvent(true));
-        inventory.setItem(43, increase);
+        setItem(43, increase);
 
         SInventoryItem decrease = new SInventoryItem(new SItemStack(dictionary.getSymbol("minus").clone()).setDisplayName("§a§l購入数を減らす").build());
         decrease.clickable(false);
         decrease.setEvent(createEvent(false));
-        inventory.setItem(37, decrease);
+        setItem(37, decrease);
     }
 
     public void renderDisplay(){
         SInventoryItem item = new SInventoryItem(new SItemStack(shop.targetItem.build().clone()).setAmount(itemCount).build());
         item.clickable(false);
-        inventory.setItem(13, item);
+        setItem(13, item);
     }
 }

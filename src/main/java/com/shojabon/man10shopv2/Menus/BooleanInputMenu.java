@@ -13,11 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Consumer;
 
-public class BooleanInputMenu {
-
-    String title;
-    public SInventory inventory;
-    JavaPlugin plugin;
+public class BooleanInputMenu extends SInventory {
 
     Consumer<Boolean> onConfirm;
     Consumer<InventoryClickEvent> onCancel;
@@ -27,23 +23,14 @@ public class BooleanInputMenu {
 
     boolean current;
 
-
-
-    public BooleanInputMenu(boolean current, String title, JavaPlugin plugin){
-        this.plugin = plugin;
-        this.title = title;
+    public BooleanInputMenu(boolean current, String title, JavaPlugin plugin) {
+        super(title, 6, plugin);
         this.current = current;
-
-        inventory = new SInventory(title, 6, plugin);
     }
+
 
     public void setInformation(ItemStack item){
         information = item;
-    }
-
-    public SInventory getInventory() {
-        renderMenu();
-        return inventory;
     }
 
     public void setOnConfirm(Consumer<Boolean> event){
@@ -58,6 +45,7 @@ public class BooleanInputMenu {
         this.onClose = event;
     }
 
+
     public void renderButtons(){
 
         SInventoryItem t = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("ture").build()).setGlowingEffect(current).build());
@@ -66,7 +54,7 @@ public class BooleanInputMenu {
             current = true;
             renderButtons();
         });
-        inventory.setItem(new int[]{10,11,19,20}, t);
+        setItem(new int[]{10,11,19,20}, t);
 
         SInventoryItem f = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().darkRed().bold().text("false").build()).setGlowingEffect(!current).build());
         f.clickable(false);
@@ -74,27 +62,27 @@ public class BooleanInputMenu {
             current = false;
             renderButtons();
         });
-        inventory.setItem(new int[]{15,16,24,25}, f);
-        inventory.renderInventory();
+        setItem(new int[]{15,16,24,25}, f);
+        renderInventory();
     }
 
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         renderButtons();
 
         if(information != null){
             SInventoryItem invItem = new SInventoryItem(information);
             invItem.clickable(false);
-            inventory.setItem(13, invItem);
+            setItem(13, invItem);
         }
 
         SInventoryItem confirm = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
         confirm.clickable(false);
         confirm.setEvent(e-> onConfirm.accept(current));
-        inventory.setItem(40, confirm);
+        setItem(40, confirm);
 
 
     }

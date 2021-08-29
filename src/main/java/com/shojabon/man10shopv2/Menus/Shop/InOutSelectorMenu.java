@@ -14,9 +14,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.function.Consumer;
 
-public class InOutSelectorMenu {
-
-    SInventory inventory;
+public class InOutSelectorMenu extends SInventory{
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
@@ -50,43 +48,37 @@ public class InOutSelectorMenu {
     }
 
     public InOutSelectorMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super(new SStringBuilder().darkGray().text("操作の種類を選択してください").build(), 3, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
-        inventory = new SInventory(new SStringBuilder().darkGray().text("操作の種類を選択してください").build(), 3, plugin);
-        registerEvents();
 
 
-    }
-
-    public SInventory getInventory() {
-        renderMenu();
-        return inventory;
     }
 
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
-        inventory.fillItem(background);
+        fillItem(background);
 
         SInventoryItem in = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().gray().bold().text(inText).build()).build());
         in.clickable(false);
         in.setEvent(e -> {
             if(onInClicked != null) onInClicked.accept(e);
         });
-        inventory.setItem(11, in);
+        setItem(11, in);
 
         SInventoryItem out = new SInventoryItem(new SItemStack(Material.DISPENSER).setDisplayName(new SStringBuilder().gray().bold().text(outText).build()).build());
         out.clickable(false);
         out.setEvent(e -> {
             if(onOutClicked != null) onOutClicked.accept(e);
         });
-        inventory.setItem(15, out);
+        setItem(15, out);
 
     }
 
     public void registerEvents(){
-        inventory.setOnCloseEvent(e -> {
+        setOnCloseEvent(e -> {
             if(onClose != null) onClose.accept(e);
         });
     }

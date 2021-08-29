@@ -18,26 +18,24 @@ import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class SettingsMainMenu {
+public class SettingsMainMenu extends LargeSInventoryMenu{
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
-    SInventory inventory;
 
-    public SettingsMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+
+    public SettingsMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin) {
+        super(new SStringBuilder().darkGray().text("ショップ設定").build(), plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
     }
 
-    public SInventory getInventory(){
+    public void renderMenu(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
-        LargeSInventoryMenu renderedCore = new LargeSInventoryMenu(new SStringBuilder().darkGray().text("ショップ設定").build(), 5, plugin);
-
         //define items here
 
         items.add(shopEnabledItem());
@@ -48,11 +46,8 @@ public class SettingsMainMenu {
         items.add(sellCapItem());
         items.add(setDeleteShopItem());
 
-        renderedCore.setItems(items);
-
-        inventory = renderedCore.getInventory();
-        inventory.setOnCloseEvent(e -> inventory.moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
-        return inventory;
+        setItems(items);
+        setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
     }
 
     public SInventoryItem setNameItem(){
@@ -62,10 +57,6 @@ public class SettingsMainMenu {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
-            player.sendMessage("start");
-            Man10ShopV2.mysql.execute("SELECT SLEEP(5)");
-            player.sendMessage("finish");
-            inventory.moveToMenu(player, new SInventory("title", 1, plugin));
         });
 
         return inventoryItem;
@@ -81,14 +72,14 @@ public class SettingsMainMenu {
 
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引値段設定").build(), plugin);
-            menu.setOnClose(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnCancel(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
 
                 shop.setPrice(newValue);
-                menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
 
         });
 
@@ -109,14 +100,14 @@ public class SettingsMainMenu {
         inventoryItem.setEvent(e -> {
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(ee -> {
                 shop.buyStorageSpace(player, 1);
-                menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
 
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
 
         });
 
@@ -135,8 +126,8 @@ public class SettingsMainMenu {
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("購入制限設定").build(), plugin);
             menu.setMaxValue(shop.storageSize);
-            menu.setOnClose(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnCancel(ee -> menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
                 if(newValue > shop.storageSize){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l購入制限は倉庫以上の数にはできません");
@@ -148,9 +139,9 @@ public class SettingsMainMenu {
                 }
 
                 shop.settings.setSetting("storage.sell.cap", newValue);
-                menu.inventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
 
         });
 
@@ -172,14 +163,14 @@ public class SettingsMainMenu {
             }
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
-            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(ee -> {
                 //delete shop
                 shop.deleteShop();
                 player.closeInventory();
             });
 
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
         });
 
         return inventoryItem;
@@ -193,14 +184,14 @@ public class SettingsMainMenu {
         inventoryItem.setEvent(e -> {
             //confirmation menu
             BooleanInputMenu menu = new BooleanInputMenu(shop.settings.getShopEnabled(), "ショップ有効か設定", plugin);
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnCancel(ee -> menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(bool -> {
                 shop.settings.setShopEnabled(bool);
-                menu.getInventory().moveToMenu(player, new SettingsMainMenu(player, shop, plugin).getInventory());
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
 
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
 
         });
 
@@ -220,7 +211,7 @@ public class SettingsMainMenu {
                 return;
             }
             //confirmation menu
-            inventory.moveToMenu(player, new ShopTypeSelectorMenu(player, shop, plugin).getInventory());
+            moveToMenu(player, new ShopTypeSelectorMenu(player, shop, plugin));
 
         });
 

@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import red.man10.man10bank.BankAPI;
 
 import java.util.UUID;
 
@@ -20,7 +19,6 @@ public final class Man10ShopV2 extends JavaPlugin {
     public static ThreadedMySQLAPI mysql;
     public Man10ShopV2API api;
     public static String prefix;
-    public static BankAPI bank;
     public static VaultAPI vault;
     public static FileConfiguration config;
 
@@ -31,7 +29,6 @@ public final class Man10ShopV2 extends JavaPlugin {
         mysql = new ThreadedMySQLAPI(this);
         this.api = new Man10ShopV2API(this);
         prefix = getConfig().getString("prefix");
-        bank = new BankAPI(this);
         vault = new VaultAPI();
         config = getConfig();
         getServer().getPluginManager().registerEvents(new SignListeners(this), this);

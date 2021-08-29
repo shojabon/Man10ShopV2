@@ -11,29 +11,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStorageMenu {
-
-    SInventory inventory;
+public class ItemStorageMenu extends SInventory{
+    
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
     int showingCount = 0;
     boolean fillItem;
 
-    public ItemStorageMenu(Player p, Man10Shop shop, Man10ShopV2 plugin, boolean fillItem){
+    public ItemStorageMenu(boolean fillItem, Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super(new SStringBuilder().darkGray().text(shop.name + "倉庫 ").green().text("上限").text(String.valueOf(shop.storageSize)).text("個").build(), 6, plugin);
         this.player = p;
         this.fillItem = fillItem;
         this.shop = shop;
         this.plugin = plugin;
-        inventory = new SInventory(new SStringBuilder().darkGray().text(shop.name + "倉庫 ").green().text("上限").text(String.valueOf(shop.storageSize)).text("個").build(), 6, plugin);
+        
 
-        registerEvents();
-        if(fillItem) renderMenu();
-
-    }
-
-    public SInventory getInventory() {
-        return inventory;
     }
 
     public void renderMenu(){
@@ -44,23 +37,23 @@ public class ItemStorageMenu {
         ItemStack targetItemSingle = shop.targetItem.build().clone();
         SItemStack maxStackedItem = new SItemStack(targetItemSingle).setAmount(shop.targetItem.getMaxStackSize());
         for(int i = 0; i < stacks; i++){
-            inventory.setItem(i, maxStackedItem.build());
+            setItem(i, maxStackedItem.build());
             nextSlot++;
         }
 
         //add remaining non full stacked item
         if(stacks != 6*9){
             int remainingItemCount = shop.itemCount - stacks*shop.targetItem.getMaxStackSize();
-            inventory.setItem(nextSlot, new SItemStack(targetItemSingle.clone()).setAmount(remainingItemCount).build());
+            setItem(nextSlot, new SItemStack(targetItemSingle.clone()).setAmount(remainingItemCount).build());
         }
-        inventory.renderInventory();
+        renderInventory();
         showingCount = countItems();
     }
 
     public int countItems(){
         int result = 0;
         for(int i = 0; i < 6*9; i++){
-            ItemStack item = inventory.activeInventory.getItem(i);
+            ItemStack item = activeInventory.getItem(i);
             if(item == null) continue;
             if(!new SItemStack(item).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) continue;
             result += item.getAmount();
@@ -69,7 +62,7 @@ public class ItemStorageMenu {
     }
 
     public void registerEvents(){
-        inventory.setOnClickEvent(e -> {
+        setOnClickEvent(e -> {
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory() == null) return;
             if(!new SItemStack(e.getCurrentItem()).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) {
@@ -87,7 +80,7 @@ public class ItemStorageMenu {
             }
         });
 
-        inventory.setOnForcedCloseEvent(e -> {
+        setOnForcedCloseEvent(e -> {
             int diff = countItems() - showingCount;
             if(diff < 0){
                 //if item taken
@@ -106,14 +99,14 @@ public class ItemStorageMenu {
             }
             //diff range excludes 0 (no change)
         });
-        inventory.setOnCloseEvent(e -> {
+        setOnCloseEvent(e -> {
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
-            menu.setOnClose(ee -> menu.getInventory().moveToMenu(player, new ShopMainMenu(player, shop, plugin).getInventory()));
-            menu.setOnInClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, false).getInventory()));
-            menu.setOnOutClicked(ee -> menu.getInventory().moveToMenu(player, new ItemStorageMenu(player, shop, plugin, true).getInventory()));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            menu.setOnInClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin)));
+            menu.setOnOutClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin)));
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
-            inventory.moveToMenu(player, menu.getInventory());
+            moveToMenu(player, menu);
         });
     }
 
