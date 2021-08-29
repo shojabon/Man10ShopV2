@@ -37,6 +37,7 @@ public class PermissionSettingsMenu extends SInventory{
         this.player = p;
         this.target = target;
         this.shop = shop;
+        this.plugin = plugin;
     }
 
     public Consumer<InventoryClickEvent> generateClickChangePermissionEvent(){
@@ -122,7 +123,7 @@ public class PermissionSettingsMenu extends SInventory{
                 .darkRed().bold().text("ユーザーを削除")
                 .yellow().obfuscated().text("OO")
                 .build()).build());
-        deleteUser.setEvent(e -> {
+        deleteUser.setAsyncEvent(e -> {
             if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのユーザーを消去する権限を持っていません");
                 return;

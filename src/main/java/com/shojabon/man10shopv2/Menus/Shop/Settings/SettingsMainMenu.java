@@ -75,7 +75,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
-
                 shop.setPrice(newValue);
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
@@ -97,7 +96,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         }
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-        inventoryItem.setEvent(e -> {
+        inventoryItem.setAsyncEvent(e -> {
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
@@ -156,7 +155,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-        inventoryItem.setEvent(e -> {
+        inventoryItem.setAsyncEvent(e -> {
             if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;

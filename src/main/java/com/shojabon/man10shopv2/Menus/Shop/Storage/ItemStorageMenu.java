@@ -80,7 +80,7 @@ public class ItemStorageMenu extends SInventory{
             }
         });
 
-        setOnForcedCloseEvent(e -> {
+        setAsyncOnForcedCloseEvent(e -> {
             int diff = countItems() - showingCount;
             if(diff < 0){
                 //if item taken
@@ -99,7 +99,7 @@ public class ItemStorageMenu extends SInventory{
             }
             //diff range excludes 0 (no change)
         });
-        setOnCloseEvent(e -> {
+        setAsyncOnCloseEvent(e -> {
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
             menu.setOnInClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin)));

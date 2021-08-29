@@ -34,7 +34,7 @@ public class ShopTypeSelectorMenu extends SInventory{
     public void renderButtons(){
         SInventoryItem buyMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
         buyMode.clickable(false);
-        buyMode.setEvent(e -> {
+        buyMode.setAsyncEvent(e -> {
             if(!shop.setShopType(Man10ShopType.BUY)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
@@ -46,7 +46,7 @@ public class ShopTypeSelectorMenu extends SInventory{
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
         sellMode.clickable(false);
-        sellMode.setEvent(e -> {
+        sellMode.setAsyncEvent(e -> {
             if(!shop.setShopType(Man10ShopType.SELL)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;

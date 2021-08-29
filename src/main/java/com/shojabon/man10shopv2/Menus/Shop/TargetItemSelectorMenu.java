@@ -46,10 +46,12 @@ public class TargetItemSelectorMenu extends SInventory{
             ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem();
             if(newTargetItem == null) return;
 
-            boolean changeResult = shop.setTargetItem(player, newTargetItem);
-            if(!changeResult) return;
-            player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムが変更されました");
-            renderMenu();
+            SInventory.threadPool.execute(()->{
+                boolean changeResult = shop.setTargetItem(player, newTargetItem);
+                if(!changeResult) return;
+                player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムが変更されました");
+                renderMenu();
+            });
 
         });
 

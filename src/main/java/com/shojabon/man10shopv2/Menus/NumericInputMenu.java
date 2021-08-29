@@ -169,10 +169,10 @@ public class NumericInputMenu extends SInventory{
 
         SInventoryItem cancel = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().bold().text("キャンセル").build()).build());
         cancel.clickable(false);
-        if(onCancel != null) cancel.setEvent(onCancel);
+        if(onCancel != null) cancel.setAsyncEvent(onCancel);
         setItem(43, cancel);
 
-        if(onClose != null) setOnCloseEvent(onClose);
+        if(onClose != null) setAsyncOnCloseEvent(onClose);
 
         renderNumberDisplay();
         renderNumberPad();

@@ -32,7 +32,7 @@ public abstract class SInventory implements Listener {
     ArrayList<Consumer<InventoryClickEvent>> asyncClickEvents = new ArrayList<>();
 
     public static ArrayList<UUID> playersInInventoryGlobal = new ArrayList<>();
-    private static Executor threadPool = Executors.newCachedThreadPool();
+    public static Executor threadPool = Executors.newCachedThreadPool();
 
 
     public Inventory activeInventory = null;

@@ -81,8 +81,12 @@ public class BooleanInputMenu extends SInventory {
 
         SInventoryItem confirm = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
         confirm.clickable(false);
-        confirm.setEvent(e-> onConfirm.accept(current));
+        confirm.setAsyncEvent(e-> onConfirm.accept(current));
         setItem(40, confirm);
+
+        setAsyncOnCloseEvent(e -> {
+            if(onClose!=null)onClose.accept(e);
+        });
 
 
     }

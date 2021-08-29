@@ -61,7 +61,7 @@ public class ShopActionMenu extends SInventory{
         SInventoryItem confirm = new SInventoryItem(item.build());
         confirm.clickable(false);
 
-        confirm.setEvent(e -> {
+        confirm.setAsyncEvent(e -> {
             shop.performAction(player, itemCount);
             player.closeInventory();
         });

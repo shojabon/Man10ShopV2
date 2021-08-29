@@ -40,19 +40,19 @@ public class ConfirmationMenu extends SInventory{
 
         SInventoryItem no = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().darkRed().bold().text("キャンセル").build()).build());
         no.clickable(false);
-        no.setEvent(e -> {
+        no.setAsyncEvent(e -> {
             if(onCancel != null) onCancel.accept(e);
         });
         setItem(new int[]{10, 11, 19, 20}, no);
 
         SInventoryItem yes = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
         yes.clickable(false);
-        yes.setEvent(e -> {
+        yes.setAsyncEvent(e -> {
             if(onCancel != null) onConfirm.accept(e);
         });
         setItem(new int[]{15, 16, 24, 25}, yes);
 
-        setOnCloseEvent(e -> {
+        setAsyncOnCloseEvent(e -> {
             if(onClose != null) onClose.accept(e);
         });
     }
