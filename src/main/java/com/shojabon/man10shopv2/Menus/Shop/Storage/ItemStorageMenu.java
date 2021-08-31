@@ -66,7 +66,8 @@ public class ItemStorageMenu extends SInventory{
         setOnClickEvent(e -> {
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory() == null) return;
-            if(!new SItemStack(e.getCurrentItem()).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) {
+            SItemStack item = new SItemStack(e.getCurrentItem());
+            if(!item.getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5()) || item.hasDamage()){
                 e.setCancelled(true);
                 return;
             }

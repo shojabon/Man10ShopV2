@@ -322,12 +322,12 @@ public class Man10Shop {
                 p.getInventory().addItem(item.build());
             }
 
-            Man10ShopV2API.log(shopId,"playerBuy", "itemCount:" + amount*item.getAmount() + "|price:" + totalPrice, p.getName(), p.getUniqueId()); //log
+            Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
-            if(itemCount > settings.getStorageCap() && settings.getStorageCap() != 0){
+            if(itemCount + amount > settings.getStorageCap() && settings.getStorageCap() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }
@@ -358,7 +358,7 @@ public class Man10Shop {
                 p.getInventory().removeItemAnySlot(item.build());
             }
 
-            Man10ShopV2API.log(shopId, "playerSell", "itemCount:" + amount*item.getAmount() + "|price:" + totalPrice, p.getName(), p.getUniqueId()); //log
+            Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");

@@ -213,4 +213,16 @@ public class Man10ShopV2API {
 
         Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_log"));
     }
+
+    public static void tradeLog(UUID shopId, String action, int amount, int total_price, String name, UUID uuid){
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("shop_id", shopId);
+        payload.put("action", action);
+        payload.put("amount", amount);
+        payload.put("total_price", total_price);
+        payload.put("name", name);
+        payload.put("uuid", uuid.toString());
+
+        Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_trade_log"));
+    }
 }

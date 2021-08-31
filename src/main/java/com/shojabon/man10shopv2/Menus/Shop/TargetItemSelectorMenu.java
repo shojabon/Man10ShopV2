@@ -11,6 +11,7 @@ import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 public class TargetItemSelectorMenu extends SInventory{
@@ -44,6 +45,7 @@ public class TargetItemSelectorMenu extends SInventory{
         setOnClickEvent(e -> {
             e.setCancelled(true);
             if(e.getCurrentItem() == null) return;
+            if(e.getClickedInventory().getType() == InventoryType.CHEST) return;
             ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem();
             if(newTargetItem == null) return;
 

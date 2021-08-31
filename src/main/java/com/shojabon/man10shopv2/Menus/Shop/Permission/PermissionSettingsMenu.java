@@ -144,6 +144,7 @@ public class PermissionSettingsMenu extends SInventory{
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
+                Man10ShopV2API.log(shop.shopId, "permissionDelete", target.uuid, player.getName(), player.getUniqueId()); //log
                 menu.moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory());
                 player.sendMessage(Man10ShopV2.prefix + "§c§a" + target.name + "を消去しました");
             });

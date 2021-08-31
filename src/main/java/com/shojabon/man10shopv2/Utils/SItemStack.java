@@ -202,6 +202,11 @@ public class SItemStack {
         return this;
     }
 
+    public boolean hasDamage(){
+        ItemMeta itemMeta = this.item.getItemMeta();
+        return ((Damageable) itemMeta).hasDamage();
+    }
+
     public int getMaxStackSize(){
         return this.item.getMaxStackSize();
     }

@@ -4,11 +4,13 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.Menus.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Settings.SettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Storage.ItemStorageMenu;
+import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -61,10 +63,12 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getShopInfoItem(){
         String iconName = new SStringBuilder().gold().bold().text("ショップ情報").build();
         SItemStack icon = new SItemStack(Material.OAK_SIGN).setDisplayName(iconName);
+
+        icon.addLore("§a口座残高:§e " + BaseUtils.priceString(shop.money) + "円");
+        icon.addLore("§7アイテム数:§e " + BaseUtils.priceString(shop.itemCount));
+
         SInventoryItem shopInfo = new SInventoryItem(icon.build());
         shopInfo.clickable(false);
-        shopInfo.setEvent(e -> {
-        });
 
         return shopInfo;
     }
@@ -270,7 +274,8 @@ public class ShopMainMenu extends SInventory {
                 }
                 Man10ShopV2.vault.withdraw(player.getUniqueId(), integer);
                 shop.addMoney(integer);
-                player.sendMessage(Man10ShopV2.prefix + "§a§l" + integer + "円入金しました");
+                Man10ShopV2API.log(shop.shopId, "depositMoney", integer, player.getName(), player.getUniqueId());
+                player.sendMessage(Man10ShopV2.prefix + "§a§l" + BaseUtils.priceString(integer) + "円入金しました");
             } else {
                 if (shop.money < integer) {
                     player.sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
@@ -278,7 +283,8 @@ public class ShopMainMenu extends SInventory {
                 }
                 Man10ShopV2.vault.deposit(player.getUniqueId(), integer);
                 shop.removeMoney(integer);
-                player.sendMessage(Man10ShopV2.prefix + "§a§l" + integer + "円出金しました");
+                Man10ShopV2API.log(shop.shopId, "withdrawMoney", integer, player.getName(), player.getUniqueId());
+                player.sendMessage(Man10ShopV2.prefix + "§a§l" + BaseUtils.priceString(integer) + "円出金しました");
             }
             menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin));
         });

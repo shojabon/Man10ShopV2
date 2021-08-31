@@ -65,7 +65,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem sellPriceItem(){
         SItemStack item = new SItemStack(Material.EMERALD).setDisplayName(new SStringBuilder().green().text("取引価格設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.price).text("円").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.priceString(shop.price)).text("円").build());
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
@@ -95,7 +95,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         item.addLore("");
         if(shop.calculateNextUnitPrice() != -1){
             item.addLore(new SStringBuilder().red().text("次のサイズ: ").text(shop.calculateCurrentStorageSize(1)).text("個").build());
-            item.addLore(new SStringBuilder().yellow().text("価格: ").text(shop.calculateNextUnitPrice()).text("円").build());
+            item.addLore(new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(shop.calculateNextUnitPrice())).text("円").build());
             item.addLore(new SStringBuilder().white().bold().text("左クリックで購入").build());
         }
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
