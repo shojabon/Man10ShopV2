@@ -72,7 +72,6 @@ public class Man10Shop {
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = item_count - " + count + " WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
         itemCount = itemCount - count;
-        //log here
         return true;
     }
 
@@ -257,6 +256,7 @@ public class Man10Shop {
             return false;
         }
         Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice());
+        Man10ShopV2API.log(shopId, "buyStorageSpace", units, p.getName(), p.getUniqueId()); //log
         p.sendMessage(Man10ShopV2.prefix + "§a§l倉庫スペースを購入しました");
         return buyStorageSpace(units);
     }
@@ -321,6 +321,7 @@ public class Man10Shop {
                 p.getInventory().addItem(item.build());
             }
 
+            Man10ShopV2API.log(shopId,"playerBuy", "itemCount:" + amount*item.getAmount() + "|price:" + totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
 
         }else if(shopType == Man10ShopType.SELL){
@@ -356,6 +357,7 @@ public class Man10Shop {
                 p.getInventory().removeItemAnySlot(item.build());
             }
 
+            Man10ShopV2API.log(shopId, "playerSell", "itemCount:" + amount*item.getAmount() + "|price:" + totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");

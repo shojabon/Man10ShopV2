@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.BooleanInputMenu;
 import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
@@ -76,6 +77,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
                 shop.setPrice(newValue);
+                Man10ShopV2API.log(shop.shopId, "setPrice", newValue, player.getName(), player.getUniqueId()); //log
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
             moveToMenu(player, menu);
@@ -102,7 +104,9 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(ee -> {
-                shop.buyStorageSpace(player, 1);
+                if(shop.buyStorageSpace(player, 1)){
+                    Man10ShopV2API.log(shop.shopId, "buyStorageSpace", 1, player.getName(), player.getUniqueId()); //log
+                }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
 
@@ -137,7 +141,9 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                     return;
                 }
 
-                shop.settings.setSetting("storage.sell.cap", newValue);
+                if(shop.settings.setStorageCap(newValue)){
+                    Man10ShopV2API.log(shop.shopId, "setStorageCap", newValue, player.getName(), player.getUniqueId()); //log
+                }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
             moveToMenu(player, menu);
@@ -166,6 +172,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnConfirm(ee -> {
                 //delete shop
                 shop.deleteShop();
+                Man10ShopV2API.log(shop.shopId, "deleteShop", null, player.getName(), player.getUniqueId()); //log
                 player.closeInventory();
             });
 
@@ -186,7 +193,9 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(bool -> {
-                shop.settings.setShopEnabled(bool);
+                if(shop.settings.setShopEnabled(bool)){
+                    Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
+                }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
 

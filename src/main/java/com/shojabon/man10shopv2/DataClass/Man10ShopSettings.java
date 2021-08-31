@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
@@ -46,6 +47,7 @@ public class Man10ShopSettings {
         boolean result = Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
         if(!result) return false;
         settings.put(key, value);
+
         return true;
     }
 

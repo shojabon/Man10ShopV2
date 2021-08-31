@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.Menus.Shop.Storage;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Shop.InOutSelectorMenu;
 import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
@@ -85,6 +86,7 @@ public class ItemStorageMenu extends SInventory{
             if(diff < 0){
                 //if item taken
                 if(shop.removeItemCount(-1*diff)){
+                    Man10ShopV2API.log(shop.shopId, "storageTakeOut", diff, player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムを" + -1*diff + "個取り出しました");
                 }else{
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
@@ -92,6 +94,8 @@ public class ItemStorageMenu extends SInventory{
             }else if (diff > 0){
                 //if item added
                 if(shop.removeItemCount(-1*diff)){
+
+                    Man10ShopV2API.log(shop.shopId, "storageTakeIn", diff, player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムを" + diff + "個をしまいました");
                 }else{
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");

@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.Menus.Shop;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
@@ -49,6 +50,8 @@ public class TargetItemSelectorMenu extends SInventory{
             SInventory.threadPool.execute(()->{
                 boolean changeResult = shop.setTargetItem(player, newTargetItem);
                 if(!changeResult) return;
+
+                Man10ShopV2API.log(shop.shopId, "itemTypeChange", new SItemStack(newTargetItem).getItemTypeMD5(), player.getName(), player.getUniqueId()); //log
                 player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムが変更されました");
                 renderMenu();
             });

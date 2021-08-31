@@ -121,7 +121,8 @@ public class MySQLAPI {
                     values.append("\"").append(escapeString(obj.toString())).append("\"");
                     values.append(",");
                 }else{
-                    continue;
+                    values.append("\"").append(escapeString(obj.toString())).append("\"");
+                    values.append(",");
                 }
                 if(!fieldsDone){
                     fields.append("`").append(key).append("`").append(",");
@@ -168,7 +169,8 @@ public class MySQLAPI {
                     values.append("\"").append(escapeString(obj.toString())).append("\"");
                     values.append(",");
                 }else{
-                    continue;
+                    values.append("\"").append(escapeString(obj.toString())).append("\"");
+                    values.append(",");
                 }
                 if(!fieldsDone){
                     fields.append("`").append(key).append("`").append(",");

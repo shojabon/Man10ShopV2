@@ -116,6 +116,7 @@ public class Man10ShopV2API {
     public String generateLocationId(Location l){
         return l.getWorld().getName() + "|" + l.getBlockX() + "|" + l.getBlockY() + "|" + l.getBlockZ();
     }
+
     public boolean createSign(Man10ShopSign sign){
         Man10Shop shop = getShop(sign.shopId);
         if(shop == null){
@@ -168,5 +169,18 @@ public class Man10ShopV2API {
         if(shop == null) return false;
         shop.signs.remove(sign.generateLocationId());
         return true;
+    }
+
+    //log
+
+    public static void log(UUID shopId, String logType, Object value, String name, UUID uuid){
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("shop_id", shopId);
+        payload.put("log_type", logType);
+        payload.put("value", value);
+        payload.put("name", name);
+        payload.put("uuid", uuid.toString());
+
+        Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_log"));
     }
 }

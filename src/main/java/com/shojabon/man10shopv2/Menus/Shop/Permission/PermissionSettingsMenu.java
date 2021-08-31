@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
@@ -59,6 +60,8 @@ public class PermissionSettingsMenu extends SInventory{
                         return;
                     }
                     target.permission = permissions[finalI];
+
+                    Man10ShopV2API.log(shop.shopId, "permissionChange." + target.uuid, permissions[finalI].name(), player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§l権限を設定しました");
                     menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin));
                 });

@@ -50,7 +50,11 @@ public class ShopActionMenu extends SInventory{
     }
 
     public void renderConfirmButton(){
-        SItemStack item = new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName("§a§l確認");
+        Material buttonMaterial = Material.LIME_STAINED_GLASS_PANE;
+        if(shop.shopType == Man10ShopType.SELL){
+            buttonMaterial = Material.RED_STAINED_GLASS_PANE;
+        }
+        SItemStack item = new SItemStack(buttonMaterial).setDisplayName("§a§l確認");
         SStringBuilder lore = new SStringBuilder().yellow().text(itemCount).text("個を").text(itemCount*shop.price).text("円で");
         if(shop.shopType == Man10ShopType.BUY){
             lore.text("買う");

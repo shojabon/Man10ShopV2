@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMainMenu;
 import com.shojabon.man10shopv2.Menus.Shop.Settings.SettingsMainMenu;
@@ -39,6 +40,8 @@ public class ShopTypeSelectorMenu extends SInventory{
                 player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
             }
+
+            Man10ShopV2API.log(shop.shopId, "setShopType", "BUY", player.getName(), player.getUniqueId()); //log
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
             renderButtons();
         });
@@ -51,6 +54,7 @@ public class ShopTypeSelectorMenu extends SInventory{
                 player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
             }
+            Man10ShopV2API.log(shop.shopId, "setShopType", "SELL", player.getName(), player.getUniqueId()); //log
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
             renderButtons();
         });
