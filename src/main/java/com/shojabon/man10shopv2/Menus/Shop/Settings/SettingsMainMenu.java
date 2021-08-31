@@ -76,8 +76,10 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
-                shop.setPrice(newValue);
-                Man10ShopV2API.log(shop.shopId, "setPrice", newValue, player.getName(), player.getUniqueId()); //log
+                if(shop.setPrice(newValue)){
+                    Man10ShopV2API.log(shop.shopId, "setPrice", newValue, player.getName(), player.getUniqueId()); //log
+                }
+                plugin.api.updateAllSigns(shop);
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
             moveToMenu(player, menu);
@@ -196,6 +198,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                 if(shop.settings.setShopEnabled(bool)){
                     Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
                 }
+                plugin.api.updateAllSigns(shop);
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
 

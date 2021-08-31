@@ -47,6 +47,8 @@ public class ShopActionMenu extends SInventory{
         renderDisplay();
         renderButtons();
 
+        renderInventory();
+
     }
 
     public void renderConfirmButton(){
@@ -67,7 +69,7 @@ public class ShopActionMenu extends SInventory{
 
         confirm.setAsyncEvent(e -> {
             shop.performAction(player, itemCount);
-            player.closeInventory();
+            plugin.getServer().getScheduler().runTask(plugin, ()-> player.closeInventory());
         });
 
         setItem(new int[]{30,31,32,39,40,41,48,49,50}, confirm);
@@ -94,17 +96,17 @@ public class ShopActionMenu extends SInventory{
                     itemCount = 1;
                 }
             }
-            renderInventory();
+            renderMenu();
         };
     }
 
     public void renderButtons(){
-        SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone()).setDisplayName("§a§l購入数を増やす").build());
+        SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone()).setDisplayName("§a§l取引数を増やす").build());
         increase.clickable(false);
         increase.setEvent(createEvent(true));
         setItem(43, increase);
 
-        SInventoryItem decrease = new SInventoryItem(new SItemStack(dictionary.getSymbol("minus").clone()).setDisplayName("§a§l購入数を減らす").build());
+        SInventoryItem decrease = new SInventoryItem(new SItemStack(dictionary.getSymbol("minus").clone()).setDisplayName("§a§l取引数を減らす").build());
         decrease.clickable(false);
         decrease.setEvent(createEvent(false));
         setItem(37, decrease);

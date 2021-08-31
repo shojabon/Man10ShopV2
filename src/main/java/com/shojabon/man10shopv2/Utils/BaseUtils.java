@@ -48,6 +48,10 @@ public class BaseUtils {
         return false;
     }
 
+    public static String priceString(int price){
+        return String.format("%,d", price);
+    }
+
     public static String booleanToJapaneseText(boolean bool){
         if(bool){
             return "有効";

@@ -1,5 +1,9 @@
 package com.shojabon.man10shopv2.DataClass;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import java.util.UUID;
 
 public class Man10ShopSign {
@@ -20,5 +24,11 @@ public class Man10ShopSign {
 
     public String generateLocationId(){
         return world + "|" + x + "|" + y + "|" + z;
+    }
+
+    public Location getLocation(){
+        World w = Bukkit.getServer().getWorld(world);
+        if(w == null) return null;
+        return new Location(w,x, y, z);
     }
 }

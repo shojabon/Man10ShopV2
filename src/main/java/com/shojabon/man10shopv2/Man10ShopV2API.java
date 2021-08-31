@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.man10shopv2.Utils.SItemStack;
@@ -169,6 +170,35 @@ public class Man10ShopV2API {
         if(shop == null) return false;
         shop.signs.remove(sign.generateLocationId());
         return true;
+    }
+
+    public void updateAllSigns(Man10Shop shop){
+        plugin.getServer().getScheduler().runTask(plugin, ()->{
+            for(Man10ShopSign signObject: shop.signs.values()){
+                Location l = signObject.getLocation();
+                if(l == null) continue;
+                if(!(l.getBlock().getState() instanceof Sign)){
+                    deleteSign(signObject);
+                    continue;
+                }
+                Sign sign = (Sign) l.getBlock().getState();
+
+                if(shop.shopType == Man10ShopType.BUY){
+                    sign.setLine(0, "§a§l販売ショップ");
+                }else{
+                    sign.setLine(0, "§c§l買取ショップ");
+                }
+
+                if(shop.settings.getShopEnabled()){
+                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
+                }else{
+                    sign.setLine(1, "§c取引停止中");
+                }
+                sign.update();
+
+
+            }
+        });
     }
 
     //log

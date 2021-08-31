@@ -7,6 +7,7 @@ import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Shop.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.Shop.ShopActionMenu;
+import com.shojabon.man10shopv2.Utils.BaseUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -43,15 +44,13 @@ public class SignListeners implements @NotNull Listener {
             }else{
                 sign.setLine(0, "§c§l買取ショップ");
             }
-            if(!containsPrice(sign.getLine(1)) && !containsPrice(sign.getLine(2)) && !containsPrice(sign.getLine(3))){
-                e.getBlock().breakNaturally();
-                e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l看板には{price}が入ってなければいけません");
-                e.getPlayer().closeInventory();
-                return;
+            sign.setLine(3, formatSignString(sign.getLine(2), shop));
+            sign.setLine(2, formatSignString(sign.getLine(1), shop));
+            if(shop.settings.getShopEnabled()){
+                sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
+            }else{
+                sign.setLine(1, "§c取引停止中");
             }
-            sign.setLine(1, formatSignString(sign.getLine(1), shop));
-            sign.setLine(2, formatSignString(sign.getLine(2), shop));
-            sign.setLine(3, formatSignString(sign.getLine(3), shop));
 
             sign.update(true);
 

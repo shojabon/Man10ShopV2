@@ -62,6 +62,7 @@ public class Man10Shop {
         this.settings = new Man10ShopSettings(this.shopId);
 
         loadPermissions();
+        loadSigns();
         storageSize = calculateCurrentStorageSize(0);
     }
 
@@ -367,6 +368,22 @@ public class Man10Shop {
     public void deleteShop(){
         Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET `deleted` = 1 WHERE shop_id = '" + shopId + "'");
         Man10ShopV2API.shopCache.remove(shopId);
+    }
+
+
+    //signs
+
+    public void loadSigns(){
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE shop_id = '" + shopId + "'");
+        for(MySQLCachedResultSet rs: result){
+            Man10ShopSign sign = new Man10ShopSign(shopId,
+                    rs.getString("world"),
+                    rs.getInt("x"),
+                    rs.getInt("y"),
+                    rs.getInt("z"));
+            signs.put(rs.getString("locationId"), sign);
+            signs.put("locationId", sign);
+        }
     }
 
 

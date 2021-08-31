@@ -43,7 +43,10 @@ public class ShopTypeSelectorMenu extends SInventory{
 
             Man10ShopV2API.log(shop.shopId, "setShopType", "BUY", player.getName(), player.getUniqueId()); //log
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
-            renderButtons();
+            player.getServer().getScheduler().runTask(plugin, ()-> {
+                player.closeInventory();
+                plugin.api.updateAllSigns(shop);
+            });
         });
         setItem(21, buyMode);
 
@@ -56,7 +59,11 @@ public class ShopTypeSelectorMenu extends SInventory{
             }
             Man10ShopV2API.log(shop.shopId, "setShopType", "SELL", player.getName(), player.getUniqueId()); //log
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
-            renderButtons();
+            player.getServer().getScheduler().runTask(plugin, ()-> plugin.api.updateAllSigns(shop));
+            player.getServer().getScheduler().runTask(plugin, ()-> {
+                player.closeInventory();
+                plugin.api.updateAllSigns(shop);
+            });
         });
         setItem(23, sellMode);
 
