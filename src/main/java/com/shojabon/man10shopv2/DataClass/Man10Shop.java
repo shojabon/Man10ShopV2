@@ -7,6 +7,7 @@ import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,6 +38,8 @@ public class Man10Shop {
     public HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
     public Man10ShopSettings settings;
+
+    public boolean currentlyEditingStorage = false;
 
     public Man10Shop(UUID shopId,
                      String name,
@@ -122,7 +125,7 @@ public class Man10Shop {
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64() + "', target_item_hash ='" + sItem.getItemTypeMD5() + "' WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
         targetItem = sItem;
-        //log here
+        Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
     }
 
@@ -273,6 +276,7 @@ public class Man10Shop {
             return false;
         }
         shopType = type;
+        Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
     }
 
@@ -281,12 +285,17 @@ public class Man10Shop {
     public boolean setPrice(int value){
         if(value < 0) return false;
         price = value;
+        Man10ShopV2API.closeInventoryGroup(shopId);
         return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET price = " + value + " WHERE shop_id = '" + shopId + "'");
     }
 
     //actions
 
     public void performAction(Player p, int amount){
+        if(currentlyEditingStorage){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l現在店主がショップの在庫を移動させています");
+            return;
+        }
         if(shopType == Man10ShopType.BUY){
             if(itemCount <= 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
@@ -368,6 +377,7 @@ public class Man10Shop {
     public void deleteShop(){
         Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET `deleted` = 1 WHERE shop_id = '" + shopId + "'");
         Man10ShopV2API.shopCache.remove(shopId);
+        Man10ShopV2API.closeInventoryGroup(shopId);
     }
 
 

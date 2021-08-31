@@ -82,6 +82,8 @@ public class ItemStorageMenu extends SInventory{
             }
         });
 
+        setAfterInventoryOpenEvents(e -> shop.currentlyEditingStorage = true);
+
         setAsyncOnForcedCloseEvent(e -> {
             int diff = countItems() - showingCount;
             if(diff < 0){
@@ -102,6 +104,7 @@ public class ItemStorageMenu extends SInventory{
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 }
             }
+            shop.currentlyEditingStorage = false;
             //diff range excludes 0 (no change)
         });
         setAsyncOnCloseEvent(e -> {

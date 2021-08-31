@@ -8,6 +8,7 @@ import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 public class Man10ShopV2API {
 
-    Man10ShopV2 plugin;
+    public static Man10ShopV2 plugin;
 
     public static HashMap<UUID, Man10Shop> shopCache = new HashMap<>();
     public static HashMap<UUID, ArrayList<UUID>> userModeratingShopList = new HashMap<>();
@@ -199,6 +200,12 @@ public class Man10ShopV2API {
 
             }
         });
+    }
+
+    //close inventory
+
+    public static void closeInventoryGroup(UUID group){
+        SInventory.closeInventoryGroup(group, plugin);
     }
 
     //log

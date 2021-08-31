@@ -37,7 +37,6 @@ public class ShopActionMenu extends SInventory{
 
     }
 
-
     public void renderMenu(){
         SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
         background.clickable(false);
@@ -49,6 +48,7 @@ public class ShopActionMenu extends SInventory{
 
         renderInventory();
 
+        setAfterInventoryOpenEvents(e -> inventoryGroup.put(player.getUniqueId(), shop.shopId));
     }
 
     public void renderConfirmButton(){

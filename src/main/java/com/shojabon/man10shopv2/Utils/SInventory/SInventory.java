@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Utils.SInventory;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -9,6 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +33,13 @@ public abstract class SInventory implements Listener {
     ArrayList<Consumer<InventoryCloseEvent>> asyncOnForcedCloseEvents = new ArrayList<>();
     ArrayList<Consumer<InventoryClickEvent>> asyncClickEvents = new ArrayList<>();
 
+    ArrayList<Consumer<Player>> asyncAfterInventoryOpenEvents = new ArrayList<>();
+    ArrayList<Consumer<Player>> afterInventoryOpenEvents = new ArrayList<>();
+
     public static ArrayList<UUID> playersInInventoryGlobal = new ArrayList<>();
     public static Executor threadPool = Executors.newCachedThreadPool();
+
+    public static HashMap<UUID, UUID> inventoryGroup = new HashMap<>();
 
 
     public Inventory activeInventory = null;
@@ -139,6 +146,12 @@ public abstract class SInventory implements Listener {
         playersInInventoryGlobal.add(p.getUniqueId());
         p.openInventory(activeInventory);
 
+        for(Consumer<Player> event: afterInventoryOpenEvents){
+            event.accept(p);
+        }
+        for(Consumer<Player> event: asyncAfterInventoryOpenEvents){
+            threadPool.execute(() -> event.accept(p));
+        }
         if(plugin != null){
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
             playerInMenu.add(p.getUniqueId());
@@ -195,6 +208,10 @@ public abstract class SInventory implements Listener {
         this.onForcedCloseEvents.add(event);
     }
 
+    public void setAfterInventoryOpenEvents(Consumer<Player> event){
+        this.afterInventoryOpenEvents.add(event);
+    }
+
     //======== async events ====
 
     public void setAsyncOnCloseEvent(Consumer<InventoryCloseEvent> event){
@@ -207,6 +224,26 @@ public abstract class SInventory implements Listener {
 
     public void setAsyncOnForcedCloseEvent(Consumer<InventoryCloseEvent> event){
         this.asyncOnForcedCloseEvents.add(event);
+    }
+
+    public void setAsyncAfterInventoryOpenEvents(Consumer<Player> event){
+        this.asyncAfterInventoryOpenEvents.add(event);
+    }
+    //========= inventory group =====
+
+    public static void closeInventoryGroup(UUID group,JavaPlugin plugin){
+        for(UUID user: inventoryGroup.keySet()){
+            if(inventoryGroup.get(user).equals(group)){
+                Player p = Bukkit.getServer().getPlayer(user);
+                if(p == null) continue;
+                Bukkit.getServer().getScheduler().runTask(plugin, (@NotNull Runnable) p::closeInventory);
+                inventoryGroup.remove(user);
+            }
+        }
+    }
+
+    public static void setInventoryGroup(UUID user, UUID group){
+        inventoryGroup.put(user, group);
     }
 
     @EventHandler
@@ -235,6 +272,7 @@ public abstract class SInventory implements Listener {
         HandlerList.unregisterAll(this);
         playersInInventoryGlobal.remove(e.getPlayer().getUniqueId());
 
+        inventoryGroup.remove(e.getPlayer().getUniqueId());
         //execute events
         if(!movingPlayer.contains(e.getPlayer().getUniqueId())){
             for(Consumer<InventoryCloseEvent> event: onCloseEvents){

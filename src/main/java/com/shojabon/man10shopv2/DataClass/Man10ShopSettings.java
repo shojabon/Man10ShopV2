@@ -107,7 +107,9 @@ public class Man10ShopSettings {
 
     public boolean setShopEnabled(boolean enabled){
         if(getShopEnabled() == enabled) return true;
-        return setSetting("shop.enabled", enabled);
+        if(!setSetting("shop.enabled", enabled)) return false;
+        Man10ShopV2API.closeInventoryGroup(shopId);
+        return true;
     }
 
 
