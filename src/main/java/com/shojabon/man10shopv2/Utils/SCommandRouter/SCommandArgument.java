@@ -33,6 +33,10 @@ public class SCommandArgument {
 
     public SCommandArgument addAllowedType(SCommandArgumentType type){
         allowedTypes.add(type);
+        if(type == SCommandArgumentType.BOOLEAN){
+            alias.add("true");
+            alias.add("false");
+        }
         return this;
     }
 

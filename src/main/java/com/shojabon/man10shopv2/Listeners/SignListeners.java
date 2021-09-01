@@ -36,10 +36,16 @@ public class SignListeners implements @NotNull Listener {
         if(e.getLine(0) == null) return;
         if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")) return;
 
-        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
-
         //allowed world
-        if(!Man10ShopV2.config.getStringList("allowedWorlds").contains(e.getBlock().getWorld().getName())) return;
+        if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(e.getBlock().getWorld().getName())) return;
+
+        //if plugin disabled
+        if(!Man10ShopV2.config.getBoolean("pluginEnabled")){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このプラグインは停止中です");
+            return;
+        }
+
+        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
 
         int signPrice = Man10ShopV2.config.getInt("sign.price");
         UUID uuid = e.getPlayer().getUniqueId();
@@ -101,7 +107,13 @@ public class SignListeners implements @NotNull Listener {
         if(!(e.getClickedBlock().getState() instanceof Sign)) return;
 
         //allowed world
-        if(!Man10ShopV2.config.getStringList("allowedWorlds").contains(e.getClickedBlock().getWorld().getName())) return;
+        if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(e.getClickedBlock().getWorld().getName())) return;
+
+        //if plugin disabled
+        if(!Man10ShopV2.config.getBoolean("pluginEnabled")){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このプラグインは停止中です");
+            return;
+        }
 
         Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
         if(sign == null) return;

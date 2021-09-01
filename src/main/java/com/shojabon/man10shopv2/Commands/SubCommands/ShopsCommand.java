@@ -18,6 +18,10 @@ public class ShopsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if(!Man10ShopV2.config.getBoolean("pluginEnabled")){
+            sender.sendMessage(Man10ShopV2.prefix + "§c§l現在このプラグインは停止中です");
+            return false;
+        }
         if(! (sender instanceof Player)){
             sender.sendMessage(Man10ShopV2.prefix + "§c§lこのコマンドはプレイヤーのみが実行可能です");
             return false;

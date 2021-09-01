@@ -33,7 +33,7 @@ public class ToggleWorldCommand implements CommandExecutor {
             List<String> worlds = Man10ShopV2.config.getStringList("enabledWorlds");
             if(worlds.contains(args[1])){
                 worlds.remove(args[1]);
-                sender.sendMessage(Man10ShopV2.prefix + "§a§l" + args[1] + "を削除しました");
+                sender.sendMessage(Man10ShopV2.prefix + "§c§l" + args[1] + "を削除しました");
             }else{
                 worlds.add(args[1]);
                 sender.sendMessage(Man10ShopV2.prefix + "§a§l" + args[1] + "を追加しました");
