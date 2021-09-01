@@ -176,6 +176,18 @@ public class Man10ShopV2API {
         return true;
     }
 
+    public void destroyAllSigns(Man10Shop shop){
+        for(Man10ShopSign sign: shop.signs.values()){
+            Location l = sign.getLocation();
+            Block b = l.getBlock();
+            deleteSign(sign);
+            if(!(b.getState() instanceof Sign)){
+                continue;
+            }
+            b.breakNaturally();
+        }
+    }
+
     public void updateAllSigns(Man10Shop shop){
         plugin.getServer().getScheduler().runTask(plugin, ()->{
             for(Man10ShopSign signObject: shop.signs.values()){

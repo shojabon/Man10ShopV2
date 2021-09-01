@@ -120,6 +120,9 @@ public class MySQLAPI {
                 }else if (obj instanceof UUID){
                     values.append("\"").append(escapeString(obj.toString())).append("\"");
                     values.append(",");
+                }else if (obj == null){
+                    values.append("\"").append("null").append("\"");
+                    values.append(",");
                 }else{
                     values.append("\"").append(escapeString(obj.toString())).append("\"");
                     values.append(",");
@@ -167,6 +170,9 @@ public class MySQLAPI {
                     values.append(",");
                 }else if (obj instanceof UUID){
                     values.append("\"").append(escapeString(obj.toString())).append("\"");
+                    values.append(",");
+                }else if (obj == null){
+                    values.append("\"").append("null").append("\"");
                     values.append(",");
                 }else{
                     values.append("\"").append(escapeString(obj.toString())).append("\"");

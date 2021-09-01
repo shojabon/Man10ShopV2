@@ -193,8 +193,9 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             menu.setOnConfirm(ee -> {
                 //delete shop
                 shop.deleteShop();
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.api.destroyAllSigns(shop));
                 Man10ShopV2API.log(shop.shopId, "deleteShop", null, player.getName(), player.getUniqueId()); //log
-                player.closeInventory();
+                menu.close(player);
             });
 
             moveToMenu(player, menu);

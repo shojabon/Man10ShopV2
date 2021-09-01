@@ -14,12 +14,7 @@ public class BaseUtils {
     }
 
     public static boolean isBoolean(String testing){
-        try{
-            Boolean.parseBoolean(testing);
-            return true;
-        }catch (Exception e){
-            return false;
-        }
+        return "true".equalsIgnoreCase(testing) || "false".equalsIgnoreCase(testing);
     }
 
     static Material[] signs = new Material[]{
