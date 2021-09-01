@@ -74,7 +74,7 @@ public class CreateShopCommand implements CommandExecutor {
             }
             Man10ShopV2API.log(shopId, "shopCreate", "", p.getName(), p.getUniqueId());
             sender.sendMessage(Man10ShopV2.prefix + "§a§lショップを作成しました \n/" + label + " shopsで管理することができます");
-            plugin.getServer().getScheduler().runTask(plugin, (@NotNull Runnable) p::closeInventory);
+            menu.close(p);
         });
         menu.open(p);
 

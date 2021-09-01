@@ -235,4 +235,12 @@ public class Man10ShopV2API {
 
         Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_trade_log"));
     }
+
+    //cache clear
+
+    public void clearCache(){
+        shopCache.clear();
+        userModeratingShopList.clear();
+        signs.clear();
+    }
 }

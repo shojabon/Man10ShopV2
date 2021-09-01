@@ -1,9 +1,6 @@
 package com.shojabon.man10shopv2.Commands;
 
-import com.shojabon.man10shopv2.Commands.SubCommands.CreateShopCommand;
-import com.shojabon.man10shopv2.Commands.SubCommands.ShopsCommand;
-import com.shojabon.man10shopv2.Commands.SubCommands.TogglePluginCommand;
-import com.shojabon.man10shopv2.Commands.SubCommands.ToggleWorldCommand;
+import com.shojabon.man10shopv2.Commands.SubCommands.*;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandArgument;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandArgumentType;
@@ -90,6 +87,20 @@ public class Man10ShopV2Command extends SCommandRouter {
                         addRequiredPermission("man10shopv2.shop.create")
                         .addExplanation("ショップを作成")
                         .setExecutor(new CreateShopCommand(plugin))
+        );
+
+        //reload command
+
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("reload")).
+
+                        addRequiredPermission("man10shopv2.reload")
+                        .addExplanation("プラグインをリロードする")
+                        .addExplanation("")
+                        .addExplanation("設定を変更したときに使用する")
+                        .addExplanation("コマンドを使用すると初期状態に戻る")
+                        .setExecutor(new ReloadConfigCommand(plugin))
         );
 
     }

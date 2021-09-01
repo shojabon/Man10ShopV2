@@ -69,7 +69,7 @@ public class ShopActionMenu extends SInventory{
 
         confirm.setAsyncEvent(e -> {
             shop.performAction(player, itemCount);
-            plugin.getServer().getScheduler().runTask(plugin, ()-> player.closeInventory());
+            close(player);
         });
 
         setItem(new int[]{30,31,32,39,40,41,48,49,50}, confirm);

@@ -45,22 +45,7 @@ public final class Man10ShopV2 extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        for(UUID uuid: SInventory.playersInInventoryGlobal){
-            Player p = getServer().getPlayer(uuid);
-            if(p != null) p.closeInventory();
-        }
+        SInventory.closeAllSInventories();
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-//        Man10Shop shop = this.api.getShop("6d524add-d0f9-4c46-af1e-1307e2bab7f4");
-//        //shop.addModerator(((Player)sender), Man10ShopPermission.OWNER);
-          Player p = ((Player) sender);
-//
-//        shop.setTargetItem(p, new SItemStack(Material.DIAMOND).setAmount(2).build());
-//        shop.performAction(p, 10);
-
-
-        return false;
-    }
 }

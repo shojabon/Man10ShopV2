@@ -158,6 +158,17 @@ public abstract class SInventory implements Listener {
         }
     }
 
+    public void close(Player p){
+        if(!playerInMenu.contains(p.getUniqueId())){
+            return;
+        }
+        plugin.getServer().getScheduler().runTask(plugin, ()->{
+            movingPlayer.add(p.getUniqueId());
+            p.closeInventory();
+            movingPlayer.remove(p.getUniqueId());
+        });
+    }
+
     public void moveToMenu(Player p, SInventory inv){
         plugin.getServer().getScheduler().runTask(plugin, ()->{
             movingPlayer.add(p.getUniqueId());
@@ -244,6 +255,20 @@ public abstract class SInventory implements Listener {
 
     public static void setInventoryGroup(UUID user, UUID group){
         inventoryGroup.put(user, group);
+    }
+
+    public static ArrayList<UUID> getPlayersInInventoryGlobal(){
+        return new ArrayList<>(playersInInventoryGlobal);
+    }
+
+    public static void closeAllSInventories(){
+        for(UUID uuid: SInventory.getPlayersInInventoryGlobal()){
+            Player p = Bukkit.getServer().getPlayer(uuid);
+            if(p == null) continue;
+            movingPlayer.add(p.getUniqueId());
+            p.closeInventory();
+            movingPlayer.remove(p.getUniqueId());
+        }
     }
 
     @EventHandler
