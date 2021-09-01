@@ -9,6 +9,7 @@ import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
@@ -181,6 +182,7 @@ public class Man10Shop {
         payload.put("uuid", moderator.uuid.toString());
         payload.put("shop_id", shopId.toString());
         payload.put("permission", moderator.permission.name());
+        payload.put("notification", moderator.notificationEnabled);
         if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
         moderators.put(moderator.uuid, moderator);
         Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
@@ -213,7 +215,7 @@ public class Man10Shop {
         ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE shop_id = '" + shopId + "'");
         for(MySQLCachedResultSet rs: results) {
             UUID uuid = UUID.fromString(rs.getString("uuid"));
-            Man10ShopModerator permission = new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")));
+            Man10ShopModerator permission = new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")), rs.getBoolean("notification"));
             moderators.put(uuid, permission);
         }
     }
@@ -333,6 +335,7 @@ public class Man10Shop {
 
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
+            notifyModerators(amount*item.getAmount());
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
@@ -369,6 +372,7 @@ public class Man10Shop {
 
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
+            notifyModerators(amount*item.getAmount());
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
@@ -401,6 +405,31 @@ public class Man10Shop {
                     rs.getInt("z"));
             signs.put(rs.getString("locationId"), sign);
             signs.put("locationId", sign);
+        }
+    }
+
+    //notification
+
+    public boolean setEnableNotification(Man10ShopModerator mod, boolean enabled){
+        if(!moderators.containsKey(mod.uuid)){
+            return false;
+        }
+        if(mod.notificationEnabled == enabled) return true;
+        mod.notificationEnabled = enabled;
+        moderators.put(mod.uuid, mod);
+        if(!Man10ShopV2.mysql.execute("UPDATE man10shop_permissions SET notification = '" + enabled + "' WHERE shop_id = '" + shopId + "' AND uuid = '" + mod.uuid + "'")){
+            return false;
+        }
+        return true;
+    }
+
+    public void notifyModerators(int amount){
+        for(Man10ShopModerator mod: moderators.values()){
+            if(!mod.notificationEnabled) continue;
+            Player p = Bukkit.getServer().getPlayer(mod.uuid);
+            if(p == null) continue;
+            if(!p.isOnline()) continue;
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + name + "で" + amount + "個のアイテム取引がありました");
         }
     }
 

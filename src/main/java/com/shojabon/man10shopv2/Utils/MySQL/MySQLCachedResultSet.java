@@ -23,7 +23,7 @@ public class MySQLCachedResultSet{
         return (Integer) obj;
     }
     public boolean getBoolean(String colName){
-        return (Boolean) result.get(colName);
+        return Boolean.parseBoolean((String)result.get(colName));
     }
     public double getDouble(String colName){
         return (Double) result.get(colName);

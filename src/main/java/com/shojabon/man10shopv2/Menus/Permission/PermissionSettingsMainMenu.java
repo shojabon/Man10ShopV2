@@ -80,7 +80,7 @@ public class PermissionSettingsMainMenu {
 
                 ConfirmationMenu menu = new ConfirmationMenu("§a" + targetPlayer.getName() + "を管理者にしますか？", plugin);
                 menu.setOnConfirm(ee -> {
-                    if(!shop.addModerator(new Man10ShopModerator(targetPlayer.getName(), targetPlayer.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS))){
+                    if(!shop.addModerator(new Man10ShopModerator(targetPlayer.getName(), targetPlayer.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS, true))){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
