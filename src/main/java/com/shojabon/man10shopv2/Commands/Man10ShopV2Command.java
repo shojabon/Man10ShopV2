@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Commands;
 
+import com.shojabon.man10shopv2.Commands.SubCommands.CreateShopCommand;
 import com.shojabon.man10shopv2.Commands.SubCommands.ShopsCommand;
 import com.shojabon.man10shopv2.Commands.SubCommands.TogglePluginCommand;
 import com.shojabon.man10shopv2.Commands.SubCommands.ToggleWorldCommand;
@@ -32,7 +33,7 @@ public class Man10ShopV2Command extends SCommandRouter {
         addCommand(
                 new SCommandObject()
                         .addArgument(new SCommandArgument().addAllowedString("shops")).
-                        
+
                         addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
                         setExecutor(new ShopsCommand(plugin))
         );
@@ -77,6 +78,18 @@ public class Man10ShopV2Command extends SCommandRouter {
                         addRequiredPermission("man10shopv2.togglePlugin")
                         .addExplanation("プラグインの有効/無効を設定")
                         .setExecutor(new TogglePluginCommand(plugin))
+        );
+
+        //create shop command
+
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("create")).
+                        addArgument(new SCommandArgument().addAlias("ショップ名")).
+
+                        addRequiredPermission("man10shopv2.shop.create")
+                        .addExplanation("ショップを作成")
+                        .setExecutor(new CreateShopCommand(plugin))
         );
 
     }

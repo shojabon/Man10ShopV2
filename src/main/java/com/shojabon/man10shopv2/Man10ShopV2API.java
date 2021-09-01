@@ -79,7 +79,7 @@ public class Man10ShopV2API {
         return shops;
     }
 
-    public boolean createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType){
+    public UUID createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType){
         UUID shopId = UUID.randomUUID();
         Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, 1, shopType);
 
@@ -95,7 +95,10 @@ public class Man10ShopV2API {
         payload.put("shop_type", shop.shopType.name());
         payload.put("deleted", 0);
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
-        return shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER));
+        if(!shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER))){
+            return null;
+        }
+        return shopId;
     }
 
     public ArrayList<Man10Shop> getShopsWithPermission(UUID uuid){
