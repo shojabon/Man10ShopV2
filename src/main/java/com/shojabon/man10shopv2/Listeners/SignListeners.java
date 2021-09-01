@@ -35,6 +35,12 @@ public class SignListeners implements @NotNull Listener {
         if(e.getLine(0) == null) return;
         if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")) return;
 
+        //permission to use
+        if(!e.getPlayer().hasPermission("man10shop.sign.create")){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
+            return;
+        }
+
         //allowed world
         if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(e.getBlock().getWorld().getName())) return;
 
@@ -104,6 +110,12 @@ public class SignListeners implements @NotNull Listener {
         if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if(e.getClickedBlock() == null) return;
         if(!(e.getClickedBlock().getState() instanceof Sign)) return;
+
+        //permission to use
+        if(!e.getPlayer().hasPermission("man10shop.use")){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
+            return;
+        }
 
         //allowed world
         if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(e.getClickedBlock().getWorld().getName())) return;
