@@ -23,7 +23,7 @@ public class ShopActionMenu extends SInventory{
     BannerDictionary dictionary = new BannerDictionary();
 
     public ShopActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super("", 6, plugin);
+        super(shop.name, 6, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
@@ -101,12 +101,18 @@ public class ShopActionMenu extends SInventory{
     }
 
     public void renderButtons(){
-        SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone()).setDisplayName("§a§l取引数を増やす").build());
+        SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone())
+                .addLore("§f左クリックで取引数1増加")
+                .addLore("§fシフト+左クリックで取引数を最大まで増加")
+                .setDisplayName("§a§l取引数を増やす").build());
         increase.clickable(false);
         increase.setEvent(createEvent(true));
         setItem(43, increase);
 
-        SInventoryItem decrease = new SInventoryItem(new SItemStack(dictionary.getSymbol("minus").clone()).setDisplayName("§a§l取引数を減らす").build());
+        SInventoryItem decrease = new SInventoryItem(new SItemStack(dictionary.getSymbol("minus").clone())
+                .addLore("§f左クリックで取引数1減らす")
+                .addLore("§fシフト+左クリックで取引数を最小まで減らす")
+                .setDisplayName("§a§l取引数を減らす").build());
         decrease.clickable(false);
         decrease.setEvent(createEvent(false));
         setItem(37, decrease);
