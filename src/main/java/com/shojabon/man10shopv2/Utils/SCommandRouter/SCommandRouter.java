@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.Utils.SCommandRouter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +83,13 @@ public abstract class SCommandRouter implements @Nullable CommandExecutor, @Null
                         if(p == null) continue;
                         if(!p.isOnline()) continue;
                         result.add(p.getName());
+                    }
+                }
+
+                //world name type
+                if(argument.hasType(SCommandArgumentType.WORLD)){
+                    for(World w : Bukkit.getServer().getWorlds()){
+                        result.add(w.getName());
                     }
                 }
                 result.addAll(argument.alias);

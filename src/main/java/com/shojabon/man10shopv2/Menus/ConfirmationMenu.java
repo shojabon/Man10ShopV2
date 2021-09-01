@@ -48,7 +48,7 @@ public class ConfirmationMenu extends SInventory{
         SInventoryItem yes = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("確認").build()).build());
         yes.clickable(false);
         yes.setAsyncEvent(e -> {
-            if(onCancel != null) onConfirm.accept(e);
+            if(onConfirm != null) onConfirm.accept(e);
         });
         setItem(new int[]{15, 16, 24, 25}, yes);
 

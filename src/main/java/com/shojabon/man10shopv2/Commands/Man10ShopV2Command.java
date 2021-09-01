@@ -1,11 +1,13 @@
 package com.shojabon.man10shopv2.Commands;
 
 import com.shojabon.man10shopv2.Commands.SubCommands.ShopsCommand;
+import com.shojabon.man10shopv2.Commands.SubCommands.ToggleWorldCommand;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandArgument;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandArgumentType;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandObject;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandRouter;
+import org.bukkit.World;
 
 
 public class Man10ShopV2Command extends SCommandRouter {
@@ -28,9 +30,30 @@ public class Man10ShopV2Command extends SCommandRouter {
         //shops command
         addCommand(
                 new SCommandObject().addArgument(new SCommandArgument().addAllowedString("shops")).
-                addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
-                setExecutor(new ShopsCommand(plugin))
+                        addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
+                        setExecutor(new ShopsCommand(plugin))
         );
+
+        //toggled worlds command
+
+        addCommand(
+                new SCommandObject().addArgument(
+                                new SCommandArgument().addAllowedString("toggleWorld")).
+                        addRequiredPermission("man10shopv2.toggleWorld")
+                        .addExplanation("看板が機能するワールド一覧を表示する")
+                        .setExecutor(new ToggleWorldCommand(plugin))
+        );
+
+        addCommand(
+                new SCommandObject().addArgument(
+                                new SCommandArgument().addAllowedString("toggleWorld")).
+                        addArgument(new SCommandArgument().addAllowedType(SCommandArgumentType.WORLD).
+                                addAlias("ワールド名")).
+                        addRequiredPermission("man10shopv2.toggleWorld")
+                        .addExplanation("看板が機能するワールドの有効/無効を設定")
+                        .setExecutor(new ToggleWorldCommand(plugin))
+        );
+
     }
 
 }

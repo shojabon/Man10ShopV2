@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.Utils.SCommandRouter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -60,6 +61,11 @@ public class SCommandArgument {
                         if(!p.getName().equals(arg)) return false;
                         if(!p.isOnline()) return false;
                         return true;
+                    case WORLD:
+                        for(World w: Bukkit.getServer().getWorlds()){
+                            if(w.getName().equals(arg)) return true;
+                        }
+                        return false;
                 }
             }catch (Exception e){
                 return false;

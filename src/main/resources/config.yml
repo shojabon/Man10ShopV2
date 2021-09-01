@@ -7,10 +7,21 @@ mysql:
 
 prefix: "§6[§eMan10Shop§dV2§6]"
 
+pluginEnabled: true
+enabledWorlds:
+  - testWorld
+
+shop:
+  creationPrice: 3500
+
+sign:
+  price: 1000
+  maxSignsPerShop: 10
+
 itemStorage:
   unitDefinition: 64
   maxStorageUnits: 54
-  defaultUnits: 1
+  defaultUnits: 9
   prices:
     0: 100
     10: 185

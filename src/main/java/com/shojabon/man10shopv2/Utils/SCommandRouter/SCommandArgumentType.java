@@ -5,5 +5,6 @@ public enum SCommandArgumentType {
     STRING,
     INT,
     BOOLEAN,
-    DOUBLE
+    DOUBLE,
+    WORLD
 }
