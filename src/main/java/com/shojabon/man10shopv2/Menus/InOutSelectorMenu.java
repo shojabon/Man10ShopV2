@@ -1,8 +1,7 @@
-package com.shojabon.man10shopv2.Menus.Shop;
+package com.shojabon.man10shopv2.Menus;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Menus.Shop.Storage.ItemStorageMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;

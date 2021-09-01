@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.Menus.Shop;
+package com.shojabon.man10shopv2.Menus;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;

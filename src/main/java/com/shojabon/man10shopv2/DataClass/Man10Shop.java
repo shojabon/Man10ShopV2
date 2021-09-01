@@ -380,6 +380,14 @@ public class Man10Shop {
         Man10ShopV2API.closeInventoryGroup(shopId);
     }
 
+    //name
+
+    public boolean setName(String name){
+        if(name.length() > 64 || name.length() == 0) return false;
+        this.name = name;
+        return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET name = '" + MySQLAPI.escapeString(name) + "' WHERE shop_id = '" + shopId + "'");
+    }
+
 
     //signs
 

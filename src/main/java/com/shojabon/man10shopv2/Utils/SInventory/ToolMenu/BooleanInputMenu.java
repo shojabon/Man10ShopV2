@@ -1,6 +1,5 @@
-package com.shojabon.man10shopv2.Menus;
+package com.shojabon.man10shopv2.Utils.SInventory.ToolMenu;
 
-import com.shojabon.man10shopv2.Utils.BannerDictionary;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;

@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.Menus;
+package com.shojabon.man10shopv2.Utils.SInventory.ToolMenu;
 
 import com.shojabon.man10shopv2.Utils.BannerDictionary;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
@@ -6,13 +6,11 @@ import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.naming.InterruptedNamingException;
 import java.util.function.Consumer;
 
 public class NumericInputMenu extends SInventory{

@@ -1,12 +1,11 @@
-package com.shojabon.man10shopv2.Menus.Shop.Permission;
+package com.shojabon.man10shopv2.Menus.Permission;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;

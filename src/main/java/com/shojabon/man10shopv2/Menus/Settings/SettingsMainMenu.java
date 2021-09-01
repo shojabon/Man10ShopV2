@@ -1,26 +1,23 @@
-package com.shojabon.man10shopv2.Menus.Shop.Settings;
+package com.shojabon.man10shopv2.Menus.Settings;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
-import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.BooleanInputMenu;
-import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
-import com.shojabon.man10shopv2.Menus.LargeSInventoryMenu;
-import com.shojabon.man10shopv2.Menus.NumericInputMenu;
-import com.shojabon.man10shopv2.Menus.Shop.Permission.PermissionSettingsMenu;
-import com.shojabon.man10shopv2.Menus.Shop.Settings.InnerSettings.ShopTypeSelectorMenu;
-import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
+import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.ShopTypeSelectorMenu;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.BooleanInputMenu;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.LargeSInventoryMenu;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.NumericInputMenu;
+import com.shojabon.man10shopv2.Menus.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.man10shopv2.Utils.SLongTextInput;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class SettingsMainMenu extends LargeSInventoryMenu{
     Man10Shop shop;
@@ -58,6 +55,28 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
+
+            //text input
+            SLongTextInput textInput = new SLongTextInput("§d§lショップ名を入力してください", plugin);
+            textInput.setOnConfirm(shopName -> {
+                if(shopName.length() > 64 || shopName.length() == 0){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lショップ名は64文字以内でなくてはなりません");
+                    return;
+                }
+                threadPool.execute(() -> {
+                    if(!shop.setName(shopName)){
+                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        return;
+                    }
+                    player.sendMessage(Man10ShopV2.prefix + "§a§lショップ名を変更しました");
+                });
+            });
+
+            textInput.setOnCancel(ee -> player.sendMessage(Man10ShopV2.prefix + "§c§lキャンセルしました"));
+
+
+            textInput.open(player);
+            close(player);
         });
 
         return inventoryItem;

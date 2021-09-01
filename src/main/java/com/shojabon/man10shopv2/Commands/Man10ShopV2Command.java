@@ -99,8 +99,14 @@ public class Man10ShopV2Command extends SCommandRouter {
                         .addExplanation("プラグインをリロードする")
                         .addExplanation("")
                         .addExplanation("設定を変更したときに使用する")
-                        .addExplanation("コマンドを使用すると初期状態に戻る")
+                        .addExplanation("コマンドを使用するとサーバー起動時状態に戻る")
                         .setExecutor(new ReloadConfigCommand(plugin))
+        );
+
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("test"))
+                        .setExecutor(new TestCommand(plugin))
         );
 
     }

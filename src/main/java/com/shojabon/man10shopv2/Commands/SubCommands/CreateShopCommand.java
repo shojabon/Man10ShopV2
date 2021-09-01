@@ -3,9 +3,7 @@ package com.shojabon.man10shopv2.Commands.SubCommands;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.ConfirmationMenu;
-import com.shojabon.man10shopv2.Menus.Shop.EditableShopSelectorMenu;
-import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import org.bukkit.Material;
@@ -15,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Base64;
 import java.util.UUID;
 
 public class CreateShopCommand implements CommandExecutor {

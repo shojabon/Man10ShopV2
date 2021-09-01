@@ -1,8 +1,8 @@
 package com.shojabon.man10shopv2.Commands.SubCommands;
 
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Menus.Shop.EditableShopSelectorMenu;
-import com.shojabon.man10shopv2.Menus.Shop.ShopMainMenu;
+import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
+import com.shojabon.man10shopv2.Menus.ShopMainMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
