@@ -148,8 +148,8 @@ public class SignListeners implements @NotNull Listener {
         if(!(e.getBlock().getState() instanceof Sign)){
             return;
         }
+        Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
         SInventory.threadPool.execute(()->{
-            Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
             if(sign == null) return;
             Man10Shop shop = plugin.api.getShop(sign.shopId);
             if(shop == null) {
@@ -161,8 +161,8 @@ public class SignListeners implements @NotNull Listener {
     }
 
     public void buySign(Man10Shop shop, SignChangeEvent e){
+        Sign sign = ((Sign) e.getBlock().getState());
         plugin.getServer().getScheduler().runTask(plugin, () -> {
-            Sign sign = ((Sign) e.getBlock().getState());
 
             if(shop.shopType == Man10ShopType.BUY){
                 sign.setLine(0, "§a§l販売ショップ");

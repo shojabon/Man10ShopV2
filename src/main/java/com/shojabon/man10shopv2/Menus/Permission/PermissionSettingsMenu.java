@@ -55,11 +55,12 @@ public class PermissionSettingsMenu extends SInventory{
                 ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
                 int finalI = i;
                 menu.setOnConfirm(ee -> {
+                    target.permission = permissions[finalI];
+
                     if(!shop.setModerator(target)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    target.permission = permissions[finalI];
 
                     Man10ShopV2API.log(shop.shopId, "permissionChange." + target.uuid, permissions[finalI].name(), player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§l権限を設定しました");

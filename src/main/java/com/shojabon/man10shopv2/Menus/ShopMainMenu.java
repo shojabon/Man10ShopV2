@@ -59,7 +59,7 @@ public class ShopMainMenu extends SInventory {
         String iconName = new SStringBuilder().gold().bold().text("ショップ情報").build();
         SItemStack icon = new SItemStack(Material.OAK_SIGN).setDisplayName(iconName);
 
-        icon.addLore("§a口座残高:§e " + BaseUtils.priceString(shop.money) + "円");
+        icon.addLore("§aショップ口座残高:§e " + BaseUtils.priceString(shop.money) + "円");
         icon.addLore("§7アイテム数:§e " + BaseUtils.priceString(shop.itemCount));
 
         SInventoryItem shopInfo = new SInventoryItem(icon.build());
@@ -224,6 +224,7 @@ public class ShopMainMenu extends SInventory {
             icon.addLore("");
         }
         icon.addLore(new SStringBuilder().white().text("現金出し入れを行うことができます").build());
+        icon.addLore(new SStringBuilder().white().text("取引は電子マネーが使われます").build());
         SInventoryItem item = new SInventoryItem(icon.build());
 
         item.clickable(false);
@@ -253,8 +254,10 @@ public class ShopMainMenu extends SInventory {
     }
 
     public SInventory generateMoneyEvent(boolean deposit) {
+        String title = "出金額を入力してください";
+        if(deposit) title = "入金額を入力してください";
 
-        NumericInputMenu menu = new NumericInputMenu("入金額を入力してください", plugin);
+        NumericInputMenu menu = new NumericInputMenu( title, plugin);
         if (deposit) {
             menu.setMaxValue((int) Man10ShopV2.vault.getBalance(player.getUniqueId()));
         }
@@ -262,6 +265,10 @@ public class ShopMainMenu extends SInventory {
         menu.setOnCancel(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
         menu.setOnClose(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
         menu.setOnConfirm(integer -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限がありません");
+                return;
+            }
             if (deposit) {
                 if (Man10ShopV2.vault.getBalance(player.getUniqueId()) < integer) {
                     player.sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");

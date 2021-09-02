@@ -35,7 +35,7 @@ public class EditableShopSelectorMenu extends LargeSInventoryMenu{
 
             SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name).build());
-            icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(String.valueOf(shop.getPermission(player.getUniqueId()))).build());
+            icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(shop.moderators.get(player.getUniqueId()).getPermissionString()).build());
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);

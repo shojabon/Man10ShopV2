@@ -18,4 +18,18 @@ public class Man10ShopModerator {
         this.notificationEnabled = notificationEnabled;
     }
 
+    public String getPermissionString(){
+        switch (permission){
+            case OWNER:
+                return "オーナー";
+            case MODERATOR:
+                return "管理者";
+            case ACCOUNTANT:
+                return "会計";
+            case STORAGE_ACCESS:
+                return "倉庫編集権";
+        }
+        return "エラー";
+    }
+
 }

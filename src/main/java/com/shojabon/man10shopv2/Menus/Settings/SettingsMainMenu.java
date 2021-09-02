@@ -145,6 +145,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         item.addLore("");
         item.addLore("§f※買取ショップの場合のみ有効");
         item.addLore("§f買取数の上限を設定する");
+        item.addLore("§f買取数上限を0にすると倉庫があるだけ買い取ります");
 
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
@@ -235,7 +236,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem shopTypeSelectItem(){
         SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.shopType.name()).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(shop.shopType)).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 

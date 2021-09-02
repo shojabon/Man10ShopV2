@@ -42,7 +42,7 @@ public class PermissionSettingsMainMenu {
 
             SItemStack icon = new SItemStack(Material.PLAYER_HEAD).setHeadOwner(mod.uuid);
             icon.setDisplayName(new SStringBuilder().gold().bold().text(mod.name).build());
-            icon.addLore(new SStringBuilder().lightPurple().text("権限: ").yellow().text(mod.permission.name()).build());
+            icon.addLore(new SStringBuilder().lightPurple().text("権限: ").yellow().text(mod.getPermissionString()).build());
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
