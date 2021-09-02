@@ -46,15 +46,15 @@ public class PermissionSettingsMenu extends SInventory{
             for(int i = 0; i < slots.length; i++){
                 if(e.getRawSlot() != slots[i]) continue;
                 if(permissions[i] == target.permission) continue;
-                if(target.permission == Man10ShopPermission.OWNER && shop.ownerCount() == 1){
-                    player.sendMessage(Man10ShopV2.prefix + "§c§lオーナーは最低一人必要です");
-                    return;
-                }
 
                 //permission change confirmation
                 ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
                 int finalI = i;
                 menu.setOnConfirm(ee -> {
+                    if(target.permission == Man10ShopPermission.OWNER && shop.ownerCount() == 1){
+                        player.sendMessage(Man10ShopV2.prefix + "§c§lオーナーは最低一人必要です");
+                        return;
+                    }
                     target.permission = permissions[finalI];
 
                     if(!shop.setModerator(target)){

@@ -71,11 +71,13 @@ public class SignListeners implements @NotNull Listener {
                 confirmationMenu.setOnConfirm(ee -> {
                     if(Man10ShopV2.vault.getBalance(uuid) < signPrice){
                         e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
-                        e.getPlayer().closeInventory();
+                        confirmationMenu.close(e.getPlayer());
                     }
                     Man10ShopV2.vault.withdraw(uuid, signPrice );
                     buySign(shop, e);
                 });
+
+                confirmationMenu.setOnCancel(ee -> confirmationMenu.close(e.getPlayer()));
 
                 confirmationMenu.open(e.getPlayer());
                 return;

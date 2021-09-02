@@ -73,9 +73,7 @@ public class CreateShopCommand implements CommandExecutor {
             sender.sendMessage(Man10ShopV2.prefix + "§a§lショップを作成しました \n/" + label + " shopsで管理することができます");
             menu.close(p);
         });
-        menu.setOnCancel(e -> {
-            menu.close(p);
-        });
+        menu.setOnCancel(e -> menu.close(p));
         menu.open(p);
 
         return true;
