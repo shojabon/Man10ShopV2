@@ -161,9 +161,8 @@ public class SignListeners implements @NotNull Listener {
     }
 
     public void buySign(Man10Shop shop, SignChangeEvent e){
-        Sign sign = ((Sign) e.getBlock().getState());
         plugin.getServer().getScheduler().runTask(plugin, () -> {
-
+            Sign sign = ((Sign) e.getBlock().getState());
             if(shop.shopType == Man10ShopType.BUY){
                 sign.setLine(0, "§a§l販売ショップ");
             }else{

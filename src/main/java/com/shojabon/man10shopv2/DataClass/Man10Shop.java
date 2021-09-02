@@ -348,6 +348,10 @@ public class Man10Shop {
                 return;
             }
             SItemStack item = new SItemStack(targetItem.build().clone());
+            if(itemCount + amount > calculateCurrentStorageSize(0)){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
+                return;
+            }
             if(!p.getInventory().containsAtLeast(targetItem.build(), amount*item.getAmount())){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l買い取るためのアイテムを持っていません");
                 return;
