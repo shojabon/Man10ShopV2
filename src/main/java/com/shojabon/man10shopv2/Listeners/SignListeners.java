@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.ShopActionMenu;
@@ -15,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +38,7 @@ public class SignListeners implements @NotNull Listener {
         if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")) return;
 
         //permission to use
-        if(!e.getPlayer().hasPermission("man10shop.sign.create")){
+        if(!e.getPlayer().hasPermission("man10shopv2.sign.create")){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
             return;
         }
@@ -96,13 +98,15 @@ public class SignListeners implements @NotNull Listener {
             plugin.api.deleteSign(sign);
             return;
         }
-        if(!shop.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(!shop.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR) && !e.getPlayer().hasPermission("man10shopv2.sign.break.bypass")){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l看板を破壊する権限を持っていません");
             e.setCancelled(true);
             return;
         }
-        plugin.api.deleteSign(sign);
-        e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を破壊しました");
+        SInventory.threadPool.execute(()-> {
+            plugin.api.deleteSign(sign);
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を破壊しました");
+        });
     }
 
     @EventHandler
@@ -111,8 +115,13 @@ public class SignListeners implements @NotNull Listener {
         if(e.getClickedBlock() == null) return;
         if(!(e.getClickedBlock().getState() instanceof Sign)) return;
 
+        Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
+        if(sign == null) return;
+        Man10Shop shop = plugin.api.getShop(sign.shopId);
+        if(shop == null) return;
+
         //permission to use
-        if(!e.getPlayer().hasPermission("man10shop.use")){
+        if(!e.getPlayer().hasPermission("man10shopv2.use")){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
             return;
         }
@@ -126,16 +135,29 @@ public class SignListeners implements @NotNull Listener {
             return;
         }
 
-        Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
-        if(sign == null) return;
-        Man10Shop shop = plugin.api.getShop(sign.shopId);
-        if(shop == null) return;
         ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
         if(!shop.settings.getShopEnabled()){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return;
         }
         menu.open(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onSignBreak(BlockPhysicsEvent e){
+        if(!(e.getBlock().getState() instanceof Sign)){
+            return;
+        }
+        SInventory.threadPool.execute(()->{
+            Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
+            if(sign == null) return;
+            Man10Shop shop = plugin.api.getShop(sign.shopId);
+            if(shop == null) {
+                plugin.api.deleteSign(sign);
+                return;
+            }
+            plugin.api.deleteSign(sign);
+        });
     }
 
     public void buySign(Man10Shop shop, SignChangeEvent e){
@@ -158,7 +180,9 @@ public class SignListeners implements @NotNull Listener {
             sign.update(true);
 
             Location l = e.getBlock().getLocation();
-            plugin.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+            SInventory.threadPool.execute(() -> {
+                plugin.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+            });
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を作成しました");
             e.getPlayer().closeInventory();
         });

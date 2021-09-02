@@ -5,6 +5,5 @@ api-version: 1.17
 authors: [ Sho0 ]
 depend:
   - Vault
-  - Man10Bank
 commands:
   mshop:

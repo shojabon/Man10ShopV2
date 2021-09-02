@@ -140,7 +140,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
     }
 
     public SInventoryItem sellCapItem(){
-        SItemStack item = new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("購入数制限").build());
+        SItemStack item = new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("買取制限").build());
         item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getStorageCap()).build());
         item.addLore("");
         item.addLore("§f※買取ショップの場合のみ有効");

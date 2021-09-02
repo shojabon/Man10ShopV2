@@ -87,7 +87,7 @@ public class Man10ShopSettings {
 
     public int getBoughtStorageUnits(){
         String currentSetting = getSetting("storage.bought");
-        if(!BaseUtils.isInt(currentSetting)) return 1;
+        if(!BaseUtils.isInt(currentSetting)) return Man10ShopV2.config.getInt("itemStorage.defaultUnits");
         return Integer.parseInt(currentSetting);
     }
 

@@ -18,11 +18,8 @@ public class TestCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        SLongTextInput inputPrompt = new SLongTextInput("ショップ名を入力してください", plugin);
-        inputPrompt.setOnConfirm(e -> {
-            sender.sendMessage(e);
-        });
-        inputPrompt.open((Player) sender);
+        plugin.reloadConfig();
+        sender.sendMessage(plugin.getConfig().getString("sign.price"));
         return true;
     }
 }

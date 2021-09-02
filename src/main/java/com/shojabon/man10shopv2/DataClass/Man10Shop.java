@@ -200,6 +200,7 @@ public class Man10Shop {
         payload.put("uuid", moderator.uuid.toString());
         payload.put("shop_id", shopId.toString());
         payload.put("permission", moderator.permission.name());
+        payload.put("notification", moderator.notificationEnabled);
         if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
         moderators.put(moderator.uuid, moderator);
         Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
