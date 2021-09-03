@@ -62,7 +62,7 @@ public class VaultAPI {
         EconomyResponse resp = economy.withdrawPlayer(p,money);
         if(resp.transactionSuccess()){
             if(p.isOnline()) {
-                p.getPlayer().sendMessage(ChatColor.YELLOW + "$" + money + "支払いました");
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー$" + money + "支払いました");
             }
             return true;
         }
@@ -81,7 +81,7 @@ public class VaultAPI {
         EconomyResponse resp = economy.depositPlayer(p,money);
         if(resp.transactionSuccess()){
             if(p.isOnline()){
-                p.getPlayer().sendMessage(ChatColor.YELLOW + "$"+money+"受取りました");
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー$"+money+"受取りました");
             }
             return true;
         }
@@ -119,39 +119,5 @@ public class VaultAPI {
             return true;
         }
         return  false;
-    }
-
-
-    public String complexJpyBalForm(Long val){
-        if(val < 10000){
-            return String.valueOf(val);
-        }
-        if(val < 100000000){
-            long man = val/10000;
-            String left = String.valueOf(val).substring(String.valueOf(val).length() - 4);
-            if(Long.parseLong(left) == 0){
-                return man + "万";
-            }
-            return man + "万" + Long.parseLong(left);
-        }
-        if(val < 100000000000L){
-            long oku = val/100000000;
-            String man = String.valueOf(val).substring(String.valueOf(val).length() - 8);
-            String te = man.substring(0, 4);
-            String left = String.valueOf(val).substring(String.valueOf(val).length() - 4);
-            if(Long.parseLong(te)  == 0){
-                if( Long.parseLong(left) == 0){
-                    return oku + "億";
-                }else{
-                    return oku + "億"+ Long.parseLong(left);
-                }
-            }else{
-                if( Long.parseLong(left) == 0){
-                    return oku + "億" + Long.parseLong(te) + "万";
-                }
-            }
-            return oku + "億" + Long.parseLong(te) + "万" + Long.parseLong(left);
-        }
-        return "Null";
     }
 }

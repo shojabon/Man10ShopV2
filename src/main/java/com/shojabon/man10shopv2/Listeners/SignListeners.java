@@ -10,8 +10,14 @@ import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.ShopActionMenu;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.FaceAttachable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -19,6 +25,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.material.Attachable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -138,6 +145,18 @@ public class SignListeners implements @NotNull Listener {
         }
 
         ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+        if(shop.shopType == Man10ShopType.BUY && shop.itemCount == 0){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップに在庫がありません");
+            return;
+        }
+        if(shop.shopType == Man10ShopType.SELL && shop.money < shop.price){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
+            return;
+        }
+        if(shop.currentlyEditingStorage){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
+            return;
+        }
         if(!shop.settings.getShopEnabled()){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return;
@@ -147,11 +166,29 @@ public class SignListeners implements @NotNull Listener {
 
     @EventHandler
     public void onSignBreak(BlockPhysicsEvent e){
-        if(!(e.getBlock().getState() instanceof Sign)){
+        if(e.isCancelled())return;
+        Block source = e.getSourceBlock();
+        Block block = e.getBlock();
+        if(source.getType() != Material.AIR){
             return;
         }
-        Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
+        if(!(block.getState() instanceof Sign)){
+            return;
+        }
+        if(block.getLocation().equals(e.getSourceBlock().getLocation())){
+            return;
+        }
+        if(block.getState().getBlockData() instanceof org.bukkit.block.data.type.WallSign){
+            org.bukkit.block.data.type.WallSign signData = (org.bukkit.block.data.type.WallSign) block.getState().getBlockData();
+            if(!block.getRelative(signData.getFacing().getOppositeFace()).equals(source)) return;
+        }else if(block.getState().getBlockData() instanceof org.bukkit.block.data.type.Sign){
+            if(!block.getRelative(BlockFace.DOWN).equals(source)) return;
+        }
+
+
         SInventory.threadPool.execute(()->{
+            Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
+
             if(sign == null) return;
             Man10Shop shop = plugin.api.getShop(sign.shopId);
             if(shop == null) {

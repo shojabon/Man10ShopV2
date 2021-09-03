@@ -140,8 +140,6 @@ public class Man10ShopV2API {
     }
 
     public Man10ShopSign getSign(Location location){
-        Block b = location.getBlock();
-        if(!(b.getState() instanceof Sign)) return null;
         String locationId = generateLocationId(location);
         if(signs.containsKey(locationId)) return signs.get(locationId);
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE location_id = '" + locationId + "' LIMIT 1;");
@@ -165,6 +163,7 @@ public class Man10ShopV2API {
     }
 
     public boolean deleteSign(Man10ShopSign sign){
+        System.out.println("DELETING " + sign.generateLocationId());
 
         boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_signs WHERE location_id = '" + sign.generateLocationId() + "'");
         if(!result) return false;

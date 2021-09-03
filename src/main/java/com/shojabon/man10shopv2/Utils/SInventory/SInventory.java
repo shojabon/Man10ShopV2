@@ -56,8 +56,6 @@ public abstract class SInventory implements Listener {
         this.title = title;
         this.rows = inventoryRows;
         this.plugin = plugin;
-
-        activeInventory = plugin.getServer().createInventory(null, this.rows*9, title);
     }
 
     //set items
@@ -125,7 +123,9 @@ public abstract class SInventory implements Listener {
     }
 
     public void renderInventory(){
-        if(activeInventory == null) return;
+        if(activeInventory == null){
+            activeInventory = plugin.getServer().createInventory(null, this.rows*9, title);
+        }
         for(int key: items.keySet()){
             activeInventory.setItem(key, items.get(key).getItemStack());
         }

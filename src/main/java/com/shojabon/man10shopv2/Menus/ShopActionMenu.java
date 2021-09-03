@@ -30,10 +30,14 @@ public class ShopActionMenu extends SInventory{
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
         if(shop.shopType == Man10ShopType.BUY){
             builder.text("§a§lを買う");
+            builder.text("残り在庫 " + shop.itemCount).text("個");
         }else{
             builder.text("§c§lを売る");
+            int buying = shop.calculateCurrentStorageSize(0);
+            if(shop.settings.getStorageCap() != 0) buying = shop.settings.getStorageCap();
+            builder.text("残り買取 " + (buying - shop.itemCount)).text("個");
         }
-        setTitle(builder.toString());
+        setTitle(builder.build());
 
     }
 
