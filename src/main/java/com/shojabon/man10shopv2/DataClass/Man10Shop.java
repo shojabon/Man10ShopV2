@@ -77,16 +77,16 @@ public class Man10Shop {
     //storage
 
     public boolean removeItemCount(int count){
+        itemCount = itemCount - count;
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = item_count - " + count + " WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
-        itemCount = itemCount - count;
         return true;
     }
 
     public boolean addItemCount(int count){
+        itemCount = itemCount + count;
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = item_count + " + count + " WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
-        itemCount = itemCount + count;
         //log here
         return true;
     }
@@ -94,17 +94,17 @@ public class Man10Shop {
     //money storage
 
     public boolean addMoney(int value){
+        money = money + value;
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET money = money + " + value + " WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
-        money = money + value;
         //log here
         return true;
     }
 
     public boolean removeMoney(int value){
+        money = money - value;
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET money = money - " + value + " WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
-        money = money - value;
         //log here
         return true;
     }
@@ -126,9 +126,9 @@ public class Man10Shop {
 
     public boolean setTargetItem(ItemStack item){
         SItemStack sItem = new SItemStack(item);
+        targetItem = sItem;
         boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64() + "', target_item_hash ='" + sItem.getItemTypeMD5() + "' WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
-        targetItem = sItem;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
     }
@@ -278,10 +278,10 @@ public class Man10Shop {
 
     //shop type
     public boolean setShopType(Man10ShopType type){
+        shopType = type;
         if(!Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET shop_type ='" + type.name() + "' WHERE shop_id = '" + shopId + "'")){
             return false;
         }
-        shopType = type;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
     }

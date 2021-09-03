@@ -145,18 +145,32 @@ public class SignListeners implements @NotNull Listener {
         }
 
         ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+
+        //no items (buy)
         if(shop.shopType == Man10ShopType.BUY && shop.itemCount == 0){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップに在庫がありません");
             return;
         }
+
+        //no money (sell)
         if(shop.shopType == Man10ShopType.SELL && shop.money < shop.price){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
             return;
         }
+
+        //no money (sell)
+        if(shop.shopType == Man10ShopType.SELL && shop.settings.getStorageCap() != 0 && shop.itemCount >= shop.settings.getStorageCap()){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
+            return;
+        }
+
+        //editing storage
         if(shop.currentlyEditingStorage){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
             return;
         }
+
+        //shop disabled
         if(!shop.settings.getShopEnabled()){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return;
