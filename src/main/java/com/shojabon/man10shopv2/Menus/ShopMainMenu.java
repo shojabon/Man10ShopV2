@@ -140,6 +140,11 @@ public class ShopMainMenu extends SInventory {
             menu.setOnOutClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin)));
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
+            //editing storage
+            if(shop.currentlyEditingStorage){
+                player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
+                return;
+            }
 
             moveToMenu(player, menu);
         });
