@@ -44,14 +44,18 @@ public class TargetItemSelectorMenu extends SInventory{
             e.setCancelled(true);
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory().getType() == InventoryType.CHEST) return;
-            ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem();
+            ItemStack newTargetItem = new SItemStack(e.getCurrentItem()).getTypeItem(true);
             if(newTargetItem == null) return;
+            if(shop.currentlyEditingStorage){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l現在倉庫編集中です");
+                return;
+            }
 
             SInventory.threadPool.execute(()->{
                 boolean changeResult = shop.setTargetItem(player, newTargetItem);
                 if(!changeResult) return;
 
-                Man10ShopV2API.log(shop.shopId, "itemTypeChange", new SItemStack(newTargetItem).getItemTypeMD5(), player.getName(), player.getUniqueId()); //log
+                Man10ShopV2API.log(shop.shopId, "itemTypeChange", new SItemStack(newTargetItem).getItemTypeMD5(true), player.getName(), player.getUniqueId()); //log
                 player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムが変更されました");
                 renderMenu();
             });

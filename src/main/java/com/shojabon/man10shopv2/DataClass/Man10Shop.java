@@ -117,7 +117,7 @@ public class Man10Shop {
             return false;
         }
         SItemStack sItem = new SItemStack(item);
-        if(!sItem.getItemTypeMD5().equals(targetItem.getItemTypeMD5()) && itemCount != 0){
+        if(!sItem.getItemTypeMD5(true).equals(targetItem.getItemTypeMD5(true)) && itemCount != 0){
             p.sendMessage(Man10ShopV2.prefix + "§c§lショップ在庫があるときは取引アイテムを変更することはできません");
             return false;
         }
@@ -127,7 +127,7 @@ public class Man10Shop {
     public boolean setTargetItem(ItemStack item){
         SItemStack sItem = new SItemStack(item);
         targetItem = sItem;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64() + "', target_item_hash ='" + sItem.getItemTypeMD5() + "' WHERE shop_id = '" + shopId + "'");
+        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64() + "', target_item_hash ='" + sItem.getItemTypeMD5(true) + "' WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
@@ -296,6 +296,20 @@ public class Man10Shop {
     }
 
     //actions
+
+//    public boolean playerHasEnoughItems(Player p,int amount){
+//        HashMap<String, Integer> invCount = new HashMap<>();
+//        for(ItemStack item: p.getInventory().getContents()){
+//            String hash = new SItemStack(item).getItemTypeMD5();
+//            if(!invCount.containsKey(hash)) invCount.put(hash, 0);
+//            if(item == null) continue;
+//            int currentCount = invCount.get(hash);
+//            invCount.put(hash, currentCount + item.getAmount());
+//        }
+//        if(!invCount.containsKey(targetItem.getItemTypeMD5())) return false;
+//        int result = invCount.get(targetItem.getItemTypeMD5());
+//        return result >= amount;
+//    }
 
     public void performAction(Player p, int amount){
         if(currentlyEditingStorage){

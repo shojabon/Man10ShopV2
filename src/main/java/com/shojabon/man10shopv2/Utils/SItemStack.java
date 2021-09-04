@@ -95,11 +95,11 @@ public class SItemStack {
 
     //ItemStack identification functions
 
-    public ItemStack getTypeItem(){
+    public ItemStack getTypeItem(boolean includeDurability){
         ItemStack clone = this.item.clone();
 
         //set durability to 0
-        if(clone.hasItemMeta()){
+        if(!includeDurability && clone.hasItemMeta()){
             ItemMeta itemMeta = clone.getItemMeta();
             ((Damageable) itemMeta).setDamage(0);
             clone.setItemMeta(itemMeta);
@@ -109,13 +109,22 @@ public class SItemStack {
         return clone;
     }
 
+    public ItemStack getTypeItem(){
+        return getTypeItem(false);
+    }
+
     public String getItemTypeBase64(){
-        return getBase64(this.getTypeItem());
+        return getBase64(this.getTypeItem(false));
     }
 
     public String getItemTypeMD5(){
-        return this.getMD5(this.getTypeItem());
+        return this.getMD5(this.getTypeItem(false));
     }
+
+    public String getItemTypeMD5(boolean includeDurability){
+        return this.getMD5(this.getTypeItem(includeDurability));
+    }
+
 
     //utils
 

@@ -56,7 +56,7 @@ public class ItemStorageMenu extends SInventory{
         for(int i = 0; i < 6*9; i++){
             ItemStack item = activeInventory.getItem(i);
             if(item == null) continue;
-            if(!new SItemStack(item).getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5())) continue;
+            if(!new SItemStack(item).getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true))) continue;
             result += item.getAmount();
         }
         return result;
@@ -67,7 +67,7 @@ public class ItemStorageMenu extends SInventory{
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory() == null) return;
             SItemStack item = new SItemStack(e.getCurrentItem());
-            if(!item.getItemTypeMD5().equals(shop.targetItem.getItemTypeMD5()) || item.hasDamage()){
+            if(!item.getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true))){
                 e.setCancelled(true);
                 return;
             }
