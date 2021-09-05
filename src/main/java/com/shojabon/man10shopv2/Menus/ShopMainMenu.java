@@ -136,15 +136,24 @@ public class ShopMainMenu extends SInventory {
 
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
-            menu.setOnInClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin)));
-            menu.setOnOutClicked(ee -> menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin)));
+            menu.setOnInClicked(ee -> {
+                //editing storage
+                if(shop.currentlyEditingStorage){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
+                    return;
+                }
+                menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin));
+            });
+            menu.setOnOutClicked(ee -> {
+                //editing storage
+                if(shop.currentlyEditingStorage){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
+                    return;
+                }
+                menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin));
+            });
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
-            //editing storage
-            if(shop.currentlyEditingStorage){
-                player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
-                return;
-            }
 
             moveToMenu(player, menu);
         });
