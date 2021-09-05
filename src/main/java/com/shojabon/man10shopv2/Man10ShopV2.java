@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.Commands.Man10ShopV2Command;
+import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Listeners.SignListeners;
 import com.shojabon.man10shopv2.Utils.MySQL.ThreadedMySQLAPI;
 import com.shojabon.man10shopv2.Utils.SCommandRouter.SCommandArgument;
@@ -40,6 +41,7 @@ public final class Man10ShopV2 extends JavaPlugin {
         Man10ShopV2Command command = new Man10ShopV2Command(this);
         getCommand("mshop").setExecutor(command);
         getCommand("mshop").setTabCompleter(command);
+
     }
 
     @Override
