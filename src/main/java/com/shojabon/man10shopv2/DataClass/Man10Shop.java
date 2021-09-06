@@ -260,7 +260,7 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§c§l倉庫ユニットの上限を超えました");
             return false;
         }
-        storageSize = calculateCurrentStorageSize(0);
+        storageSize = calculateCurrentStorageSize(1);
         if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < calculateNextUnitPrice()){
             p.sendMessage(Man10ShopV2.prefix + "§c§lお金が足りません");
             return false;

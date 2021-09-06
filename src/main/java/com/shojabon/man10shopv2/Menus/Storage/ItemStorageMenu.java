@@ -31,6 +31,7 @@ public class ItemStorageMenu extends SInventory{
     }
 
     public void renderMenu(){
+        if(!fillItem) return;
         int nextSlot = 0;
 
         int stacks = shop.itemCount/shop.targetItem.getMaxStackSize();
