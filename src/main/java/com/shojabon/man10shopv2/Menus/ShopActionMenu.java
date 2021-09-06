@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.Consumer;
 
@@ -51,6 +52,11 @@ public class ShopActionMenu extends SInventory{
         renderButtons();
 
         renderInventory();
+
+        setOnClickEvent(e -> {
+            if(e.getClickedInventory() == null) return;
+            if(e.getClickedInventory().getType() == InventoryType.PLAYER)e.setCancelled(true);
+        });
 
         setAfterInventoryOpenEvents(e -> inventoryGroup.put(player.getUniqueId(), shop.shopId));
     }
