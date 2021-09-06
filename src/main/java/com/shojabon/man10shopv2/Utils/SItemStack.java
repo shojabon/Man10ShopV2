@@ -117,6 +117,10 @@ public class SItemStack {
         return getBase64(this.getTypeItem(false));
     }
 
+    public String getItemTypeBase64(boolean includeDurability){
+        return getBase64(this.getTypeItem(includeDurability));
+    }
+
     public String getItemTypeMD5(){
         return this.getMD5(this.getTypeItem(false));
     }

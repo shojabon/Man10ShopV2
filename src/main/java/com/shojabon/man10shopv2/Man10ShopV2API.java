@@ -89,7 +89,7 @@ public class Man10ShopV2API {
         payload.put("item_count", shop.itemCount);
         payload.put("price", shop.price);
         payload.put("money", shop.money);
-        payload.put("target_item", shop.targetItem.getItemTypeBase64());
+        payload.put("target_item", shop.targetItem.getItemTypeBase64(true));
         payload.put("target_item_hash", shop.targetItem.getItemTypeMD5(true));
         payload.put("target_item_count", 1);
         payload.put("shop_type", shop.shopType.name());

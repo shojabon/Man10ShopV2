@@ -127,7 +127,7 @@ public class Man10Shop {
     public boolean setTargetItem(ItemStack item){
         SItemStack sItem = new SItemStack(item);
         targetItem = sItem;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64() + "', target_item_hash ='" + sItem.getItemTypeMD5(true) + "' WHERE shop_id = '" + shopId + "'");
+        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64(true) + "', target_item_hash ='" + sItem.getItemTypeMD5(true) + "' WHERE shop_id = '" + shopId + "'");
         if(!result) return false;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
