@@ -45,6 +45,8 @@ public class Man10Shop {
 
     public boolean currentlyEditingStorage = false;
 
+    public HashMap<UUID, Long> coolDownMap = new HashMap<>();
+
     public Man10Shop(UUID shopId,
                      String name,
                      int itemCount,
@@ -316,6 +318,11 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在店主がショップの在庫を移動させています");
             return;
         }
+        if(checkCoolDown(p)){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l" + settings.getCoolDownTime() + "秒の取引クールダウン中です");
+            return;
+        }
+
         if(shopType == Man10ShopType.BUY){
             if(itemCount <= 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
@@ -354,6 +361,7 @@ public class Man10Shop {
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
             notifyModerators(amount*item.getAmount());
+            setCoolDown(p); //set coolDown
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
@@ -395,6 +403,9 @@ public class Man10Shop {
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
             notifyModerators(amount*item.getAmount());
+            setCoolDown(p); //set coolDown
+
+
         }else if(shopType == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
@@ -453,6 +464,22 @@ public class Man10Shop {
             if(!p.isOnline()) continue;
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + name + "で" + amount + "個のアイテム取引がありました");
         }
+    }
+
+    //coolDown
+
+    public boolean checkCoolDown(Player p){
+        int coolDown = settings.getCoolDownTime();
+        if(coolDown == 0) return false;
+        if(!coolDownMap.containsKey(p.getUniqueId())) coolDownMap.put(p.getUniqueId(), 0L);
+        long currentTime = System.currentTimeMillis() / 1000L;
+
+        return currentTime - coolDownMap.get(p.getUniqueId()) < coolDown;
+    }
+
+    public void setCoolDown(Player p){
+        long currentTime = System.currentTimeMillis() / 1000L;
+        coolDownMap.put(p.getUniqueId(), currentTime);
     }
 
 

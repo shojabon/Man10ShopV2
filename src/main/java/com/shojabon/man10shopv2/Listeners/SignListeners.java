@@ -175,6 +175,12 @@ public class SignListeners implements @NotNull Listener {
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return;
         }
+
+        //if player is in coolDown
+        if(shop.checkCoolDown(e.getPlayer())){
+            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l" + shop.settings.getCoolDownTime() + "秒の取引クールダウン中です");
+            return;
+        }
         menu.open(e.getPlayer());
     }
 

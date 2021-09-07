@@ -43,6 +43,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         items.add(buyStorageItem());
         items.add(sellCapItem());
         items.add(singleTransactionItem());
+        items.add(coolDownTimeItem());
         items.add(setDeleteShopItem());
 
         setItems(items);
@@ -169,6 +170,40 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
                 if(shop.settings.setStorageCap(newValue)){
                     Man10ShopV2API.log(shop.shopId, "setStorageCap", newValue, player.getName(), player.getUniqueId()); //log
+                }
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+            });
+            moveToMenu(player, menu);
+
+        });
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem coolDownTimeItem(){
+        SItemStack item = new SItemStack(Material.CLOCK).setDisplayName(new SStringBuilder().yellow().text("取引クールダウン").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getCoolDownTime()).text("秒").build());
+        item.addLore("");
+        item.addLore("§f取引を制限する");
+        item.addLore("§f設定秒に1回のみしか取引できなくなります");
+        item.addLore("§f0の場合はクールダウンなし");
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setEvent(e -> {
+
+            //number input menu
+            NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引クールダウン").build(), plugin);
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnConfirm(newValue -> {
+                if(newValue < 0){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lクールダウンタイムは正の数でなくてはならない");
+                    return;
+                }
+
+                if(shop.settings.setCoolDown(newValue)){
+                    Man10ShopV2API.log(shop.shopId, "setCoolDownTime", newValue, player.getName(), player.getUniqueId()); //log
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
