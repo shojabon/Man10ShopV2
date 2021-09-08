@@ -8,7 +8,9 @@ import com.shojabon.man10shopv2.Menus.ShopMainMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,6 +71,11 @@ public class ItemStorageMenu extends SInventory{
             if(e.getClickedInventory() == null) return;
             SItemStack item = new SItemStack(e.getCurrentItem());
             if(!item.getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true))){
+                e.setCancelled(true);
+                return;
+            }
+            //if bundle and right click
+            if(item.getType() == Material.BUNDLE && e.getAction() == InventoryAction.PICKUP_HALF) {
                 e.setCancelled(true);
                 return;
             }
