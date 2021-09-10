@@ -41,7 +41,6 @@ public final class Man10ShopV2 extends JavaPlugin {
         Man10ShopV2Command command = new Man10ShopV2Command(this);
         getCommand("mshop").setExecutor(command);
         getCommand("mshop").setTabCompleter(command);
-
     }
 
     @Override
