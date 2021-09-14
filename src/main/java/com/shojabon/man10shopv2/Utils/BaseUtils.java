@@ -60,5 +60,4 @@ public class BaseUtils {
         return "買取ショップ";
     }
 
-
 }

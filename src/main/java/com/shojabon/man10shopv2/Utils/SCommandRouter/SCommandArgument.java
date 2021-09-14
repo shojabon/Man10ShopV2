@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class SCommandArgument {
     ArrayList<String> alias = new ArrayList<>();

@@ -313,25 +313,73 @@ public class Man10Shop {
 //        return result >= amount;
 //    }
 
-    public void performAction(Player p, int amount){
+    public boolean allowedToUseShop(Player p){
+        //permission to use
+        if(!p.hasPermission("man10shopv2.use")){
+            p.sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
+            return false;
+        }
+
+        //allowed worlds
+        if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(p.getWorld().getName())) return false;
+
+        //if plugin disabled
+        if(!Man10ShopV2.config.getBoolean("pluginEnabled")){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このプラグインは停止中です");
+            return false;
+        }
+
+        //editing storage
         if(currentlyEditingStorage){
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在店主がショップの在庫を移動させています");
-            return;
+            return false;
         }
+
+        //shop disabled
+        if(!settings.getShopEnabled()){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
+            return false;
+        }
+
+        //if player has permission
+        if(settings.getAllowedPermission() != null && !p.hasPermission("man10shopv2.use." + settings.getAllowedPermission())){
+            p.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのショップを使う権限がありません");
+            return false;
+        }
+
+        //if player is in coolDown
         if(checkCoolDown(p)){
             p.sendMessage(Man10ShopV2.prefix + "§c§l" + settings.getCoolDownTime() + "秒の取引クールダウン中です");
-            return;
+            return false;
         }
 
         if(shopType == Man10ShopType.BUY){
             if(itemCount <= 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
-                return;
+                return false;
             }
-            if(p.getInventory().firstEmpty() == -1){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lインベントリに空きがありません");
-                return;
+            //no items (buy)
+        }else{
+            //no money (sell)
+            if(money < price){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
+                return false;
             }
+
+            //no money (sell)
+            if(settings.getStorageCap() != 0 && itemCount >= settings.getStorageCap()){
+                p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void performAction(Player p, int amount){
+
+        if(!allowedToUseShop(p)) return;
+
+        if(shopType == Man10ShopType.BUY){
             if(amount > itemCount){
                 amount = itemCount;
             }

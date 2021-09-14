@@ -4,6 +4,7 @@ import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

@@ -3,14 +3,12 @@ package com.shojabon.man10shopv2.Utils.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class MySQLAPI {

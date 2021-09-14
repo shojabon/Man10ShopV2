@@ -1,7 +1,5 @@
 package com.shojabon.man10shopv2.Utils.SInventory.ToolMenu;
 
-import com.shojabon.man10shopv2.DataClass.Man10Shop;
-import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
@@ -16,16 +14,14 @@ import java.util.function.Consumer;
 
 public class OnlinePlayerSelectorMenu extends LargeSInventoryMenu{
 
-    Man10ShopV2 plugin;
     Player player;
     Consumer<Player> onClick = null;
 
     ArrayList<UUID> exceptions = new ArrayList<>();
 
-    public OnlinePlayerSelectorMenu(Player p, Man10ShopV2 plugin){
+    public OnlinePlayerSelectorMenu(Player p, JavaPlugin plugin){
         super(new SStringBuilder().aqua().bold().text("オンラインプレイヤー一覧").build(), plugin);
         this.player = p;
-        this.plugin = plugin;
     }
 
     public void setOnClick(Consumer<Player> event){

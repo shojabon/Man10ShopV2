@@ -35,14 +35,19 @@ public class Man10ShopSettings {
         return null;
     }
 
+    public boolean deleteSetting(String key){
+        boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_settings WHERE unique_setting_hash = '" + calculateUniqueSettingsHash(key) + "';");
+        if(!result) return false;
+        settings.remove(key);
+        return true;
+    }
+
     public boolean setSetting(String key, String value){
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shopId);
         payload.put("unique_setting_hash", calculateUniqueSettingsHash(key));
         payload.put("key", key);
         payload.put("value", value);
-
-        System.out.println("DEBUGGER " + MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
 
         boolean result = Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
         if(!result) return false;
@@ -140,6 +145,20 @@ public class Man10ShopSettings {
     public boolean setCoolDown(int time){
         if(getCoolDownTime() == time) return true;
         return setSetting("shop.coolDown", time);
+    }
+
+    //-------------------- allowed permission ------------------
+
+    public String getAllowedPermission(){
+        return getSetting("shop.permission.allowed");
+    }
+
+    public boolean setAllowedPermission(String permission){
+        if(getAllowedPermission() != null) {
+            if(getAllowedPermission().equalsIgnoreCase(permission)) return true;
+        }
+        if(permission.equalsIgnoreCase("")) return deleteSetting("shop.permission.allowed");
+        return setSetting("shop.permission.allowed", permission);
     }
 
 

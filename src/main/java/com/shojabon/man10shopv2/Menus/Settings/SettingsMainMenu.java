@@ -44,6 +44,11 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         items.add(sellCapItem());
         items.add(singleTransactionItem());
         items.add(coolDownTimeItem());
+        items.add(setAllowedPermissionItem());
+
+
+
+
         items.add(setDeleteShopItem());
 
         setItems(items);
@@ -71,6 +76,46 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                         return;
                     }
                     player.sendMessage(Man10ShopV2.prefix + "§a§lショップ名を変更しました");
+                });
+            });
+
+            textInput.setOnCancel(ee -> player.sendMessage(Man10ShopV2.prefix + "§c§lキャンセルしました"));
+
+
+            textInput.open(player);
+            close(player);
+        });
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem setAllowedPermissionItem(){
+        SItemStack item = new SItemStack(Material.IRON_DOOR).setDisplayName(new SStringBuilder().gold().text("ショップを使用可能な権限を設定する").build());
+        SStringBuilder currentSetting = new SStringBuilder().lightPurple().text("現在の設定: ").yellow();
+        if(shop.settings.getAllowedPermission() == null){
+            currentSetting.text("なし");
+        }else{
+            currentSetting.text("man10shopv2.use." + shop.settings.getAllowedPermission());
+        }
+        item.addLore(currentSetting.build());
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setAsyncEvent(e -> {
+
+            //text input
+            SLongTextInput textInput = new SLongTextInput("§d§l権限を入力してください man10shopv2.use.XXXX 空白の場合はなし", plugin);
+            textInput.setOnConfirm(permissionName -> {
+                if(permissionName.length() > 64){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l権限は64文字以内でなくてはなりません");
+                    return;
+                }
+                threadPool.execute(() -> {
+                    if(!shop.settings.setAllowedPermission(permissionName)){
+                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        return;
+                    }
+                    player.sendMessage(Man10ShopV2.prefix + "§a§l権限を変更しました");
                 });
             });
 

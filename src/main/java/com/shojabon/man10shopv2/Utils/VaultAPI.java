@@ -48,7 +48,7 @@ public class VaultAPI {
     public void showBalance(UUID uuid){
         OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
         double money = getBalance(uuid);
-        p.getPlayer().sendMessage(ChatColor.YELLOW + "あなたの所持金は$" + money);
+        p.getPlayer().sendMessage(ChatColor.YELLOW + "あなたの所持金は" + money + "円です");
     }
     /////////////////////////////////////
     //      引き出し
@@ -62,7 +62,7 @@ public class VaultAPI {
         EconomyResponse resp = economy.withdrawPlayer(p,money);
         if(resp.transactionSuccess()){
             if(p.isOnline()) {
-                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー$" + money + "支払いました");
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー" + money + "円支払いました");
             }
             return true;
         }
@@ -81,7 +81,7 @@ public class VaultAPI {
         EconomyResponse resp = economy.depositPlayer(p,money);
         if(resp.transactionSuccess()){
             if(p.isOnline()){
-                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー$"+money+"受取りました");
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "電子マネー"+money+"円受取りました");
             }
             return true;
         }

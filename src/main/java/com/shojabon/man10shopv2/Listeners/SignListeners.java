@@ -129,58 +129,12 @@ public class SignListeners implements @NotNull Listener {
         Man10Shop shop = plugin.api.getShop(sign.shopId);
         if(shop == null) return;
 
-        //permission to use
-        if(!e.getPlayer().hasPermission("man10shopv2.use")){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
-            return;
-        }
 
-        //allowed world
-        if(!Man10ShopV2.config.getStringList("enabledWorlds").contains(e.getClickedBlock().getWorld().getName())) return;
-
-        //if plugin disabled
-        if(!Man10ShopV2.config.getBoolean("pluginEnabled")){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このプラグインは停止中です");
-            return;
-        }
 
         ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
 
-        //no items (buy)
-        if(shop.shopType == Man10ShopType.BUY && shop.itemCount == 0){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップに在庫がありません");
-            return;
-        }
+        if(!shop.allowedToUseShop(e.getPlayer())) return;
 
-        //no money (sell)
-        if(shop.shopType == Man10ShopType.SELL && shop.money < shop.price){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
-            return;
-        }
-
-        //no money (sell)
-        if(shop.shopType == Man10ShopType.SELL && shop.settings.getStorageCap() != 0 && shop.itemCount >= shop.settings.getStorageCap()){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
-            return;
-        }
-
-        //editing storage
-        if(shop.currentlyEditingStorage){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
-            return;
-        }
-
-        //shop disabled
-        if(!shop.settings.getShopEnabled()){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
-            return;
-        }
-
-        //if player is in coolDown
-        if(shop.checkCoolDown(e.getPlayer())){
-            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l" + shop.settings.getCoolDownTime() + "秒の取引クールダウン中です");
-            return;
-        }
         menu.open(e.getPlayer());
     }
 
