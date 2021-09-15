@@ -28,6 +28,9 @@ public class MySQLCachedResultSet{
     public double getDouble(String colName){
         return (Double) result.get(colName);
     }
+    public long getLong(String colName){
+        return (Long) result.get(colName);
+    }
 
     public Object getObject(String colName) {
         return result.get(colName);

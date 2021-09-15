@@ -43,6 +43,7 @@ public class Man10Shop {
     public boolean currentlyEditingStorage = false;
 
     public HashMap<UUID, Long> coolDownMap = new HashMap<>();
+    public HashMap<UUID, LinkedList<Man10ShopLogObject>> perMinuteCoolDownMap = new HashMap<>();
 
     public Man10Shop(UUID shopId,
                      String name,
@@ -69,6 +70,7 @@ public class Man10Shop {
 
         loadPermissions();
         loadSigns();
+        loadPerMinuteMap();
         storageSize = calculateCurrentStorageSize(0);
     }
 
@@ -367,6 +369,12 @@ public class Man10Shop {
             return false;
         }
 
+        //if player is in per minute cool down
+        if(checkPerMinuteCoolDown(p, 1)){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
+            return false;
+        }
+
         if(shopType == Man10ShopType.BUY){
             if(itemCount <= 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
@@ -392,6 +400,11 @@ public class Man10Shop {
     public void performAction(Player p, int amount){
 
         if(!allowedToUseShop(p)) return;
+
+        if(checkPerMinuteCoolDown(p, amount)){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
+            return;
+        }
 
         if(shopType == Man10ShopType.BUY){
             if(amount > itemCount){
@@ -421,6 +434,8 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
+            addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
             notifyModerators(amount*item.getAmount());
             setCoolDown(p); //set coolDown
@@ -463,6 +478,8 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
+            addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
             notifyModerators(amount*item.getAmount());
             setCoolDown(p); //set coolDown
@@ -542,6 +559,56 @@ public class Man10Shop {
     public void setCoolDown(Player p){
         long currentTime = System.currentTimeMillis() / 1000L;
         coolDownMap.put(p.getUniqueId(), currentTime);
+    }
+
+    //per minute cool down
+    public void loadPerMinuteMap(){
+        perMinuteCoolDownMap.clear();
+        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
+            return;
+        }
+
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,uuid,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shopId + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + settings.getPerMinuteCoolDownTime()*60L + " GROUP BY UUID, YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
+        for(MySQLCachedResultSet rs: result){
+            addPerMinuteCoolDownLog(UUID.fromString(rs.getString("uuid")), new Man10ShopLogObject(rs.getLong("time"), rs.getInt("amount")));
+        }
+    }
+
+    public void addPerMinuteCoolDownLog(UUID uuid, Man10ShopLogObject obj){
+        if(!perMinuteCoolDownMap.containsKey(uuid)){
+            perMinuteCoolDownMap.put(uuid, new LinkedList<>());
+        }
+        perMinuteCoolDownMap.get(uuid).addFirst(obj);
+    }
+
+    public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
+        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
+            return true;
+        }
+        long currentTime = System.currentTimeMillis() / 1000L;
+        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())) return false;
+
+        int totalAmountInTime = 0;
+
+        LinkedList<Man10ShopLogObject> logs = perMinuteCoolDownMap.get(p.getUniqueId());
+
+        //count amount
+        for(int i = 0; i < logs.size(); i++){
+            Man10ShopLogObject log = logs.get(i);
+            if(currentTime - log.time >= settings.getPerMinuteCoolDownTime()* 60L) continue;
+            totalAmountInTime += log.amount;
+        }
+
+        //delete unneeded logs
+        for(int i = 0; i < logs.size(); i++){
+            Man10ShopLogObject log = logs.getLast();
+            if(currentTime - log.time >= settings.getPerMinuteCoolDownTime()* 60L) {
+                logs.removeLast();
+            }else{
+                break;
+            }
+        }
+        return totalAmountInTime + addingAmount > settings.getPerMinuteCoolDownAmount();
     }
 
 
