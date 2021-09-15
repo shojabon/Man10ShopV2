@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -159,6 +160,31 @@ public class Man10ShopSettings {
         }
         if(permission.equalsIgnoreCase("")) return deleteSetting("shop.permission.allowed");
         return setSetting("shop.permission.allowed", permission);
+    }
+
+    //-------------------- weekday toggle ------------------
+
+    public boolean[] getWeekdayShopToggle(){
+        String current = getSetting("shop.weekday.toggle");
+        if(current == null) return new boolean[7];
+        boolean[] results = new boolean[7];
+        for(int i = 0; i < current.length(); i++){
+            results[i] = current.charAt(i) == '1';
+        }
+        return results;
+    }
+
+    public boolean setWeekdayShopToggle(boolean[] results){
+        StringBuilder result = new StringBuilder();
+        for(boolean res: results){
+            if(res) {
+                result.append("1");
+            }else{
+                result.append("0");
+            }
+        }
+        if(Arrays.equals(getWeekdayShopToggle(), results)) return true;
+        return setSetting("shop.weekday.toggle", result.toString());
     }
 
 

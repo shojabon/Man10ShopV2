@@ -19,10 +19,7 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Man10Shop {
 
@@ -317,6 +314,23 @@ public class Man10Shop {
         //permission to use
         if(!p.hasPermission("man10shopv2.use")){
             p.sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
+            return false;
+        }
+
+        //weekday toggle
+        if(!settings.getWeekdayShopToggle()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1]){
+            p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップを本日ご利用することはできません");
+            StringBuilder availableWeekDays = new StringBuilder();
+            int i = 0;
+            for(boolean enabled: settings.getWeekdayShopToggle()){
+                if(enabled){
+                    availableWeekDays.append(BaseUtils.weekToString(i)).append(" ");
+                }
+                i++;
+            }
+            if(availableWeekDays.toString().length() != 0){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは" + availableWeekDays.substring(0, availableWeekDays.length()-1) + "に利用することができます");
+            }
             return false;
         }
 

@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.ShopTypeSelectorMenu;
+import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.WeekdayShopToggleMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.BooleanInputMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.LargeSInventoryMenu;
@@ -45,6 +46,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         items.add(singleTransactionItem());
         items.add(coolDownTimeItem());
         items.add(setAllowedPermissionItem());
+        items.add(weekdayShopToggleItem());
 
 
 
@@ -115,6 +117,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
+                    Man10ShopV2API.log(shop.shopId, "setShopAllowedPermission", permissionName, player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§l権限を変更しました");
                 });
             });
@@ -259,36 +262,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         return inventoryItem;
     }
 
-    public SInventoryItem setDeleteShopItem(){
-        SItemStack item = new SItemStack(Material.LAVA_BUCKET).setDisplayName(new SStringBuilder().yellow().obfuscated().text("OO")
-                .darkRed().bold().text("ショップを削除")
-                .yellow().obfuscated().text("OO")
-                .build());
-
-        SInventoryItem inventoryItem = new SInventoryItem(item.build());
-        inventoryItem.clickable(false);
-        inventoryItem.setAsyncEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
-                return;
-            }
-            //confirmation menu
-            ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnConfirm(ee -> {
-                //delete shop
-                shop.deleteShop();
-                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.api.destroyAllSigns(shop));
-                Man10ShopV2API.log(shop.shopId, "deleteShop", null, player.getName(), player.getUniqueId()); //log
-                menu.close(player);
-            });
-
-            moveToMenu(player, menu);
-        });
-
-        return inventoryItem;
-    }
-
     public SInventoryItem shopEnabledItem(){
         SItemStack item = new SItemStack(Material.LEVER).setDisplayName(new SStringBuilder().gray().text("ショップ取引有効").build());
         item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.settings.getShopEnabled())).build());
@@ -362,6 +335,83 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
         });
 
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem weekdayShopToggleItem(){
+        SItemStack item = new SItemStack(Material.COMPARATOR).setDisplayName(new SStringBuilder().red().text("曜日有効化設定").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定").build());
+        int i = 0;
+        for(boolean res: shop.settings.getWeekdayShopToggle()){
+            SStringBuilder builder = new SStringBuilder();
+            builder.yellow().text(BaseUtils.weekToString(i) + ": ");
+            if(res){
+                builder.green().text("有効");
+            }else{
+                builder.red().text("無効");
+            }
+            item.addLore(builder.build());
+            i++;
+        }
+
+        item.addLore("");
+        item.addLore("§f特定の曜日にショップを有効かするかを設定する");
+
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+
+        inventoryItem.setEvent(e -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
+            //confirmation menu
+            WeekdayShopToggleMenu menu = new WeekdayShopToggleMenu(player, shop, plugin);
+
+            menu.setAsyncOnCloseEvent(ee -> {
+                if(shop.settings.setWeekdayShopToggle(menu.states)){
+                    Man10ShopV2API.log(shop.shopId, "setWeekdayShopToggle", shop.settings.getWeekdayShopToggle(), player.getName(), player.getUniqueId()); //log
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l曜日設定をしました");
+                moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+            });
+
+            moveToMenu(player, menu);
+
+        });
+
+
+        return inventoryItem;
+    }
+
+    public SInventoryItem setDeleteShopItem(){
+        SItemStack item = new SItemStack(Material.LAVA_BUCKET).setDisplayName(new SStringBuilder().yellow().obfuscated().text("OO")
+                .darkRed().bold().text("ショップを削除")
+                .yellow().obfuscated().text("OO")
+                .build());
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setAsyncEvent(e -> {
+            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
+            //confirmation menu
+            ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnConfirm(ee -> {
+                //delete shop
+                shop.deleteShop();
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.api.destroyAllSigns(shop));
+                Man10ShopV2API.log(shop.shopId, "deleteShop", null, player.getName(), player.getUniqueId()); //log
+                menu.close(player);
+            });
+
+            moveToMenu(player, menu);
+        });
 
         return inventoryItem;
     }
