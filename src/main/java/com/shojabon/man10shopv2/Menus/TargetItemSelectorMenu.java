@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.Menus;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
@@ -52,8 +53,20 @@ public class TargetItemSelectorMenu extends SInventory{
             }
 
             SInventory.threadPool.execute(()->{
-                boolean changeResult = shop.setTargetItem(player, newTargetItem);
-                if(!changeResult) return;
+
+                if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lあなたにはこの項目を設定する権限がありません");
+                    return;
+                }
+                if(!new SItemStack(e.getCurrentItem()).getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true)) && shop.itemCount != 0 && !shop.admin){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lショップ在庫があるときは取引アイテムを変更することはできません");
+                    return;
+                }
+
+                if(!shop.setTargetItem(newTargetItem)) {
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
 
                 Man10ShopV2API.log(shop.shopId, "itemTypeChange", new SItemStack(newTargetItem).getItemTypeMD5(true), player.getName(), player.getUniqueId()); //log
                 player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムが変更されました");

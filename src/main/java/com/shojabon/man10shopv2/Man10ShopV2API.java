@@ -46,7 +46,8 @@ public class Man10ShopV2API {
                     rs.getInt("money"),
                     SItemStack.fromBase64(rs.getString("target_item")),
                     rs.getInt("target_item_count"),
-                    Man10ShopType.valueOf(rs.getString("shop_type")));
+                    Man10ShopType.valueOf(rs.getString("shop_type")),
+                    rs.getBoolean("admin"));
         }
         if(shop == null){
             return null;
@@ -79,9 +80,9 @@ public class Man10ShopV2API {
         return shops;
     }
 
-    public UUID createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType){
+    public UUID createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType, boolean admin){
         UUID shopId = UUID.randomUUID();
-        Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, 1, shopType);
+        Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, 1, shopType, admin);
 
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shop.shopId);
@@ -94,9 +95,12 @@ public class Man10ShopV2API {
         payload.put("target_item_count", 1);
         payload.put("shop_type", shop.shopType.name());
         payload.put("deleted", 0);
+        payload.put("admin", admin);
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
-        if(!shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER, true))){
-            return null;
+        if(!admin){
+            if(!shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER, true))){
+                return null;
+            }
         }
         return shopId;
     }
@@ -115,6 +119,17 @@ public class Man10ShopV2API {
         userModeratingShopList.put(uuid, ids);
         return getShops(ids);
     }
+
+    public ArrayList<Man10Shop> getAdminShops(){
+        ArrayList<UUID> ids = new ArrayList<>();
+        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_shops WHERE admin = 'true'");
+        for(MySQLCachedResultSet rs: results){
+            ids.add(UUID.fromString(rs.getString("shop_id")));
+        }
+        return getShops(ids);
+    }
+
+
 
     //sign
 

@@ -7,14 +7,9 @@ import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SItemStack;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,6 +23,8 @@ public class Man10Shop {
     public int storageSize;
     public int itemCount;
     public int price;
+
+    public boolean admin = false;
 
     public int money;
 
@@ -52,7 +49,8 @@ public class Man10Shop {
                      int money,
                      SItemStack targetItem,
                      int targetItemCount,
-                     Man10ShopType shopType){
+                     Man10ShopType shopType,
+                     boolean admin){
 
         if(targetItem == null){
             targetItem = new SItemStack(Material.DIAMOND);
@@ -67,6 +65,7 @@ public class Man10Shop {
         this.icon = new ItemStack(targetItem.getType());
         this.shopType = shopType;
         this.settings = new Man10ShopSettings(this.shopId);
+        this.admin = admin;
 
         loadPermissions();
         loadSigns();
@@ -112,19 +111,6 @@ public class Man10Shop {
 
     //itemstack setting
 
-    public boolean setTargetItem(Player p, ItemStack item){
-        if(!hasPermissionAtLeast(p.getUniqueId(), Man10ShopPermission.MODERATOR)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lあなたにはこの項目を設定する権限がありません");
-            return false;
-        }
-        SItemStack sItem = new SItemStack(item);
-        if(!sItem.getItemTypeMD5(true).equals(targetItem.getItemTypeMD5(true)) && itemCount != 0){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lショップ在庫があるときは取引アイテムを変更することはできません");
-            return false;
-        }
-        return setTargetItem(item);
-    }
-
     public boolean setTargetItem(ItemStack item){
         SItemStack sItem = new SItemStack(item);
         targetItem = sItem;
@@ -137,29 +123,36 @@ public class Man10Shop {
     //permissions settings
 
     public Man10ShopPermission getPermission(UUID uuid){
+        //admin mode admin
+        if(admin){
+            Player targetPlayer = Bukkit.getPlayer(uuid);
+            if(targetPlayer != null && targetPlayer.isOnline()){
+                if(targetPlayer.hasPermission("man10shopv2.admin")) return Man10ShopPermission.OWNER;
+            }
+        }
+
         if(!moderators.containsKey(uuid)) return null;
         return moderators.get(uuid).permission;
     }
 
     public boolean hasPermissionAtLeast(UUID uuid, Man10ShopPermission permission){
-        if(!moderators.containsKey(uuid)){
-            return false;
-        }
-        Man10ShopPermission actualPerm = moderators.get(uuid).permission;
+        Man10ShopPermission actualPerm = getPermission(uuid);
+        if(actualPerm == null) return false;
+
         int userPermissionLevel = calculatePermissionLevel(actualPerm);
+
         int requiredPermissionLevel = calculatePermissionLevel(permission);
         return userPermissionLevel >= requiredPermissionLevel;
     }
 
     public boolean hasPermission(UUID uuid, Man10ShopPermission permission){
-        if(!moderators.containsKey(uuid)){
-            return false;
-        }
-        Man10ShopPermission actualPerm = moderators.get(uuid).permission;
+        Man10ShopPermission actualPerm = getPermission(uuid);
+        if(actualPerm == null) return false;
         return actualPerm == permission;
     }
 
     public int ownerCount(){
+        if(admin) return 1;
         int result = 0;
         for(Man10ShopModerator mod: moderators.values()){
             if(mod.permission == Man10ShopPermission.OWNER) result ++;
@@ -376,14 +369,14 @@ public class Man10Shop {
         }
 
         if(shopType == Man10ShopType.BUY){
-            if(itemCount <= 0){
+            if(itemCount <= 0 && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
                 return false;
             }
             //no items (buy)
         }else{
             //no money (sell)
-            if(money < price){
+            if(money < price && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
                 return false;
             }
@@ -407,7 +400,7 @@ public class Man10Shop {
         }
 
         if(shopType == Man10ShopType.BUY){
-            if(amount > itemCount){
+            if(amount > itemCount && !admin){
                 amount = itemCount;
             }
             int totalPrice = price*amount;
@@ -447,7 +440,7 @@ public class Man10Shop {
                 return;
             }
             SItemStack item = new SItemStack(targetItem.build().clone());
-            if(itemCount + amount > calculateCurrentStorageSize(0)){
+            if(itemCount + amount > calculateCurrentStorageSize(0) && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }
@@ -456,7 +449,7 @@ public class Man10Shop {
                 return;
             }
             int totalPrice = price*amount;
-            if(totalPrice > money){
+            if(totalPrice > money && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップの現金が不足しています");
                 return;
             }
@@ -583,10 +576,14 @@ public class Man10Shop {
 
     public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
         if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
-            return true;
+            return false;
         }
+
         long currentTime = System.currentTimeMillis() / 1000L;
-        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())) return false;
+        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
+            if(addingAmount > settings.getPerMinuteCoolDownAmount()) return true;//if not trade within time and amount is bigger than limit
+            return false;
+        }
 
         int totalAmountInTime = 0;
 

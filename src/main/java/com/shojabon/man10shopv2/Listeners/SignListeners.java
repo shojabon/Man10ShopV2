@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Menus.AdminShopSelectorMenu;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
@@ -42,7 +43,7 @@ public class SignListeners implements @NotNull Listener {
     @EventHandler
     public void onSignUpdate(SignChangeEvent e){
         if(e.getLine(0) == null) return;
-        if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")) return;
+        if(!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop") && !Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10adminshop")) return;
 
         //permission to use
         if(!e.getPlayer().hasPermission("man10shopv2.sign.create")){
@@ -59,40 +60,83 @@ public class SignListeners implements @NotNull Listener {
             return;
         }
 
-        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
+        if(Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")){
+            EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
 
-        int signPrice = Man10ShopV2.config.getInt("sign.price");
-        UUID uuid = e.getPlayer().getUniqueId();
+            int signPrice = Man10ShopV2.config.getInt("sign.price");
+            UUID uuid = e.getPlayer().getUniqueId();
 
-        menu.setOnClick(shop -> {
+            menu.setOnClick(shop -> {
 
-            if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
-                e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
+                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
+                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
+                    return;
+                }
+
+                if(Man10ShopV2.config.getInt("sign.price") != 0){
+                    ConfirmationMenu confirmationMenu = new ConfirmationMenu(BaseUtils.priceString(signPrice)+ "円支払いますか？", plugin);
+
+                    //confirm purchase
+                    confirmationMenu.setOnConfirm(ee -> {
+                        if(Man10ShopV2.vault.getBalance(uuid) < signPrice){
+                            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
+                            confirmationMenu.close(e.getPlayer());
+                        }
+                        Man10ShopV2.vault.withdraw(uuid, signPrice );
+                        buySign(shop, e);
+                    });
+
+                    confirmationMenu.setOnCancel(ee -> confirmationMenu.close(e.getPlayer()));
+
+                    confirmationMenu.open(e.getPlayer());
+                    return;
+                }
+                buySign(shop, e);
+
+            });
+            menu.open(e.getPlayer());
+        }else{
+
+            //permission to use
+            if(!e.getPlayer().hasPermission("man10shopv2.admin.sign.create")){
+                e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
                 return;
             }
+            AdminShopSelectorMenu menu = new AdminShopSelectorMenu(e.getPlayer(), plugin);
 
-            if(Man10ShopV2.config.getInt("sign.price") != 0){
-                ConfirmationMenu confirmationMenu = new ConfirmationMenu(BaseUtils.priceString(signPrice)+ "円支払いますか？", plugin);
+            int signPrice = Man10ShopV2.config.getInt("sign.price");
+            UUID uuid = e.getPlayer().getUniqueId();
 
-                //confirm purchase
-                confirmationMenu.setOnConfirm(ee -> {
-                    if(Man10ShopV2.vault.getBalance(uuid) < signPrice){
-                        e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
-                        confirmationMenu.close(e.getPlayer());
-                    }
-                    Man10ShopV2.vault.withdraw(uuid, signPrice );
-                    buySign(shop, e);
-                });
+            menu.setOnClick(shop -> {
 
-                confirmationMenu.setOnCancel(ee -> confirmationMenu.close(e.getPlayer()));
+                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
+                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
+                    return;
+                }
 
-                confirmationMenu.open(e.getPlayer());
-                return;
-            }
-            buySign(shop, e);
+                if(Man10ShopV2.config.getInt("sign.price") != 0){
+                    ConfirmationMenu confirmationMenu = new ConfirmationMenu(BaseUtils.priceString(signPrice)+ "円支払いますか？", plugin);
 
-        });
-        menu.open(e.getPlayer());
+                    //confirm purchase
+                    confirmationMenu.setOnConfirm(ee -> {
+                        if(Man10ShopV2.vault.getBalance(uuid) < signPrice){
+                            e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
+                            confirmationMenu.close(e.getPlayer());
+                        }
+                        Man10ShopV2.vault.withdraw(uuid, signPrice );
+                        buySign(shop, e);
+                    });
+
+                    confirmationMenu.setOnCancel(ee -> confirmationMenu.close(e.getPlayer()));
+
+                    confirmationMenu.open(e.getPlayer());
+                    return;
+                }
+                buySign(shop, e);
+
+            });
+            menu.open(e.getPlayer());
+        }
     }
 
     @EventHandler

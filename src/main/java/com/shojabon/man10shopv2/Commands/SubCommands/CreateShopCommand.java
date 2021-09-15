@@ -39,7 +39,7 @@ public class CreateShopCommand implements CommandExecutor {
         Player p = ((Player)sender);
         int shopPrice = Man10ShopV2.config.getInt("shop.creationPrice");
         if(shopPrice == 0){
-            UUID shopId = plugin.api.createShop(p, args[1], 1000, new SItemStack(Material.DIAMOND), Man10ShopType.BUY);
+            UUID shopId = plugin.api.createShop(p, args[1], 1000, new SItemStack(Material.DIAMOND), Man10ShopType.BUY, false);
 
             if(shopId == null){
                 sender.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
@@ -63,7 +63,7 @@ public class CreateShopCommand implements CommandExecutor {
                 return;
             }
 
-            UUID shopId = plugin.api.createShop(p, args[1], 1000, new SItemStack(Material.DIAMOND), Man10ShopType.BUY);
+            UUID shopId = plugin.api.createShop(p, args[1], 1000, new SItemStack(Material.DIAMOND), Man10ShopType.BUY, false);
 
             if(shopId == null){
                 sender.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");

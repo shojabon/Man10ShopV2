@@ -205,11 +205,11 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("購入制限設定").build(), plugin);
-            menu.setMaxValue(shop.storageSize);
+            if(!shop.admin) menu.setMaxValue(shop.storageSize);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
-                if(newValue > shop.storageSize){
+                if(newValue > shop.storageSize && !shop.admin){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l購入制限は倉庫以上の数にはできません");
                     return;
                 }
@@ -390,7 +390,17 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem perMinuteCoolDownItem(){
         SItemStack item = new SItemStack(Material.DISPENSER).setDisplayName(new SStringBuilder().yellow().text("分間毎ごとのクールダウン設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(shop.shopType)).build());
+        if(shop.settings.getPerMinuteCoolDownAmount() != 0 && shop.settings.getPerMinuteCoolDownTime() != 0){
+            item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getPerMinuteCoolDownTime()).text("分毎に").text(shop.settings.getPerMinuteCoolDownAmount()).text("個").build());
+        }else{
+            item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text("なし").build());
+        }
+
+        item.addLore("");
+        item.addLore("§f取引を制限します");
+        item.addLore("§f分間毎の取引を設定した個数までとします");
+        item.addLore("§fどちらかが0の場合設定は無効化");
+
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 

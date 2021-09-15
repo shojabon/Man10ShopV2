@@ -34,6 +34,13 @@ public class Man10ShopV2Command extends SCommandRouter {
                         addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
                         setExecutor(new ShopsCommand(plugin))
         );
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("adminShops")).
+
+                        addRequiredPermission("man10shopv2.admin.shops").addExplanation("管理者ショップ一覧").
+                        setExecutor(new AdminShopsCommand(plugin))
+        );
 
         //toggled worlds command
 
@@ -87,6 +94,16 @@ public class Man10ShopV2Command extends SCommandRouter {
                         addRequiredPermission("man10shopv2.shop.create")
                         .addExplanation("ショップを作成")
                         .setExecutor(new CreateShopCommand(plugin))
+        );
+
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("createAdmin")).
+                        addArgument(new SCommandArgument().addAlias("ショップ名")).
+
+                        addRequiredPermission("man10shopv2.admin.shop.create")
+                        .addExplanation("管理者ショップを作成")
+                        .setExecutor(new CreateAdminShopCommand(plugin))
         );
 
         //reload command

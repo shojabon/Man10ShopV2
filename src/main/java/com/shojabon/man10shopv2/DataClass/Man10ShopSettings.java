@@ -166,8 +166,9 @@ public class Man10ShopSettings {
 
     public boolean[] getWeekdayShopToggle(){
         String current = getSetting("shop.weekday.toggle");
-        if(current == null) return new boolean[7];
         boolean[] results = new boolean[7];
+        Arrays.fill(results, true);
+        if(current == null) return results;
         for(int i = 0; i < current.length(); i++){
             results[i] = current.charAt(i) == '1';
         }

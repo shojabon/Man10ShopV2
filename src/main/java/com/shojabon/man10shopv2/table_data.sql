@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS `man10shop_shops` (
   `price` int DEFAULT NULL,
   `shop_type` varchar(64) DEFAULT NULL,
   `deleted` tinyint DEFAULT NULL,
+  `admin` varchar(64) DEFAULT 'false',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

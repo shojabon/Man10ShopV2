@@ -54,9 +54,15 @@ public class ShopMainMenu extends SInventory {
         setItem(10, getTargetItemSettingsItem());
 
         setOnCloseEvent(e -> {
-            EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, plugin);
-            menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
-            moveToMenu(player, menu);
+            if(shop.admin){
+                AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, plugin);
+                menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
+                moveToMenu(player, menu);
+            }else{
+                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, plugin);
+                menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
+                moveToMenu(player, menu);
+            }
         });
 
         renderInventory();
