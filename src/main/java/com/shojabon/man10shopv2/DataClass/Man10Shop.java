@@ -227,25 +227,37 @@ public class Man10Shop {
         return (addedUnits+boughtCurrentStorageCount)*defaultUnit;
     }
 
-    public int calculateNextUnitPrice(){
-        int nextUnit = settings.getBoughtStorageUnits()+1;
+    public int calculateNextUnitPrice(int addUnits){
+        int totalPrice = 0;
+
         MemorySection section = ((MemorySection)Man10ShopV2.config.get("itemStorage.prices"));
         if(section == null) return -1;
-        if(nextUnit > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) return -1;
 
-        String currentRangeKey = null;
-        for(String key : section.getKeys(false)){
-            if(!BaseUtils.isInt(key)) continue;
-            if(Integer.parseInt(key) <= nextUnit){
-                currentRangeKey = key;
-            }else{
-                break;
+        int nextUnit = settings.getBoughtStorageUnits();
+
+        if(nextUnit + 1 > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) return -1;
+
+        for(int i = 0; i < addUnits; i++){
+            nextUnit += 1;
+            if(nextUnit > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) continue;
+
+            String currentRangeKey = null;
+            for(String key : section.getKeys(false)){
+                if(!BaseUtils.isInt(key)) continue;
+                if(Integer.parseInt(key) <= nextUnit){
+                    currentRangeKey = key;
+                }else{
+                    break;
+                }
             }
+            if(currentRangeKey == null){
+                totalPrice += 0;
+                continue;
+            }
+            totalPrice += section.getInt(currentRangeKey);
         }
-        if(currentRangeKey == null){
-            return 0;
-        }
-        return section.getInt(currentRangeKey);
+
+        return totalPrice;
     }
 
     public boolean buyStorageSpace(Player p, int units){
@@ -254,14 +266,14 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§c§l倉庫ユニットの上限を超えました");
             return false;
         }
-        storageSize = calculateCurrentStorageSize(1);
-        if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < calculateNextUnitPrice()){
+        if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < calculateNextUnitPrice(units)){
             p.sendMessage(Man10ShopV2.prefix + "§c§lお金が足りません");
             return false;
         }
-        Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice());
+        Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice(units));
         Man10ShopV2API.log(shopId, "buyStorageSpace", units, p.getName(), p.getUniqueId()); //log
         p.sendMessage(Man10ShopV2.prefix + "§a§l倉庫スペースを購入しました");
+        storageSize = calculateCurrentStorageSize(units);
         return buyStorageSpace(units);
     }
 
@@ -384,6 +396,10 @@ public class Man10Shop {
             //no money (sell)
             if(settings.getStorageCap() != 0 && itemCount >= settings.getStorageCap()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
+                return false;
+            }
+            if(itemCount >= calculateCurrentStorageSize(0)){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫がいっぱいです");
                 return false;
             }
         }
@@ -574,21 +590,18 @@ public class Man10Shop {
         perMinuteCoolDownMap.get(uuid).addFirst(obj);
     }
 
-    public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
+    public int perMinuteCoolDownTotalAmountInTime(Player p){
         if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
-            return false;
+            return 0;
         }
 
-        long currentTime = System.currentTimeMillis() / 1000L;
         if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
-            if(addingAmount > settings.getPerMinuteCoolDownAmount()) return true;//if not trade within time and amount is bigger than limit
-            return false;
+            return 0;
         }
-
         int totalAmountInTime = 0;
 
         LinkedList<Man10ShopLogObject> logs = perMinuteCoolDownMap.get(p.getUniqueId());
-
+        long currentTime = System.currentTimeMillis() / 1000L;
         //count amount
         for(int i = 0; i < logs.size(); i++){
             Man10ShopLogObject log = logs.get(i);
@@ -605,7 +618,20 @@ public class Man10Shop {
                 break;
             }
         }
-        return totalAmountInTime + addingAmount > settings.getPerMinuteCoolDownAmount();
+        return totalAmountInTime;
+    }
+
+    public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
+        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
+            return false;
+        }
+
+        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
+            if(addingAmount > settings.getPerMinuteCoolDownAmount()) return true;//if not trade within time and amount is bigger than limit
+            return false;
+        }
+
+        return perMinuteCoolDownTotalAmountInTime(p) + addingAmount > settings.getPerMinuteCoolDownAmount();
     }
 
 

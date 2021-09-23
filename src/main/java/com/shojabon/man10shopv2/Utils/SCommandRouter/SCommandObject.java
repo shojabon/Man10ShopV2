@@ -15,10 +15,16 @@ public class SCommandObject {
     public ArrayList<SCommandArgument> arguments = new ArrayList<>();
     public ArrayList<CommandExecutor> executors = new ArrayList<>();
     public ArrayList<Consumer<SCommandData>> executorConsumers = new ArrayList<>();
+    public boolean isInfinity = false;
 
     public ArrayList<String> requiredPermissions = new ArrayList<>();
 
     ArrayList<String> explanation = new ArrayList<>();
+
+    public SCommandObject setInfinity(){
+        isInfinity = true;
+        return this;
+    }
 
     public SCommandObject addExplanation(String explanation){
         this.explanation.add(explanation);
@@ -53,8 +59,10 @@ public class SCommandObject {
     }
 
     public boolean matches(String[] args){
-        if(args.length != arguments.size()) return false;
+        if(args.length < arguments.size()) return false;
+        if(args.length > arguments.size() && !isInfinity) return false;
         for(int i = 0; i < args.length; i++){
+            if(arguments.size()-1 <= i && isInfinity) continue;
             if(!arguments.get(i).matches(args[i])){
                 return false;
             }

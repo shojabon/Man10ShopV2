@@ -79,8 +79,15 @@ public class SCommandArgument {
 
     public boolean matches(String arg){
         if(!matchesType(arg)) return false;
-        if(allowedStrings.size() != 0 && !allowedStrings.contains(arg)) return false;
-        return true;
+        //test allowed strings
+        if(allowedStrings.size() != 0){
+            for(String testingAllowedString: allowedStrings){
+                if(testingAllowedString.equalsIgnoreCase(arg)) return true;
+            }
+        }else{
+            return true;
+        }
+        return false;
     }
 
 

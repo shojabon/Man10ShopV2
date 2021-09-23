@@ -23,10 +23,14 @@ public class ShopActionMenu extends SInventory{
     int itemCount = 1;
     BannerDictionary dictionary = new BannerDictionary();
 
+    //per minute cool down counter
+    int itemsTradedPerMinute = 0;
+
     public ShopActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
         super(shop.name, 6, plugin);
         this.player = p;
         this.shop = shop;
+        this.itemsTradedPerMinute = shop.perMinuteCoolDownTotalAmountInTime(player);
         this.plugin = plugin;
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
         if(shop.shopType == Man10ShopType.BUY){
@@ -105,6 +109,11 @@ public class ShopActionMenu extends SInventory{
                 }else if (e.getClick() == ClickType.SHIFT_LEFT){
                     itemCount = 1;
                 }
+            }
+            //transaction per day limit
+            if(shop.settings.getPerMinuteCoolDownAmount() != 0 && shop.settings.getPerMinuteCoolDownTime() != 0){
+                int itemsLeft = shop.settings.getPerMinuteCoolDownAmount() - itemsTradedPerMinute;
+                if(itemCount > itemsLeft) itemCount = itemsLeft;
             }
             renderMenu();
         };

@@ -19,6 +19,8 @@ import com.shojabon.man10shopv2.Utils.SLongTextInput;
 import com.shojabon.man10shopv2.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+
 import java.util.ArrayList;
 
 public class SettingsMainMenu extends LargeSInventoryMenu{
@@ -164,20 +166,33 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         SItemStack item = new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().gray().text("ショップの倉庫を拡張する").build());
         item.addLore(new SStringBuilder().lightPurple().text("現在の倉庫サイズ: ").yellow().text(shop.storageSize).text("個").build());
         item.addLore("");
-        if(shop.calculateNextUnitPrice() != -1){
+
+        int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - shop.settings.getBoughtStorageUnits();
+
+        if(shop.calculateNextUnitPrice(1) != -1){
             item.addLore(new SStringBuilder().red().text("次のサイズ: ").text(shop.calculateCurrentStorageSize(1)).text("個").build());
-            item.addLore(new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(shop.calculateNextUnitPrice())).text("円").build());
+            item.addLore(new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(shop.calculateNextUnitPrice(1))).text("円").build());
             item.addLore(new SStringBuilder().white().bold().text("左クリックで購入").build());
+            item.addLore(new SStringBuilder().white().bold().text("左シフトクリックで最大まで買う").yellow().text("価格:")
+                    .text(BaseUtils.priceString(shop.calculateNextUnitPrice(unitsTillMax))).text("円").build());
         }
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
+            int buyingUnits = 1;
+
+            if(e.getClick() == ClickType.SHIFT_LEFT) buyingUnits = unitsTillMax;
+
+
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+
+
+            int finalBuyingUnits = buyingUnits;
             menu.setOnConfirm(ee -> {
-                if(shop.buyStorageSpace(player, 1)){
+                if(shop.buyStorageSpace(player, finalBuyingUnits)){
                     Man10ShopV2API.log(shop.shopId, "buyStorageSpace", 1, player.getName(), player.getUniqueId()); //log
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
