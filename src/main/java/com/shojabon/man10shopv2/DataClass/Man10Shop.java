@@ -398,7 +398,7 @@ public class Man10Shop {
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
                 return false;
             }
-            if(itemCount >= calculateCurrentStorageSize(0)){
+            if(itemCount >= calculateCurrentStorageSize(0) && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫がいっぱいです");
                 return false;
             }
