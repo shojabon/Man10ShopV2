@@ -405,8 +405,8 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem perMinuteCoolDownItem(){
         SItemStack item = new SItemStack(Material.DISPENSER).setDisplayName(new SStringBuilder().yellow().text("分間毎ごとのクールダウン設定").build());
-        if(shop.settings.getPerMinuteCoolDownAmount() != 0 && shop.settings.getPerMinuteCoolDownTime() != 0){
-            item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getPerMinuteCoolDownTime()).text("分毎に").text(shop.settings.getPerMinuteCoolDownAmount()).text("個").build());
+        if(shop.perMinuteCoolDown.getPerMinuteCoolDownAmount() != 0 && shop.perMinuteCoolDown.getPerMinuteCoolDownTime() != 0){
+            item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.perMinuteCoolDown.getPerMinuteCoolDownTime()).text("分毎に").text(shop.perMinuteCoolDown.getPerMinuteCoolDownAmount()).text("個").build());
         }else{
             item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text("なし").build());
         }

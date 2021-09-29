@@ -30,7 +30,7 @@ public class ShopActionMenu extends SInventory{
         super(shop.name, 6, plugin);
         this.player = p;
         this.shop = shop;
-        this.itemsTradedPerMinute = shop.perMinuteCoolDownTotalAmountInTime(player);
+        this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownTotalAmountInTime(player);
         this.plugin = plugin;
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
         if(shop.shopType == Man10ShopType.BUY){
@@ -111,8 +111,8 @@ public class ShopActionMenu extends SInventory{
                 }
             }
             //transaction per day limit
-            if(shop.settings.getPerMinuteCoolDownAmount() != 0 && shop.settings.getPerMinuteCoolDownTime() != 0){
-                int itemsLeft = shop.settings.getPerMinuteCoolDownAmount() - itemsTradedPerMinute;
+            if(shop.perMinuteCoolDown.getPerMinuteCoolDownAmount() != 0 && shop.perMinuteCoolDown.getPerMinuteCoolDownTime() != 0){
+                int itemsLeft = shop.perMinuteCoolDown.getPerMinuteCoolDownAmount() - itemsTradedPerMinute;
                 if(itemCount > itemsLeft) itemCount = itemsLeft;
             }
             renderMenu();

@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.CoolDownFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.PerMinuteCoolDownFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.PermissionFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.StorageFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
@@ -43,11 +44,10 @@ public class Man10Shop {
     public PermissionFunction permission;
     public StorageFunction storage;
     public CoolDownFunction coolDown;
+    public PerMinuteCoolDownFunction perMinuteCoolDown;
 
 
     public boolean currentlyEditingStorage = false;
-
-    public HashMap<UUID, LinkedList<Man10ShopLogObject>> perMinuteCoolDownMap = new HashMap<>();
 
     public Man10Shop(UUID shopId,
                      String name,
@@ -74,7 +74,6 @@ public class Man10Shop {
         this.admin = admin;
 
         loadSigns();
-        loadPerMinuteMap();
 
         //load functions
         permission = new PermissionFunction(this);
@@ -86,6 +85,9 @@ public class Man10Shop {
 
         coolDown = new CoolDownFunction(this);
         functions.add(coolDown);
+
+        perMinuteCoolDown = new PerMinuteCoolDownFunction(this);
+        functions.add(perMinuteCoolDown);
     }
 
 
@@ -207,12 +209,6 @@ public class Man10Shop {
             return false;
         }
 
-        //if player is in per minute cool down
-        if(checkPerMinuteCoolDown(p, 1)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
-            return false;
-        }
-
         if(shopType == Man10ShopType.BUY){
         }else{
             //no money (sell)
@@ -240,7 +236,7 @@ public class Man10Shop {
 
         if(!allowedToUseShop(p)) return;
 
-        if(checkPerMinuteCoolDown(p, amount)){
+        if(perMinuteCoolDown.checkPerMinuteCoolDown(p, amount)){
             p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
             return;
         }
@@ -273,7 +269,7 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-            addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+            perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
             permission.notifyModerators(amount*item.getAmount());
@@ -317,7 +313,7 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-            addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+            perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
             permission.notifyModerators(amount*item.getAmount());
@@ -358,71 +354,6 @@ public class Man10Shop {
         }
     }
 
-    //coolDown
-
-    //per minute cool down
-    public void loadPerMinuteMap(){
-        perMinuteCoolDownMap.clear();
-        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
-            return;
-        }
-
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,uuid,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shopId + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + settings.getPerMinuteCoolDownTime()*60L + " GROUP BY UUID, YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
-        for(MySQLCachedResultSet rs: result){
-            addPerMinuteCoolDownLog(UUID.fromString(rs.getString("uuid")), new Man10ShopLogObject(rs.getLong("time"), rs.getInt("amount")));
-        }
-    }
-
-    public void addPerMinuteCoolDownLog(UUID uuid, Man10ShopLogObject obj){
-        if(!perMinuteCoolDownMap.containsKey(uuid)){
-            perMinuteCoolDownMap.put(uuid, new LinkedList<>());
-        }
-        perMinuteCoolDownMap.get(uuid).addFirst(obj);
-    }
-
-    public int perMinuteCoolDownTotalAmountInTime(Player p){
-        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
-            return 0;
-        }
-
-        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
-            return 0;
-        }
-        int totalAmountInTime = 0;
-
-        LinkedList<Man10ShopLogObject> logs = perMinuteCoolDownMap.get(p.getUniqueId());
-        long currentTime = System.currentTimeMillis() / 1000L;
-        //count amount
-        for(int i = 0; i < logs.size(); i++){
-            Man10ShopLogObject log = logs.get(i);
-            if(currentTime - log.time >= settings.getPerMinuteCoolDownTime()* 60L) continue;
-            totalAmountInTime += log.amount;
-        }
-
-        //delete unneeded logs
-        for(int i = 0; i < logs.size(); i++){
-            Man10ShopLogObject log = logs.getLast();
-            if(currentTime - log.time >= settings.getPerMinuteCoolDownTime()* 60L) {
-                logs.removeLast();
-            }else{
-                break;
-            }
-        }
-        return totalAmountInTime;
-    }
-
-    public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
-        if(settings.getPerMinuteCoolDownTime() == 0 || settings.getPerMinuteCoolDownAmount() == 0){
-            return false;
-        }
-
-        if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
-            if(addingAmount > settings.getPerMinuteCoolDownAmount()) return true;//if not trade within time and amount is bigger than limit
-            return false;
-        }
-
-        return perMinuteCoolDownTotalAmountInTime(p) + addingAmount > settings.getPerMinuteCoolDownAmount();
-    }
 
 
 }

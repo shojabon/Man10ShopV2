@@ -162,30 +162,5 @@ public class Man10ShopSettings {
         return setSetting("shop.weekday.toggle", result.toString());
     }
 
-    //-------------------- per minute cool down ------------------
-
-    public int getPerMinuteCoolDownTime(){
-        String currentSetting = getSetting("shop.perminute.cooldown.time");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setPerMinuteCoolDownTime(int time){
-        if(getPerMinuteCoolDownTime() == time) return true;
-        return setSetting("shop.perminute.cooldown.time", time);
-    }
-
-    public int getPerMinuteCoolDownAmount(){
-        String currentSetting = getSetting("shop.perminute.cooldown.amount");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setPerMinuteCoolDownAmount(int amount){
-        if(getPerMinuteCoolDownAmount() == amount) return true;
-        return setSetting("shop.perminute.cooldown.amount", amount);
-    }
-
-
 
 }

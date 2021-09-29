@@ -39,12 +39,12 @@ public class PerMinuteCoolDownSelectorMenu extends SInventory{
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.settings.setPerMinuteCoolDownTime(number)){
+                if(!shop.perMinuteCoolDown.setPerMinuteCoolDownTime(number)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l時間を設定しました");
-                shop.loadPerMinuteMap();
+                shop.perMinuteCoolDown.loadPerMinuteMap();
                 moveToMenu(player, new PerMinuteCoolDownSelectorMenu(player, shop, plugin));
             });
             menu.setOnCancel(ee -> moveToMenu(player, new PerMinuteCoolDownSelectorMenu(player, shop, plugin)));
@@ -61,7 +61,7 @@ public class PerMinuteCoolDownSelectorMenu extends SInventory{
 
             NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.settings.setPerMinuteCoolDownAmount(number)){
+                if(!shop.perMinuteCoolDown.setPerMinuteCoolDownAmount(number)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
