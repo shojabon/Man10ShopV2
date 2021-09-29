@@ -247,7 +247,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem coolDownTimeItem(){
         SItemStack item = new SItemStack(Material.CLOCK).setDisplayName(new SStringBuilder().yellow().text("取引クールダウン").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.settings.getCoolDownTime()).text("秒").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.coolDown.getCoolDownTime()).text("秒").build());
         item.addLore("");
         item.addLore("§f取引を制限する");
         item.addLore("§f設定秒に1回のみしか取引できなくなります");
@@ -267,7 +267,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                     return;
                 }
 
-                if(shop.settings.setCoolDown(newValue)){
+                if(shop.coolDown.setCoolDown(newValue)){
                     Man10ShopV2API.log(shop.shopId, "setCoolDownTime", newValue, player.getName(), player.getUniqueId()); //log
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));

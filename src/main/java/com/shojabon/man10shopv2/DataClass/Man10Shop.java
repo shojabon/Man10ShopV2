@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.DataClass;
 
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.CoolDownFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.PermissionFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.StorageFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
@@ -38,12 +39,14 @@ public class Man10Shop {
 
     //functions
 
+    public ArrayList<ShopFunction> functions = new ArrayList<>();
     public PermissionFunction permission;
     public StorageFunction storage;
+    public CoolDownFunction coolDown;
+
 
     public boolean currentlyEditingStorage = false;
 
-    public HashMap<UUID, Long> coolDownMap = new HashMap<>();
     public HashMap<UUID, LinkedList<Man10ShopLogObject>> perMinuteCoolDownMap = new HashMap<>();
 
     public Man10Shop(UUID shopId,
@@ -75,9 +78,14 @@ public class Man10Shop {
 
         //load functions
         permission = new PermissionFunction(this);
+        functions.add(permission);
 
         storage = new StorageFunction(this);
         storage.itemCount = itemCount;
+        functions.add(storage);
+
+        coolDown = new CoolDownFunction(this);
+        functions.add(coolDown);
     }
 
 
@@ -199,12 +207,6 @@ public class Man10Shop {
             return false;
         }
 
-        //if player is in coolDown
-        if(checkCoolDown(p)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l" + settings.getCoolDownTime() + "秒の取引クールダウン中です");
-            return false;
-        }
-
         //if player is in per minute cool down
         if(checkPerMinuteCoolDown(p, 1)){
             p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
@@ -222,6 +224,12 @@ public class Man10Shop {
             //no money (sell)
             if(settings.getStorageCap() != 0 && storage.itemCount >= settings.getStorageCap()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
+                return false;
+            }
+        }
+        //all function check
+        for(ShopFunction func: functions){
+            if(!func.isAllowedToUseShop(p)){
                 return false;
             }
         }
@@ -269,7 +277,7 @@ public class Man10Shop {
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
             permission.notifyModerators(amount*item.getAmount());
-            setCoolDown(p); //set coolDown
+            coolDown.setCoolDown(p); //set coolDown
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
@@ -313,7 +321,7 @@ public class Man10Shop {
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
             permission.notifyModerators(amount*item.getAmount());
-            setCoolDown(p); //set coolDown
+            coolDown.setCoolDown(p); //set coolDown
 
 
         }else if(shopType == Man10ShopType.STOPPED){
@@ -351,20 +359,6 @@ public class Man10Shop {
     }
 
     //coolDown
-
-    public boolean checkCoolDown(Player p){
-        int coolDown = settings.getCoolDownTime();
-        if(coolDown == 0) return false;
-        if(!coolDownMap.containsKey(p.getUniqueId())) coolDownMap.put(p.getUniqueId(), 0L);
-        long currentTime = System.currentTimeMillis() / 1000L;
-
-        return currentTime - coolDownMap.get(p.getUniqueId()) < coolDown;
-    }
-
-    public void setCoolDown(Player p){
-        long currentTime = System.currentTimeMillis() / 1000L;
-        coolDownMap.put(p.getUniqueId(), currentTime);
-    }
 
     //per minute cool down
     public void loadPerMinuteMap(){

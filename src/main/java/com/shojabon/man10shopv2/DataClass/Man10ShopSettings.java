@@ -122,20 +122,6 @@ public class Man10ShopSettings {
         return true;
     }
 
-
-    //-------------------- coolDown ------------------
-
-    public int getCoolDownTime(){
-        String currentSetting = getSetting("shop.coolDown");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setCoolDown(int time){
-        if(getCoolDownTime() == time) return true;
-        return setSetting("shop.coolDown", time);
-    }
-
     //-------------------- allowed permission ------------------
 
     public String getAllowedPermission(){
