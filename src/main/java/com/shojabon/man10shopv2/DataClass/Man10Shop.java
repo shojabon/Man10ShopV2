@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.PermissionFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.StorageFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -21,8 +22,6 @@ public class Man10Shop {
 
     public String name;
     public UUID shopId;
-    public int storageSize;
-    public int itemCount;
     public int price;
 
     public boolean admin = false;
@@ -39,7 +38,8 @@ public class Man10Shop {
 
     //functions
 
-    public PermissionFunction permission = null;
+    public PermissionFunction permission;
+    public StorageFunction storage;
 
     public boolean currentlyEditingStorage = false;
 
@@ -63,7 +63,6 @@ public class Man10Shop {
         this.price = price;
         this.shopId = shopId;
         this.name = name;
-        this.itemCount = itemCount;
         this.targetItem = targetItem;
         this.targetItemCount = targetItemCount;
         this.icon = new ItemStack(targetItem.getType());
@@ -73,29 +72,14 @@ public class Man10Shop {
 
         loadSigns();
         loadPerMinuteMap();
-        storageSize = calculateCurrentStorageSize(0);
 
         //load functions
         permission = new PermissionFunction(this);
+
+        storage = new StorageFunction(this);
+        storage.itemCount = itemCount;
     }
 
-
-    //storage
-
-    public boolean removeItemCount(int count){
-        itemCount = itemCount - count;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = item_count - " + count + " WHERE shop_id = '" + shopId + "'");
-        if(!result) return false;
-        return true;
-    }
-
-    public boolean addItemCount(int count){
-        itemCount = itemCount + count;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = item_count + " + count + " WHERE shop_id = '" + shopId + "'");
-        if(!result) return false;
-        //log here
-        return true;
-    }
 
     //money storage
 
@@ -126,69 +110,6 @@ public class Man10Shop {
         return true;
     }
 
-    //storage space
-
-    public int calculateCurrentStorageSize(int addedUnits){
-        int boughtCurrentStorageCount = settings.getBoughtStorageUnits();
-        int defaultUnit = Man10ShopV2.config.getInt("itemStorage.unitDefinition");
-        if(defaultUnit == 0) defaultUnit = 1;
-        return (addedUnits+boughtCurrentStorageCount)*defaultUnit;
-    }
-
-    public int calculateNextUnitPrice(int addUnits){
-        int totalPrice = 0;
-
-        MemorySection section = ((MemorySection)Man10ShopV2.config.get("itemStorage.prices"));
-        if(section == null) return -1;
-
-        int nextUnit = settings.getBoughtStorageUnits();
-
-        if(nextUnit + 1 > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) return -1;
-
-        for(int i = 0; i < addUnits; i++){
-            nextUnit += 1;
-            if(nextUnit > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) continue;
-
-            String currentRangeKey = null;
-            for(String key : section.getKeys(false)){
-                if(!BaseUtils.isInt(key)) continue;
-                if(Integer.parseInt(key) <= nextUnit){
-                    currentRangeKey = key;
-                }else{
-                    break;
-                }
-            }
-            if(currentRangeKey == null){
-                totalPrice += 0;
-                continue;
-            }
-            totalPrice += section.getInt(currentRangeKey);
-        }
-
-        return totalPrice;
-    }
-
-    public boolean buyStorageSpace(Player p, int units){
-        int boughtCurrentStorageCount = settings.getBoughtStorageUnits();
-        if(boughtCurrentStorageCount+units > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l倉庫ユニットの上限を超えました");
-            return false;
-        }
-        if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < calculateNextUnitPrice(units)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lお金が足りません");
-            return false;
-        }
-        Man10ShopV2.vault.withdraw(p.getUniqueId(), calculateNextUnitPrice(units));
-        Man10ShopV2API.log(shopId, "buyStorageSpace", units, p.getName(), p.getUniqueId()); //log
-        p.sendMessage(Man10ShopV2.prefix + "§a§l倉庫スペースを購入しました");
-        storageSize = calculateCurrentStorageSize(units);
-        return buyStorageSpace(units);
-    }
-
-    public boolean buyStorageSpace(int units){
-        return settings.setBoughtStorageUnits(settings.getBoughtStorageUnits()+units);
-
-    }
 
     //shop type
     public boolean setShopType(Man10ShopType type){
@@ -222,23 +143,10 @@ public class Man10Shop {
         return name;
     }
 
+    public Man10ShopType getShopType(){
+        return shopType;
+    }
 
-
-    //actions
-
-//    public boolean playerHasEnoughItems(Player p,int amount){
-//        HashMap<String, Integer> invCount = new HashMap<>();
-//        for(ItemStack item: p.getInventory().getContents()){
-//            String hash = new SItemStack(item).getItemTypeMD5();
-//            if(!invCount.containsKey(hash)) invCount.put(hash, 0);
-//            if(item == null) continue;
-//            int currentCount = invCount.get(hash);
-//            invCount.put(hash, currentCount + item.getAmount());
-//        }
-//        if(!invCount.containsKey(targetItem.getItemTypeMD5())) return false;
-//        int result = invCount.get(targetItem.getItemTypeMD5());
-//        return result >= amount;
-//    }
 
     public boolean allowedToUseShop(Player p){
         //permission to use
@@ -304,11 +212,6 @@ public class Man10Shop {
         }
 
         if(shopType == Man10ShopType.BUY){
-            if(itemCount <= 0 && !admin){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
-                return false;
-            }
-            //no items (buy)
         }else{
             //no money (sell)
             if(money < price && !admin){
@@ -317,12 +220,8 @@ public class Man10Shop {
             }
 
             //no money (sell)
-            if(settings.getStorageCap() != 0 && itemCount >= settings.getStorageCap()){
+            if(settings.getStorageCap() != 0 && storage.itemCount >= settings.getStorageCap()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
-                return false;
-            }
-            if(itemCount >= calculateCurrentStorageSize(0) && !admin){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫がいっぱいです");
                 return false;
             }
         }
@@ -339,8 +238,8 @@ public class Man10Shop {
         }
 
         if(shopType == Man10ShopType.BUY){
-            if(amount > itemCount && !admin){
-                amount = itemCount;
+            if(amount > storage.itemCount && !admin){
+                amount = storage.itemCount;
             }
             int totalPrice = price*amount;
             if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
@@ -355,7 +254,7 @@ public class Man10Shop {
             //remove items from shop storage
 
             SItemStack item = new SItemStack(targetItem.build().clone());
-            boolean removeItemResult =  removeItemCount(amount*item.getAmount());
+            boolean removeItemResult =  storage.removeItemCount(amount*item.getAmount());
             if(!removeItemResult){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
@@ -374,12 +273,12 @@ public class Man10Shop {
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
-            if(itemCount + amount > settings.getStorageCap() && settings.getStorageCap() != 0){
+            if(storage.itemCount + amount > settings.getStorageCap() && settings.getStorageCap() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }
             SItemStack item = new SItemStack(targetItem.build().clone());
-            if(itemCount + amount > calculateCurrentStorageSize(0) && !admin){
+            if(storage.itemCount + amount > storage.calculateCurrentStorageSize(0) && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }
@@ -398,7 +297,7 @@ public class Man10Shop {
             }
             Man10ShopV2.vault.deposit(p.getUniqueId(), totalPrice);
             //remove items from shop storage
-            boolean addItemResult =  addItemCount(amount);
+            boolean addItemResult =  storage.addItemCount(amount);
             if(!addItemResult){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;

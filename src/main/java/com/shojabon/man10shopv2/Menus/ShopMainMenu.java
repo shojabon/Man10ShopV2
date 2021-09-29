@@ -73,7 +73,7 @@ public class ShopMainMenu extends SInventory {
         SItemStack icon = new SItemStack(Material.OAK_SIGN).setDisplayName(iconName);
 
         icon.addLore("§aショップ口座残高:§e " + BaseUtils.priceString(shop.money) + "円");
-        icon.addLore("§7アイテム数:§e " + BaseUtils.priceString(shop.itemCount));
+        icon.addLore("§7アイテム数:§e " + BaseUtils.priceString(shop.storage.itemCount));
 
         SInventoryItem shopInfo = new SInventoryItem(icon.build());
         shopInfo.clickable(false);

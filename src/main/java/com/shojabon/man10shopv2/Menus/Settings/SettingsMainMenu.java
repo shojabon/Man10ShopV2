@@ -164,17 +164,17 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem buyStorageItem(){
         SItemStack item = new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().gray().text("ショップの倉庫を拡張する").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の倉庫サイズ: ").yellow().text(shop.storageSize).text("個").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の倉庫サイズ: ").yellow().text(shop.storage.storageSize).text("個").build());
         item.addLore("");
 
-        int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - shop.settings.getBoughtStorageUnits();
+        int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - shop.storage.getBoughtStorageUnits();
 
-        if(shop.calculateNextUnitPrice(1) != -1){
-            item.addLore(new SStringBuilder().red().text("次のサイズ: ").text(shop.calculateCurrentStorageSize(1)).text("個").build());
-            item.addLore(new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(shop.calculateNextUnitPrice(1))).text("円").build());
+        if(shop.storage.calculateNextUnitPrice(1) != -1){
+            item.addLore(new SStringBuilder().red().text("次のサイズ: ").text(shop.storage.calculateCurrentStorageSize(1)).text("個").build());
+            item.addLore(new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(shop.storage.calculateNextUnitPrice(1))).text("円").build());
             item.addLore(new SStringBuilder().white().bold().text("左クリックで購入").build());
             item.addLore(new SStringBuilder().white().bold().text("左シフトクリックで最大まで買う").yellow().text("価格:")
-                    .text(BaseUtils.priceString(shop.calculateNextUnitPrice(unitsTillMax))).text("円").build());
+                    .text(BaseUtils.priceString(shop.storage.calculateNextUnitPrice(unitsTillMax))).text("円").build());
         }
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
@@ -192,7 +192,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
             int finalBuyingUnits = buyingUnits;
             menu.setOnConfirm(ee -> {
-                if(shop.buyStorageSpace(player, finalBuyingUnits)){
+                if(shop.storage.buyStorageSpace(player, finalBuyingUnits)){
                     Man10ShopV2API.log(shop.shopId, "buyStorageSpace", 1, player.getName(), player.getUniqueId()); //log
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
@@ -220,11 +220,11 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("購入制限設定").build(), plugin);
-            if(!shop.admin) menu.setMaxValue(shop.storageSize);
+            if(!shop.admin) menu.setMaxValue(shop.storage.storageSize);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(newValue -> {
-                if(newValue > shop.storageSize && !shop.admin){
+                if(newValue > shop.storage.storageSize && !shop.admin){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l購入制限は倉庫以上の数にはできません");
                     return;
                 }

@@ -16,6 +16,12 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PermissionFunction extends ShopFunction {
+    //variables
+    private HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
+
+    public ArrayList<Man10ShopModerator> getModerators(){
+        return new ArrayList<>(moderators.values());
+    }
 
     //init
 
@@ -31,13 +37,6 @@ public class PermissionFunction extends ShopFunction {
             Man10ShopModerator permission = new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")), rs.getBoolean("notification"));
             moderators.put(uuid, permission);
         }
-    }
-
-    //variables
-    private HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
-
-    public ArrayList<Man10ShopModerator> getModerators(){
-        return new ArrayList<>(moderators.values());
     }
 
     // mod user functions

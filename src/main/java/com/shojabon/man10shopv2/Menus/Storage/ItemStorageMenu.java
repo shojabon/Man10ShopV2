@@ -23,7 +23,7 @@ public class ItemStorageMenu extends SInventory{
     boolean fillItem;
 
     public ItemStorageMenu(boolean fillItem, Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(new SStringBuilder().darkGray().text(shop.name + "倉庫 ").green().text("上限").text(String.valueOf(shop.storageSize)).text("個").build(), 6, plugin);
+        super(new SStringBuilder().darkGray().text(shop.name + "倉庫 ").green().text("上限").text(String.valueOf(shop.storage.storageSize)).text("個").build(), 6, plugin);
         this.player = p;
         this.fillItem = fillItem;
         this.shop = shop;
@@ -36,7 +36,7 @@ public class ItemStorageMenu extends SInventory{
         if(!fillItem) return;
         int nextSlot = 0;
 
-        int stacks = shop.itemCount/shop.targetItem.getMaxStackSize();
+        int stacks = shop.storage.itemCount/shop.targetItem.getMaxStackSize();
         if(stacks > 6*9) stacks = 6*9;
         ItemStack targetItemSingle = shop.targetItem.build().clone();
         SItemStack maxStackedItem = new SItemStack(targetItemSingle).setAmount(shop.targetItem.getMaxStackSize());
@@ -47,7 +47,7 @@ public class ItemStorageMenu extends SInventory{
 
         //add remaining non full stacked item
         if(stacks != 6*9){
-            int remainingItemCount = shop.itemCount - stacks*shop.targetItem.getMaxStackSize();
+            int remainingItemCount = shop.storage.itemCount - stacks*shop.targetItem.getMaxStackSize();
             setItem(nextSlot, new SItemStack(targetItemSingle.clone()).setAmount(remainingItemCount).build());
         }
         renderInventory();
@@ -82,8 +82,8 @@ public class ItemStorageMenu extends SInventory{
             //if item exceeds items storage size
             int selectedItemCount = new SItemStack(e.getCurrentItem()).getAmount();
             int diff = countItems() - showingCount;
-            int estimatedNewStorageCount = diff + shop.itemCount;
-            if(estimatedNewStorageCount + selectedItemCount > shop.storageSize && e.getClickedInventory().getType() != InventoryType.CHEST){
+            int estimatedNewStorageCount = diff + shop.storage.itemCount;
+            if(estimatedNewStorageCount + selectedItemCount > shop.storage.storageSize && e.getClickedInventory().getType() != InventoryType.CHEST){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l倉庫のサイズ上限を越します");
                 e.setCancelled(true);
                 return;
@@ -96,7 +96,7 @@ public class ItemStorageMenu extends SInventory{
             int diff = countItems() - showingCount;
             if(diff < 0){
                 //if item taken
-                if(shop.removeItemCount(-1*diff)){
+                if(shop.storage.removeItemCount(-1*diff)){
                     Man10ShopV2API.log(shop.shopId, "storageTakeOut", diff, player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムを" + -1*diff + "個取り出しました");
                 }else{
@@ -104,7 +104,7 @@ public class ItemStorageMenu extends SInventory{
                 }
             }else if (diff > 0){
                 //if item added
-                if(shop.removeItemCount(-1*diff)){
+                if(shop.storage.removeItemCount(-1*diff)){
 
                     Man10ShopV2API.log(shop.shopId, "storageTakeIn", diff, player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§lアイテムを" + diff + "個をしまいました");

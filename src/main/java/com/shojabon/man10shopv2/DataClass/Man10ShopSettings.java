@@ -89,18 +89,6 @@ public class Man10ShopSettings {
         return setSetting("storage.sell.cap", storageCap);
     }
 
-    //--------------------- storage size -----------------
-
-    public int getBoughtStorageUnits(){
-        String currentSetting = getSetting("storage.bought");
-        if(!BaseUtils.isInt(currentSetting)) return Man10ShopV2.config.getInt("itemStorage.defaultUnits");
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setBoughtStorageUnits(int units){
-        if(getBoughtStorageUnits() == units) return true;
-        return setSetting("storage.bought", units);
-    }
 
     //----------------------- shop enabled for trade -----
 
