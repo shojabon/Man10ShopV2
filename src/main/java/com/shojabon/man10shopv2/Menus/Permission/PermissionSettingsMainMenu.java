@@ -37,12 +37,11 @@ public class PermissionSettingsMainMenu {
 
         LargeSInventoryMenu renderedCore = new LargeSInventoryMenu(new SStringBuilder().darkRed().text("権限設定").build(), plugin);
 
-        for(UUID modUUID: shop.moderators.keySet()){
-            Man10ShopModerator mod = shop.moderators.get(modUUID);
+        for(Man10ShopModerator mod: shop.permission.getModerators()){
 
             SItemStack icon = new SItemStack(Material.PLAYER_HEAD).setHeadOwner(mod.uuid);
             icon.setDisplayName(new SStringBuilder().gold().bold().text(mod.name).build());
-            icon.addLore(new SStringBuilder().lightPurple().text("権限: ").yellow().text(mod.getPermissionString()).build());
+            icon.addLore(new SStringBuilder().lightPurple().text("権限: ").yellow().text(shop.permission.getPermissionString(mod.permission)).build());
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
@@ -68,19 +67,19 @@ public class PermissionSettingsMainMenu {
         item.setEvent(e -> {
 
             OnlinePlayerSelectorMenu playerSelectorMenu = new OnlinePlayerSelectorMenu(player, plugin);
-            for(UUID playerUUID: shop.moderators.keySet()){
-                playerSelectorMenu.addException(playerUUID);
+            for(Man10ShopModerator mod: shop.permission.getModerators()){
+                playerSelectorMenu.addException(mod.uuid);
             }
             playerSelectorMenu.setOnClick(targetPlayer -> {
 
-                if(shop.moderators.containsKey(targetPlayer.getUniqueId())){
+                if(shop.permission.isModerator(targetPlayer.getUniqueId())){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのプレイヤーはすでに管理者です");
                     return;
                 }
 
                 ConfirmationMenu menu = new ConfirmationMenu("§a" + targetPlayer.getName() + "を管理者にしますか？", plugin);
                 menu.setOnConfirm(ee -> {
-                    if(!shop.addModerator(new Man10ShopModerator(targetPlayer.getName(), targetPlayer.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS, true))){
+                    if(!shop.permission.addModerator(new Man10ShopModerator(targetPlayer.getName(), targetPlayer.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS, true))){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }

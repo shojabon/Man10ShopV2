@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.DataClass;
 
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.PermissionFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -33,9 +34,12 @@ public class Man10Shop {
     public ItemStack icon;
     public Man10ShopType shopType;
 
-    public HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
     public Man10ShopSettings settings;
+
+    //functions
+
+    public PermissionFunction permission = null;
 
     public boolean currentlyEditingStorage = false;
 
@@ -67,10 +71,12 @@ public class Man10Shop {
         this.settings = new Man10ShopSettings(this.shopId);
         this.admin = admin;
 
-        loadPermissions();
         loadSigns();
         loadPerMinuteMap();
         storageSize = calculateCurrentStorageSize(0);
+
+        //load functions
+        permission = new PermissionFunction(this);
     }
 
 
@@ -118,104 +124,6 @@ public class Man10Shop {
         if(!result) return false;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
-    }
-
-    //permissions settings
-
-    public Man10ShopPermission getPermission(UUID uuid){
-        //admin mode admin
-        if(admin){
-            Player targetPlayer = Bukkit.getPlayer(uuid);
-            if(targetPlayer != null && targetPlayer.isOnline()){
-                if(targetPlayer.hasPermission("man10shopv2.admin")) return Man10ShopPermission.OWNER;
-            }
-        }
-
-        if(!moderators.containsKey(uuid)) return null;
-        return moderators.get(uuid).permission;
-    }
-
-    public boolean hasPermissionAtLeast(UUID uuid, Man10ShopPermission permission){
-        Man10ShopPermission actualPerm = getPermission(uuid);
-        if(actualPerm == null) return false;
-
-        int userPermissionLevel = calculatePermissionLevel(actualPerm);
-
-        int requiredPermissionLevel = calculatePermissionLevel(permission);
-        return userPermissionLevel >= requiredPermissionLevel;
-    }
-
-    public boolean hasPermission(UUID uuid, Man10ShopPermission permission){
-        Man10ShopPermission actualPerm = getPermission(uuid);
-        if(actualPerm == null) return false;
-        return actualPerm == permission;
-    }
-
-    public int ownerCount(){
-        if(admin) return 1;
-        int result = 0;
-        for(Man10ShopModerator mod: moderators.values()){
-            if(mod.permission == Man10ShopPermission.OWNER) result ++;
-        }
-        return result;
-    }
-
-    private int calculatePermissionLevel(Man10ShopPermission permission){
-        int permissionLevel = 0;
-        switch (permission){
-            case OWNER: permissionLevel = 10; break;
-            case MODERATOR: permissionLevel = 9; break;
-            case ACCOUNTANT: permissionLevel = 7; break;
-            case STORAGE_ACCESS: permissionLevel = 7; break;
-        }
-        return permissionLevel;
-    }
-
-    public boolean addModerator(Man10ShopModerator moderator){
-        Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
-
-        HashMap<String, Object> payload = new HashMap<>();
-        payload.put("name", moderator.name);
-        payload.put("uuid", moderator.uuid.toString());
-        payload.put("shop_id", shopId.toString());
-        payload.put("permission", moderator.permission.name());
-        payload.put("notification", moderator.notificationEnabled);
-        if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
-        moderators.put(moderator.uuid, moderator);
-        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
-        return true;
-    }
-
-    public boolean setModerator(Man10ShopModerator moderator){
-        Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
-
-        HashMap<String, Object> payload = new HashMap<>();
-        payload.put("name", moderator.name);
-        payload.put("uuid", moderator.uuid.toString());
-        payload.put("shop_id", shopId.toString());
-        payload.put("permission", moderator.permission.name());
-        payload.put("notification", moderator.notificationEnabled);
-        if(!Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_permissions"))) return false;
-        moderators.put(moderator.uuid, moderator);
-        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
-        return true;
-    }
-
-    public boolean removeModerator(Man10ShopModerator moderator){
-        boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_permissions WHERE shop_id ='" + shopId + "' AND uuid = '" + moderator.uuid + "'");
-        if(!result) return false;
-        moderators.remove(moderator.uuid);
-        Man10ShopV2API.userModeratingShopList.remove(moderator.uuid);
-        return true;
-    }
-
-    public void loadPermissions(){
-        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE shop_id = '" + shopId + "'");
-        for(MySQLCachedResultSet rs: results) {
-            UUID uuid = UUID.fromString(rs.getString("uuid"));
-            Man10ShopModerator permission = new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")), rs.getBoolean("notification"));
-            moderators.put(uuid, permission);
-        }
     }
 
     //storage space
@@ -300,6 +208,21 @@ public class Man10Shop {
         Man10ShopV2API.closeInventoryGroup(shopId);
         return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET price = " + value + " WHERE shop_id = '" + shopId + "'");
     }
+
+    //base gets
+    public boolean isAdminShop(){
+        return admin;
+    }
+
+    public UUID getShopId(){
+        return shopId;
+    }
+
+    public String getShopName(){
+        return name;
+    }
+
+
 
     //actions
 
@@ -446,7 +369,7 @@ public class Man10Shop {
             addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
-            notifyModerators(amount*item.getAmount());
+            permission.notifyModerators(amount*item.getAmount());
             setCoolDown(p); //set coolDown
 
         }else if(shopType == Man10ShopType.SELL){
@@ -490,7 +413,7 @@ public class Man10Shop {
             addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
-            notifyModerators(amount*item.getAmount());
+            permission.notifyModerators(amount*item.getAmount());
             setCoolDown(p); //set coolDown
 
 
@@ -513,7 +436,6 @@ public class Man10Shop {
         return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET name = '" + MySQLAPI.escapeString(name) + "' WHERE shop_id = '" + shopId + "'");
     }
 
-
     //signs
 
     public void loadSigns(){
@@ -526,31 +448,6 @@ public class Man10Shop {
                     rs.getInt("z"));
             signs.put(rs.getString("locationId"), sign);
             signs.put("locationId", sign);
-        }
-    }
-
-    //notification
-
-    public boolean setEnableNotification(Man10ShopModerator mod, boolean enabled){
-        if(!moderators.containsKey(mod.uuid)){
-            return false;
-        }
-        if(mod.notificationEnabled == enabled) return true;
-        mod.notificationEnabled = enabled;
-        moderators.put(mod.uuid, mod);
-        if(!Man10ShopV2.mysql.execute("UPDATE man10shop_permissions SET notification = '" + enabled + "' WHERE shop_id = '" + shopId + "' AND uuid = '" + mod.uuid + "'")){
-            return false;
-        }
-        return true;
-    }
-
-    public void notifyModerators(int amount){
-        for(Man10ShopModerator mod: moderators.values()){
-            if(!mod.notificationEnabled) continue;
-            Player p = Bukkit.getServer().getPlayer(mod.uuid);
-            if(p == null) continue;
-            if(!p.isOnline()) continue;
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + name + "で" + amount + "個のアイテム取引がありました");
         }
     }
 

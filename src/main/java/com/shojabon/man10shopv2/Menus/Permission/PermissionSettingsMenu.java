@@ -51,13 +51,13 @@ public class PermissionSettingsMenu extends SInventory{
                 ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
                 int finalI = i;
                 menu.setOnConfirm(ee -> {
-                    if(target.permission == Man10ShopPermission.OWNER && shop.ownerCount() == 1){
+                    if(target.permission == Man10ShopPermission.OWNER && shop.permission.totalOwnerCount() == 1){
                         player.sendMessage(Man10ShopV2.prefix + "§c§lオーナーは最低一人必要です");
                         return;
                     }
                     target.permission = permissions[finalI];
 
-                    if(!shop.setModerator(target)){
+                    if(!shop.permission.setModerator(target)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
@@ -79,8 +79,8 @@ public class PermissionSettingsMenu extends SInventory{
 
     public void renderSelector(){
         for(int i = 0; i < slots.length; i++){
-            if(shop.hasPermissionAtLeast(player.getUniqueId(), permissions[i])){
-                if(shop.hasPermission(target.uuid, permissions[i])){
+            if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), permissions[i])){
+                if(shop.permission.hasPermission(target.uuid, permissions[i])){
                     //has permission and is current permission
                     SInventoryItem current = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().bold().text("現在の権限").build()).build());
                     current.clickable(false);
@@ -128,11 +128,11 @@ public class PermissionSettingsMenu extends SInventory{
                 .yellow().obfuscated().text("OO")
                 .build()).build());
         deleteUser.setAsyncEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのユーザーを消去する権限を持っていません");
                 return;
             }
-            if(target.permission == Man10ShopPermission.OWNER && shop.ownerCount() == 1){
+            if(target.permission == Man10ShopPermission.OWNER && shop.permission.totalOwnerCount() == 1){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lオーナーは最低一人必要です");
                 return;
             }
@@ -141,7 +141,7 @@ public class PermissionSettingsMenu extends SInventory{
             //confirmation
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
             menu.setOnConfirm(ee -> {
-                if(!shop.removeModerator(target)){
+                if(!shop.permission.removeModerator(target)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
@@ -194,7 +194,7 @@ public class PermissionSettingsMenu extends SInventory{
 
             BooleanInputMenu boolMenu = new BooleanInputMenu(target.notificationEnabled, "設定を変更しますか？", plugin);
             boolMenu.setOnConfirm(bool -> {
-                if(!shop.setEnableNotification(target, bool)){
+                if(!shop.permission.setEnableNotification(target, bool)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }

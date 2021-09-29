@@ -54,7 +54,7 @@ public class TargetItemSelectorMenu extends SInventory{
 
             SInventory.threadPool.execute(()->{
 
-                if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+                if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lあなたにはこの項目を設定する権限がありません");
                     return;
                 }

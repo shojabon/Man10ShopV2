@@ -54,17 +54,6 @@ public class Man10ShopV2API {
         }
 
 
-        //load permissions
-        ArrayList<MySQLCachedResultSet> permissionsResult = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE shop_id = '" + shopId + "';");
-        if(permissionsResult == null) return null;
-        HashMap<UUID, Man10ShopModerator> moderators = new HashMap<>();
-        for (MySQLCachedResultSet rs : permissionsResult) {
-            UUID uuid = UUID.fromString(rs.getString("uuid"));
-            moderators.put(uuid,
-                    new Man10ShopModerator(rs.getString("name"), uuid, Man10ShopPermission.valueOf(rs.getString("permission")), rs.getBoolean("notification")));
-        }
-        shop.moderators = moderators;
-
 
         shopCache.put(shop.shopId, shop);
         return shop;
@@ -98,7 +87,7 @@ public class Man10ShopV2API {
         payload.put("admin", admin);
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
         if(!admin){
-            if(!shop.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER, true))){
+            if(!shop.permission.addModerator(new Man10ShopModerator(p.getName(), p.getUniqueId(), Man10ShopPermission.OWNER, true))){
                 return null;
             }
         }

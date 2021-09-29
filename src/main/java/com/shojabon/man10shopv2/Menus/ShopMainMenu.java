@@ -84,7 +84,7 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getShopSettingsItem(){
         SStringBuilder iconName = new SStringBuilder();
 
-        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             iconName.gray().bold().text("ショップ設定");
         }else{
             iconName.gray().bold().strike().text("ショップ設定");
@@ -92,7 +92,7 @@ public class ShopMainMenu extends SInventory {
 
         SItemStack icon = new SItemStack(Material.IRON_DOOR).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -103,7 +103,7 @@ public class ShopMainMenu extends SInventory {
 
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
@@ -117,7 +117,7 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getStorageSettingsItem(){
         SStringBuilder iconName = new SStringBuilder();
 
-        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+        if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
             iconName.gray().bold().text("アイテム倉庫").build();
         }else{
             iconName.gray().bold().strike().text("アイテム倉庫");
@@ -125,7 +125,7 @@ public class ShopMainMenu extends SInventory {
 
         SItemStack icon = new SItemStack(Material.CHEST).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
+        if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -135,7 +135,7 @@ public class ShopMainMenu extends SInventory {
         item.clickable(false);
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
@@ -172,7 +172,7 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getPermissionSettingsItem(){
         SStringBuilder iconName = new SStringBuilder();
 
-        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             iconName.darkRed().bold().text("権限設定").build();
         }else{
             iconName.gray().bold().strike().text("権限設定");
@@ -180,7 +180,7 @@ public class ShopMainMenu extends SInventory {
 
         SItemStack icon = new SItemStack(Material.BELL).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -190,7 +190,7 @@ public class ShopMainMenu extends SInventory {
         item.clickable(false);
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
@@ -205,7 +205,7 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getTargetItemSettingsItem(){
         SStringBuilder iconName = new SStringBuilder();
 
-        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             iconName.aqua().bold().text("取引アイテム設定").build();
         }else{
             iconName.gray().bold().strike().text("取引アイテム設定");
@@ -213,7 +213,7 @@ public class ShopMainMenu extends SInventory {
 
         SItemStack icon = new SItemStack(Material.LECTERN).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+        if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -224,7 +224,7 @@ public class ShopMainMenu extends SInventory {
 
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
@@ -238,7 +238,7 @@ public class ShopMainMenu extends SInventory {
     public SInventoryItem getMoneySelectorMenu(){
         SStringBuilder iconName = new SStringBuilder();
 
-        if(shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+        if(shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
             iconName.green().bold().text("現金出し入れ").build();
         }else{
             iconName.gray().bold().strike().text("現金出し入れ");
@@ -246,7 +246,7 @@ public class ShopMainMenu extends SInventory {
 
         SItemStack icon = new SItemStack(Material.EMERALD).setDisplayName(iconName.build());
 
-        if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+        if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
             icon.addLore(new SStringBuilder().red().text("権限がありません").build());
             icon.addLore("");
         }
@@ -257,7 +257,7 @@ public class ShopMainMenu extends SInventory {
         item.clickable(false);
 
         item.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
@@ -292,7 +292,7 @@ public class ShopMainMenu extends SInventory {
         menu.setOnCancel(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
         menu.setOnClose(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
         menu.setOnConfirm(integer -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限がありません");
                 return;
             }

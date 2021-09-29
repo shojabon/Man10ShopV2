@@ -343,7 +343,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         inventoryItem.clickable(false);
 
         inventoryItem.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
@@ -380,7 +380,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         inventoryItem.clickable(false);
 
         inventoryItem.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
@@ -420,7 +420,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         inventoryItem.clickable(false);
 
         inventoryItem.setEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
@@ -442,7 +442,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
-            if(!shop.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
+            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.OWNER)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }

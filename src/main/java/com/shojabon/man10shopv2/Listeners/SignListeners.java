@@ -151,7 +151,7 @@ public class SignListeners implements @NotNull Listener {
             plugin.api.deleteSign(sign);
             return;
         }
-        if(!shop.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR) && !e.getPlayer().hasPermission("man10shopv2.sign.break.bypass")){
+        if(!shop.permission.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR) && !e.getPlayer().hasPermission("man10shopv2.sign.break.bypass")){
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§l看板を破壊する権限を持っていません");
             e.setCancelled(true);
             return;

@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 public abstract class ShopFunction {
 
-    private final Man10Shop shop;
+    public final Man10Shop shop;
 
     public ShopFunction(Man10Shop shop){
         this.shop = shop;
