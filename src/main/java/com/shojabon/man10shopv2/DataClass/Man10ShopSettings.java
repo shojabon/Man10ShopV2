@@ -76,18 +76,5 @@ public class Man10ShopSettings {
         return settings.get(key);
     }
 
-    //-------------------- storage cap ------------------
-
-    public int getStorageCap(){
-        String currentSetting = getSetting("storage.sell.cap");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setStorageCap(int storageCap){
-        if(getStorageCap() == storageCap) return true;
-        return setSetting("storage.sell.cap", storageCap);
-    }
-
 
 }

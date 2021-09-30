@@ -39,7 +39,7 @@ public class ShopActionMenu extends SInventory{
         }else{
             builder.text("§c§lを売る");
             int buying = shop.storage.calculateCurrentStorageSize(0);
-            if(shop.settings.getStorageCap() != 0) buying = shop.settings.getStorageCap();
+            if(shop.storageCap.getStorageCap() != 0) buying = shop.storageCap.getStorageCap();
             if(!shop.admin)builder.text("残り買取 " + (buying - shop.storage.itemCount)).text("個");
         }
         setTitle(builder.build());

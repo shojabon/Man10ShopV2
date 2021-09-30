@@ -47,6 +47,7 @@ public class Man10Shop {
     public AllowedPermissionFunction allowedPermission;
     public SingleTransactionModeFunction singleTransactionMode;
     public ShopEnabledFunction shopEnabled;
+    public StorageCapFunction storageCap;
 
 
     public boolean currentlyEditingStorage = false;
@@ -102,6 +103,9 @@ public class Man10Shop {
 
         shopEnabled = new ShopEnabledFunction(this);
         functions.add(shopEnabled);
+
+        storageCap = new StorageCapFunction(this);
+        functions.add(storageCap);
     }
 
 
@@ -202,11 +206,6 @@ public class Man10Shop {
                 return false;
             }
 
-            //no money (sell)
-            if(settings.getStorageCap() != 0 && storage.itemCount >= settings.getStorageCap()){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
-                return false;
-            }
         }
         //all function check
         for(ShopFunction func: functions){
@@ -262,7 +261,7 @@ public class Man10Shop {
 
         }else if(shopType == Man10ShopType.SELL){
             //if item storage hits storage cap
-            if(storage.itemCount + amount > settings.getStorageCap() && settings.getStorageCap() != 0){
+            if(storage.itemCount + amount > storageCap.getStorageCap() && storageCap.getStorageCap() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return;
             }
