@@ -34,7 +34,6 @@ public class Man10Shop {
     public Man10ShopType shopType;
 
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
-    public Man10ShopSettings settings;
 
     //functions
 
@@ -73,7 +72,6 @@ public class Man10Shop {
         this.targetItemCount = targetItemCount;
         this.icon = new ItemStack(targetItem.getType());
         this.shopType = shopType;
-        this.settings = new Man10ShopSettings(this.shopId);
         this.admin = admin;
 
         loadSigns();
