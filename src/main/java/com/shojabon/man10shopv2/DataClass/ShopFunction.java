@@ -3,8 +3,10 @@ package com.shojabon.man10shopv2.DataClass;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
 import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +30,7 @@ public abstract class ShopFunction {
 
     public boolean isAllowedToUseShopWithAmount(Player p, int amount){return true;}
 
-    public SInventoryItem getSettingItem(){return null;}
+    public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
 
 
     //setting

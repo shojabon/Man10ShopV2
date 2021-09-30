@@ -3,7 +3,15 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
+import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
 import com.shojabon.man10shopv2.Utils.BaseUtils;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
+import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.NumericInputMenu;
+import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -57,5 +65,40 @@ public class CoolDownFunction extends ShopFunction {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
+        SItemStack item = new SItemStack(Material.CLOCK).setDisplayName(new SStringBuilder().yellow().text("取引クールダウン").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(getCoolDownTime()).text("秒").build());
+        item.addLore("");
+        item.addLore("§f取引を制限する");
+        item.addLore("§f設定秒に1回のみしか取引できなくなります");
+        item.addLore("§f0の場合はクールダウンなし");
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setEvent(e -> {
+
+            //number input menu
+            NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引クールダウン").build(), plugin);
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnConfirm(newValue -> {
+                if(newValue < 0){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§lクールダウンタイムは正の数でなくてはならない");
+                    return;
+                }
+
+                if(shop.coolDown.setCoolDown(newValue)){
+                    Man10ShopV2API.log(shop.shopId, "setCoolDownTime", newValue, player.getName(), player.getUniqueId()); //log
+                }
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+            });
+            sInventory.moveToMenu(player, menu);
+
+        });
+
+        return inventoryItem;
     }
 }

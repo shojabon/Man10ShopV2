@@ -3,6 +3,13 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
+import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
+import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.man10shopv2.Utils.SLongTextInput;
+import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class AllowedPermissionFunction extends ShopFunction {
@@ -42,5 +49,45 @@ public class AllowedPermissionFunction extends ShopFunction {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
+        SItemStack item = new SItemStack(Material.IRON_DOOR).setDisplayName(new SStringBuilder().gold().text("ショップを使用可能な権限を設定する").build());
+        SStringBuilder currentSetting = new SStringBuilder().lightPurple().text("現在の設定: ").yellow();
+        if(getAllowedPermission() == null){
+            currentSetting.text("なし");
+        }else{
+            currentSetting.text("man10shopv2.use." + getAllowedPermission());
+        }
+        item.addLore(currentSetting.build());
+
+        SInventoryItem inventoryItem = new SInventoryItem(item.build());
+        inventoryItem.clickable(false);
+        inventoryItem.setAsyncEvent(e -> {
+
+            //text input
+            SLongTextInput textInput = new SLongTextInput("§d§l権限を入力してください man10shopv2.use.XXXX 空白の場合はなし", plugin);
+            textInput.setOnConfirm(permissionName -> {
+                if(permissionName.length() > 64){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l権限は64文字以内でなくてはなりません");
+                    return;
+                }
+                if(!setAllowedPermission(permissionName)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                Man10ShopV2API.log(shop.getShopId(), "setShopAllowedPermission", permissionName, player.getName(), player.getUniqueId()); //log
+                player.sendMessage(Man10ShopV2.prefix + "§a§l権限を変更しました");
+            });
+
+            textInput.setOnCancel(ee -> player.sendMessage(Man10ShopV2.prefix + "§c§lキャンセルしました"));
+
+
+            textInput.open(player);
+            sInventory.close(player);
+        });
+
+        return inventoryItem;
     }
 }

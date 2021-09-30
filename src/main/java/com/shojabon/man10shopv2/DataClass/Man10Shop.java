@@ -218,6 +218,13 @@ public class Man10Shop {
 
         if(!allowedToUseShop(p)) return;
 
+        //all function check
+        for(ShopFunction func: functions){
+            if(!func.isAllowedToUseShopWithAmount(p, amount)){
+                return;
+            }
+        }
+
         if(shopType == Man10ShopType.BUY){
             int totalPrice = price*amount;
             if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){

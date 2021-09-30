@@ -32,4 +32,10 @@ public class FunctionTemplate extends ShopFunction {
     public boolean isAllowedToUseShop(Player p) {
         return true;
     }
+
+    @Override
+    public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
+        return true;
+    }
+
 }
