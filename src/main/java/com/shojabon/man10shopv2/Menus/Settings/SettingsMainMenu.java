@@ -56,7 +56,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         }
 
         items.add(sellPriceItem());
-        items.add(shopTypeSelectItem());
 
 
 
@@ -89,26 +88,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             moveToMenu(player, menu);
 
         });
-
-        return inventoryItem;
-    }
-
-    public SInventoryItem shopTypeSelectItem(){
-        SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(shop.shopType.getShopType())).build());
-        SInventoryItem inventoryItem = new SInventoryItem(item.build());
-        inventoryItem.clickable(false);
-
-        inventoryItem.setEvent(e -> {
-            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
-                return;
-            }
-            //confirmation menu
-            moveToMenu(player, new ShopTypeSelectorMenu(player, shop, plugin));
-
-        });
-
 
         return inventoryItem;
     }

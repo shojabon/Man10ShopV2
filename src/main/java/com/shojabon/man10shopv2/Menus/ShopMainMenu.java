@@ -23,7 +23,7 @@ public class ShopMainMenu extends SInventory {
     Player player;
 
     public ShopMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(new SStringBuilder().green().text(shop.name + "設定").build(), 3, plugin);
+        super(new SStringBuilder().green().text(shop.name.getName() + "設定").build(), 3, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
@@ -72,7 +72,7 @@ public class ShopMainMenu extends SInventory {
         String iconName = new SStringBuilder().gold().bold().text("ショップ情報").build();
         SItemStack icon = new SItemStack(Material.OAK_SIGN).setDisplayName(iconName);
 
-        icon.addLore("§aショップ口座残高:§e " + BaseUtils.priceString(shop.money) + "円");
+        icon.addLore("§aショップ口座残高:§e " + BaseUtils.priceString(shop.money.getMoney()) + "円");
         icon.addLore("§7アイテム数:§e " + BaseUtils.priceString(shop.storage.itemCount));
 
         SInventoryItem shopInfo = new SInventoryItem(icon.build());
@@ -302,16 +302,16 @@ public class ShopMainMenu extends SInventory {
                     return;
                 }
                 Man10ShopV2.vault.withdraw(player.getUniqueId(), integer);
-                shop.addMoney(integer);
+                shop.money.addMoney(integer);
                 Man10ShopV2API.log(shop.shopId, "depositMoney", integer, player.getName(), player.getUniqueId());
                 player.sendMessage(Man10ShopV2.prefix + "§a§l" + BaseUtils.priceString(integer) + "円入金しました");
             } else {
-                if (shop.money < integer) {
+                if (shop.money.getMoney() < integer) {
                     player.sendMessage(Man10ShopV2.prefix + "§c§l現金が不足しています");
                     return;
                 }
                 Man10ShopV2.vault.deposit(player.getUniqueId(), integer);
-                shop.removeMoney(integer);
+                shop.money.removeMoney(integer);
                 Man10ShopV2API.log(shop.shopId, "withdrawMoney", integer, player.getName(), player.getUniqueId());
                 player.sendMessage(Man10ShopV2.prefix + "§a§l" + BaseUtils.priceString(integer) + "円出金しました");
             }

@@ -26,8 +26,6 @@ public class Man10Shop {
 
     public boolean admin = false;
 
-    public int money;
-
     public SItemStack targetItem;
     public int targetItemCount;
     public ItemStack icon;
@@ -48,6 +46,7 @@ public class Man10Shop {
     public StorageCapFunction storageCap;
     public NameFunction name;
     public ShopTypeFunction shopType;
+    public MoneyFunction money;
 
     public boolean currentlyEditingStorage = false;
 
@@ -64,7 +63,6 @@ public class Man10Shop {
         if(targetItem == null){
             targetItem = new SItemStack(Material.DIAMOND);
         }
-        this.money = money;
         this.price = price;
         this.shopId = shopId;
         this.targetItem = targetItem;
@@ -104,30 +102,18 @@ public class Man10Shop {
         functions.add(storageCap);
 
         this.name = new NameFunction(this);
+        this.name.name = name;
         functions.add(this.name);
 
         this.shopType = new ShopTypeFunction(this);
+        this.shopType.shopType = shopType;
         functions.add(this.shopType);
+
+        this.money = new MoneyFunction(this);
+        this.money.money = money;
+        functions.add(this.money);
     }
 
-
-    //money storage
-
-    public boolean addMoney(int value){
-        money = money + value;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET money = money + " + value + " WHERE shop_id = '" + shopId + "'");
-        if(!result) return false;
-        //log here
-        return true;
-    }
-
-    public boolean removeMoney(int value){
-        money = money - value;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET money = money - " + value + " WHERE shop_id = '" + shopId + "'");
-        if(!result) return false;
-        //log here
-        return true;
-    }
 
     //itemstack setting
 
@@ -181,15 +167,6 @@ public class Man10Shop {
             return false;
         }
 
-        if(shopType.getShopType() == Man10ShopType.BUY){
-        }else{
-            //no money (sell)
-            if(money < price && !admin){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
-                return false;
-            }
-
-        }
         //all function check
         for(ShopFunction func: functions){
             if(!func.isAllowedToUseShop(p)){
@@ -220,7 +197,7 @@ public class Man10Shop {
                 p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
             }
-            addMoney(totalPrice);
+            money.addMoney(totalPrice);
             //remove items from shop storage
 
             SItemStack item = new SItemStack(targetItem.build().clone());
@@ -248,11 +225,11 @@ public class Man10Shop {
                 return;
             }
             int totalPrice = price*amount;
-            if(totalPrice > money && !admin){
+            if(totalPrice > money.getMoney() && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップの現金が不足しています");
                 return;
             }
-            if(!removeMoney(totalPrice)){
+            if(!money.removeMoney(totalPrice)){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
             }
