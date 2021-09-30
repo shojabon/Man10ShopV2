@@ -45,6 +45,8 @@ public class Man10Shop {
     public PerMinuteCoolDownFunction perMinuteCoolDown;
     public WeekDayToggleFunction weekDayToggle;
     public AllowedPermissionFunction allowedPermission;
+    public SingleTransactionModeFunction singleTransactionMode;
+    public ShopEnabledFunction shopEnabled;
 
 
     public boolean currentlyEditingStorage = false;
@@ -94,6 +96,12 @@ public class Man10Shop {
 
         allowedPermission = new AllowedPermissionFunction(this);
         functions.add(allowedPermission);
+
+        singleTransactionMode = new SingleTransactionModeFunction(this);
+        functions.add(singleTransactionMode);
+
+        shopEnabled = new ShopEnabledFunction(this);
+        functions.add(shopEnabled);
     }
 
 
@@ -183,12 +191,6 @@ public class Man10Shop {
         //editing storage
         if(currentlyEditingStorage){
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在店主がショップの在庫を移動させています");
-            return false;
-        }
-
-        //shop disabled
-        if(!settings.getShopEnabled()){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return false;
         }
 

@@ -120,7 +120,7 @@ public class ShopActionMenu extends SInventory{
     }
 
     public void renderButtons(){
-        if(shop.settings.isSingleTransactionMode()) return;
+        if(shop.singleTransactionMode.isSingleTransactionMode()) return;
         SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone())
                 .addLore("§f左クリックで取引数1増加")
                 .addLore("§fシフト+左クリックで取引数を最大まで増加")

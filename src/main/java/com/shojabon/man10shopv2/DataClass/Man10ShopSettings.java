@@ -90,38 +90,4 @@ public class Man10ShopSettings {
     }
 
 
-    //----------------------- shop enabled for trade -----
-
-
-    public boolean getShopEnabled(){
-        String currentSetting = getSetting("shop.enabled");
-        if(!BaseUtils.isBoolean(currentSetting)) return true;
-        return Boolean.parseBoolean(currentSetting);
-    }
-
-    public boolean setShopEnabled(boolean enabled){
-        if(getShopEnabled() == enabled) return true;
-        if(!setSetting("shop.enabled", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shopId);
-        return true;
-    }
-
-    //----------------------- shop single sell mode -----
-
-
-    public boolean isSingleTransactionMode(){
-        String currentSetting = getSetting("shop.transaction.single");
-        if(!BaseUtils.isBoolean(currentSetting)) return false;
-        return Boolean.parseBoolean(currentSetting);
-    }
-
-    public boolean setSingleSellMode(boolean enabled){
-        if(isSingleTransactionMode() == enabled) return true;
-        if(!setSetting("shop.transaction.single", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shopId);
-        return true;
-    }
-
-
-
 }

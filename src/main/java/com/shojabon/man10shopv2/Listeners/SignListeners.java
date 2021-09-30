@@ -227,7 +227,7 @@ public class SignListeners implements @NotNull Listener {
             }
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
-            if(shop.settings.getShopEnabled()){
+            if(shop.shopEnabled.getShopEnabled()){
                 sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
             }else{
                 sign.setLine(1, "§c取引停止中");

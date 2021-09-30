@@ -208,7 +208,7 @@ public class Man10ShopV2API {
                     sign.setLine(0, "§c§l買取ショップ");
                 }
 
-                if(shop.settings.getShopEnabled()){
+                if(shop.shopEnabled.getShopEnabled()){
                     sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
                 }else{
                     sign.setLine(1, "§c取引停止中");

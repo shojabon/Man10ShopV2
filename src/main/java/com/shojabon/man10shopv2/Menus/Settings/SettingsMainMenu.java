@@ -281,16 +281,16 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem shopEnabledItem(){
         SItemStack item = new SItemStack(Material.LEVER).setDisplayName(new SStringBuilder().gray().text("ショップ取引有効").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.settings.getShopEnabled())).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.shopEnabled.getShopEnabled())).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setEvent(e -> {
             //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(shop.settings.getShopEnabled(), "ショップ有効化設定", plugin);
+            BooleanInputMenu menu = new BooleanInputMenu(shop.shopEnabled.getShopEnabled(), "ショップ有効化設定", plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(bool -> {
-                if(shop.settings.setShopEnabled(bool)){
+                if(shop.shopEnabled.setShopEnabled(bool)){
                     Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
                 }
                 plugin.api.updateAllSigns(shop);
@@ -307,7 +307,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem singleTransactionItem(){
         SItemStack item = new SItemStack(Material.BOWL).setDisplayName(new SStringBuilder().gray().text("単品取引モード").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.settings.isSingleTransactionMode())).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(shop.singleTransactionMode.isSingleTransactionMode())).build());
         item.addLore("");
         item.addLore("§fまとめて取引ができなくなります");
         item.addLore("§f1個ずつのみの取引になります");
@@ -318,11 +318,11 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         inventoryItem.clickable(false);
         inventoryItem.setEvent(e -> {
             //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(shop.settings.isSingleTransactionMode(), "単品取引モード", plugin);
+            BooleanInputMenu menu = new BooleanInputMenu(shop.singleTransactionMode.isSingleTransactionMode(), "単品取引モード", plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnConfirm(bool -> {
-                if(shop.settings.setSingleSellMode(bool)){
+                if(shop.singleTransactionMode.setSingleSellMode(bool)){
                     Man10ShopV2API.log(shop.shopId, "setSingleSellMode", bool, player.getName(), player.getUniqueId()); //log
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
