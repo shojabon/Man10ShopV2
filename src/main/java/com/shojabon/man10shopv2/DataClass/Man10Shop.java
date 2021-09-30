@@ -218,15 +218,7 @@ public class Man10Shop {
 
         if(!allowedToUseShop(p)) return;
 
-        if(perMinuteCoolDown.checkPerMinuteCoolDown(p, amount)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
-            return;
-        }
-
         if(shopType == Man10ShopType.BUY){
-            if(amount > storage.itemCount && !admin){
-                amount = storage.itemCount;
-            }
             int totalPrice = price*amount;
             if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
               p.sendMessage(Man10ShopV2.prefix + "§c§l残高が不足しています");
@@ -258,16 +250,7 @@ public class Man10Shop {
             coolDown.setCoolDown(p); //set coolDown
 
         }else if(shopType == Man10ShopType.SELL){
-            //if item storage hits storage cap
-            if(storage.itemCount + amount > storageCap.getStorageCap() && storageCap.getStorageCap() != 0){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
-                return;
-            }
             SItemStack item = new SItemStack(targetItem.build().clone());
-            if(storage.itemCount + amount > storage.calculateCurrentStorageSize(0) && !admin){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
-                return;
-            }
             if(!p.getInventory().containsAtLeast(targetItem.build(), amount*item.getAmount())){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l買い取るためのアイテムを持っていません");
                 return;

@@ -122,4 +122,13 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
         }
         return true;
     }
+
+    @Override
+    public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
+        if(checkPerMinuteCoolDown(p, amount)){
+            p.sendMessage(Man10ShopV2.prefix + "§c§l時間内の最大取引数に達しました");
+            return false;
+        }
+        return true;
+    }
 }

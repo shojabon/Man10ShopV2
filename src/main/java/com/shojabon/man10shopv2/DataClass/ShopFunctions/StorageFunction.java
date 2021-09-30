@@ -147,4 +147,21 @@ public class StorageFunction extends ShopFunction {
         }
         return true;
     }
+
+    @Override
+    public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
+        if(shop.getShopType() == Man10ShopType.BUY){
+            if(amount > itemCount && !shop.isAdminShop()){
+                p.sendMessage(Man10ShopV2.prefix + "§c§l在庫が不足しています");
+                return false;
+            }
+        }
+        if(shop.getShopType() == Man10ShopType.SELL){
+            if(itemCount + amount > calculateCurrentStorageSize(0) && !shop.isAdminShop()){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
+                return false;
+            }
+        }
+        return true;
+    }
 }

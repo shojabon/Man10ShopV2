@@ -26,6 +26,8 @@ public abstract class ShopFunction {
         return true;
     }
 
+    public boolean isAllowedToUseShopWithAmount(Player p, int amount){return true;}
+
     public SInventoryItem getSettingItem(){return null;}
 
 
