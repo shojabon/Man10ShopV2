@@ -360,7 +360,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
         SItemStack item = new SItemStack(Material.COMPARATOR).setDisplayName(new SStringBuilder().red().text("曜日有効化設定").build());
         item.addLore(new SStringBuilder().lightPurple().text("現在の設定").build());
         int i = 0;
-        for(boolean res: shop.settings.getWeekdayShopToggle()){
+        for(boolean res: shop.weekDayToggle.getWeekdayShopToggle()){
             SStringBuilder builder = new SStringBuilder();
             builder.yellow().text(BaseUtils.weekToString(i) + ": ");
             if(res){
@@ -388,8 +388,8 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
             WeekdayShopToggleMenu menu = new WeekdayShopToggleMenu(player, shop, plugin);
 
             menu.setAsyncOnCloseEvent(ee -> {
-                if(shop.settings.setWeekdayShopToggle(menu.states)){
-                    Man10ShopV2API.log(shop.shopId, "setWeekdayShopToggle", shop.settings.getWeekdayShopToggle(), player.getName(), player.getUniqueId()); //log
+                if(shop.weekDayToggle.setWeekdayShopToggle(menu.states)){
+                    Man10ShopV2API.log(shop.shopId, "setWeekdayShopToggle", shop.weekDayToggle.getWeekdayShopToggle(), player.getName(), player.getUniqueId()); //log
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l曜日設定をしました");
                 moveToMenu(player, new SettingsMainMenu(player, shop, plugin));

@@ -1,9 +1,6 @@
 package com.shojabon.man10shopv2.DataClass;
 
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.CoolDownFunction;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.PerMinuteCoolDownFunction;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.PermissionFunction;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.StorageFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.*;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -45,6 +42,7 @@ public class Man10Shop {
     public StorageFunction storage;
     public CoolDownFunction coolDown;
     public PerMinuteCoolDownFunction perMinuteCoolDown;
+    public WeekDayToggleFunction weekDayToggle;
 
 
     public boolean currentlyEditingStorage = false;
@@ -88,6 +86,9 @@ public class Man10Shop {
 
         perMinuteCoolDown = new PerMinuteCoolDownFunction(this);
         functions.add(perMinuteCoolDown);
+
+        weekDayToggle = new WeekDayToggleFunction(this);
+        functions.add(weekDayToggle);
     }
 
 
@@ -162,23 +163,6 @@ public class Man10Shop {
         //permission to use
         if(!p.hasPermission("man10shopv2.use")){
             p.sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
-            return false;
-        }
-
-        //weekday toggle
-        if(!settings.getWeekdayShopToggle()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1]){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップを本日ご利用することはできません");
-            StringBuilder availableWeekDays = new StringBuilder();
-            int i = 0;
-            for(boolean enabled: settings.getWeekdayShopToggle()){
-                if(enabled){
-                    availableWeekDays.append(BaseUtils.weekToString(i)).append(" ");
-                }
-                i++;
-            }
-            if(availableWeekDays.toString().length() != 0){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは" + availableWeekDays.substring(0, availableWeekDays.length()-1) + "に利用することができます");
-            }
             return false;
         }
 

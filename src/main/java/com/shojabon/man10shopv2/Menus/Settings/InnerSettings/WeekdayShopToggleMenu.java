@@ -30,7 +30,7 @@ public class WeekdayShopToggleMenu extends SInventory{
             renderSelector();
         });
 
-        states = shop.settings.getWeekdayShopToggle();
+        states = shop.weekDayToggle.getWeekdayShopToggle();
 
     }
 
