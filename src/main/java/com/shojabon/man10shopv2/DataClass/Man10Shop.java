@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 
@@ -43,6 +44,7 @@ public class Man10Shop {
     public CoolDownFunction coolDown;
     public PerMinuteCoolDownFunction perMinuteCoolDown;
     public WeekDayToggleFunction weekDayToggle;
+    public AllowedPermissionFunction allowedPermission;
 
 
     public boolean currentlyEditingStorage = false;
@@ -89,6 +91,9 @@ public class Man10Shop {
 
         weekDayToggle = new WeekDayToggleFunction(this);
         functions.add(weekDayToggle);
+
+        allowedPermission = new AllowedPermissionFunction(this);
+        functions.add(allowedPermission);
     }
 
 
@@ -184,12 +189,6 @@ public class Man10Shop {
         //shop disabled
         if(!settings.getShopEnabled()){
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
-            return false;
-        }
-
-        //if player has permission
-        if(settings.getAllowedPermission() != null && !p.hasPermission("man10shopv2.use." + settings.getAllowedPermission())){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのショップを使う権限がありません");
             return false;
         }
 

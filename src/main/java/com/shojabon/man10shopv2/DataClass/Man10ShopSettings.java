@@ -122,20 +122,6 @@ public class Man10ShopSettings {
         return true;
     }
 
-    //-------------------- allowed permission ------------------
-
-    public String getAllowedPermission(){
-        return getSetting("shop.permission.allowed");
-    }
-
-    public boolean setAllowedPermission(String permission){
-        if(getAllowedPermission() != null) {
-            if(getAllowedPermission().equalsIgnoreCase(permission)) return true;
-        }
-        if(permission.equalsIgnoreCase("")) return deleteSetting("shop.permission.allowed");
-        return setSetting("shop.permission.allowed", permission);
-    }
-
 
 
 }

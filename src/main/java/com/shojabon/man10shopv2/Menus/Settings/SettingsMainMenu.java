@@ -98,10 +98,10 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
     public SInventoryItem setAllowedPermissionItem(){
         SItemStack item = new SItemStack(Material.IRON_DOOR).setDisplayName(new SStringBuilder().gold().text("ショップを使用可能な権限を設定する").build());
         SStringBuilder currentSetting = new SStringBuilder().lightPurple().text("現在の設定: ").yellow();
-        if(shop.settings.getAllowedPermission() == null){
+        if(shop.allowedPermission.getAllowedPermission() == null){
             currentSetting.text("なし");
         }else{
-            currentSetting.text("man10shopv2.use." + shop.settings.getAllowedPermission());
+            currentSetting.text("man10shopv2.use." + shop.allowedPermission.getAllowedPermission());
         }
         item.addLore(currentSetting.build());
 
@@ -117,7 +117,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
                     return;
                 }
                 threadPool.execute(() -> {
-                    if(!shop.settings.setAllowedPermission(permissionName)){
+                    if(!shop.allowedPermission.setAllowedPermission(permissionName)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
