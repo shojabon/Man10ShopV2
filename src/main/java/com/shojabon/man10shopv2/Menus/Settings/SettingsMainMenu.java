@@ -39,11 +39,18 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public void renderMenu(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
-        //define items here
 
         //set items from function
         for(ShopFunction func: shop.functions){
             SInventoryItem item = func.getSettingItem(player, this, plugin);
+            if(item == null)continue;
+            items.add(item);
+        }
+
+        //admin items
+        for(ShopFunction func: shop.functions){
+            if(!shop.isAdminShop()) continue;
+            SInventoryItem item = func.getAdminSettingItem(player, this, plugin);
             if(item == null)continue;
             items.add(item);
         }

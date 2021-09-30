@@ -52,7 +52,7 @@ public class AllowedPermissionFunction extends ShopFunction {
     }
 
     @Override
-    public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
+    public SInventoryItem getAdminSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
         SItemStack item = new SItemStack(Material.IRON_DOOR).setDisplayName(new SStringBuilder().gold().text("ショップを使用可能な権限を設定する").build());
         SStringBuilder currentSetting = new SStringBuilder().lightPurple().text("現在の設定: ").yellow();
         if(getAllowedPermission() == null){

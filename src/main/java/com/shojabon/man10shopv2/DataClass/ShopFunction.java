@@ -32,6 +32,8 @@ public abstract class ShopFunction {
 
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
 
+    public SInventoryItem getAdminSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
+
 
     //setting
     private HashMap<String, String> settings = new HashMap<>();
