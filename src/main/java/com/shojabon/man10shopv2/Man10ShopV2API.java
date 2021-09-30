@@ -82,7 +82,7 @@ public class Man10ShopV2API {
         payload.put("target_item", shop.targetItem.getItemTypeBase64(true));
         payload.put("target_item_hash", shop.targetItem.getItemTypeMD5(true));
         payload.put("target_item_count", 1);
-        payload.put("shop_type", shop.shopType.name());
+        payload.put("shop_type", shop.shopType.getShopType().name());
         payload.put("deleted", 0);
         payload.put("admin", admin);
         Man10ShopV2.mysql.execute(MySQLAPI.buildInsertQuery(payload, "man10shop_shops"));
@@ -202,7 +202,7 @@ public class Man10ShopV2API {
                 }
                 Sign sign = (Sign) l.getBlock().getState();
 
-                if(shop.shopType == Man10ShopType.BUY){
+                if(shop.shopType.getShopType() == Man10ShopType.BUY){
                     sign.setLine(0, "§a§l販売ショップ");
                 }else{
                     sign.setLine(0, "§c§l買取ショップ");

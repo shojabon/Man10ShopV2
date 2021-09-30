@@ -170,7 +170,7 @@ public class PermissionFunction extends ShopFunction {
             Player p = Bukkit.getServer().getPlayer(mod.uuid);
             if(p == null) continue;
             if(!p.isOnline()) continue;
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + shop.getShopName() + "で" + amount + "個のアイテム取引がありました");
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + shop.name.getName() + "で" + amount + "個のアイテム取引がありました");
         }
     }
 

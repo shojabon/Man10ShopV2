@@ -220,7 +220,7 @@ public class SignListeners implements @NotNull Listener {
     public void buySign(Man10Shop shop, SignChangeEvent e){
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Sign sign = ((Sign) e.getBlock().getState());
-            if(shop.shopType == Man10ShopType.BUY){
+            if(shop.shopType.getShopType() == Man10ShopType.BUY){
                 sign.setLine(0, "§a§l販売ショップ");
             }else{
                 sign.setLine(0, "§c§l買取ショップ");
@@ -251,7 +251,7 @@ public class SignListeners implements @NotNull Listener {
     public String formatSignString(String original, Man10Shop shop){
         return original.replace("{price}", String.valueOf(shop.price))
                 .replace("{iName}", shop.targetItem.getDisplayName())
-                .replace("{sName}", shop.name)
+                .replace("{sName}", shop.name.getName())
                 .replace("&", "§");
     }
 

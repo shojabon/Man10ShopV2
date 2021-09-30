@@ -34,7 +34,7 @@ public class AdminShopSelectorMenu extends LargeSInventoryMenu{
         for(Man10Shop shop: shops){
 
             SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
-            icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name).build());
+            icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);

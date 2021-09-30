@@ -45,7 +45,7 @@ public class StorageCapFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(shop.getShopType() == Man10ShopType.SELL){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
             //no money (sell)
             if(getStorageCap() != 0 && shop.storage.itemCount >= getStorageCap()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
@@ -58,7 +58,7 @@ public class StorageCapFunction extends ShopFunction {
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         //if item storage hits storage cap
-        if(shop.getShopType() == Man10ShopType.SELL){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
             if(shop.storage.itemCount + amount > getStorageCap() && getStorageCap() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return false;

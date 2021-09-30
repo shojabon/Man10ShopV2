@@ -57,7 +57,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
         items.add(sellPriceItem());
         items.add(shopTypeSelectItem());
-        items.add(setNameItem());
 
 
 
@@ -66,40 +65,6 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
         setItems(items);
         setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
-    }
-
-    public SInventoryItem setNameItem(){
-        SItemStack item = new SItemStack(Material.NAME_TAG).setDisplayName(new SStringBuilder().gold().text("ショップの名前を変更する").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shop.name).build());
-
-        SInventoryItem inventoryItem = new SInventoryItem(item.build());
-        inventoryItem.clickable(false);
-        inventoryItem.setAsyncEvent(e -> {
-
-            //text input
-            SLongTextInput textInput = new SLongTextInput("§d§lショップ名を入力してください", plugin);
-            textInput.setOnConfirm(shopName -> {
-                if(shopName.length() > 64 || shopName.length() == 0){
-                    player.sendMessage(Man10ShopV2.prefix + "§c§lショップ名は64文字以内でなくてはなりません");
-                    return;
-                }
-                threadPool.execute(() -> {
-                    if(!shop.setName(shopName)){
-                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                        return;
-                    }
-                    player.sendMessage(Man10ShopV2.prefix + "§a§lショップ名を変更しました");
-                });
-            });
-
-            textInput.setOnCancel(ee -> player.sendMessage(Man10ShopV2.prefix + "§c§lキャンセルしました"));
-
-
-            textInput.open(player);
-            close(player);
-        });
-
-        return inventoryItem;
     }
 
     public SInventoryItem sellPriceItem(){
@@ -130,7 +95,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu{
 
     public SInventoryItem shopTypeSelectItem(){
         SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(shop.shopType)).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(shop.shopType.getShopType())).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 

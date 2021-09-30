@@ -16,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.units.qual.A;
 
+import javax.naming.Name;
 import java.util.*;
 
 public class Man10Shop {
 
-    public String name;
     public UUID shopId;
     public int price;
 
@@ -31,7 +31,6 @@ public class Man10Shop {
     public SItemStack targetItem;
     public int targetItemCount;
     public ItemStack icon;
-    public Man10ShopType shopType;
 
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
 
@@ -47,7 +46,8 @@ public class Man10Shop {
     public SingleTransactionModeFunction singleTransactionMode;
     public ShopEnabledFunction shopEnabled;
     public StorageCapFunction storageCap;
-
+    public NameFunction name;
+    public ShopTypeFunction shopType;
 
     public boolean currentlyEditingStorage = false;
 
@@ -67,11 +67,9 @@ public class Man10Shop {
         this.money = money;
         this.price = price;
         this.shopId = shopId;
-        this.name = name;
         this.targetItem = targetItem;
         this.targetItemCount = targetItemCount;
         this.icon = new ItemStack(targetItem.getType());
-        this.shopType = shopType;
         this.admin = admin;
 
         loadSigns();
@@ -104,6 +102,12 @@ public class Man10Shop {
 
         storageCap = new StorageCapFunction(this);
         functions.add(storageCap);
+
+        this.name = new NameFunction(this);
+        functions.add(this.name);
+
+        this.shopType = new ShopTypeFunction(this);
+        functions.add(this.shopType);
     }
 
 
@@ -136,17 +140,6 @@ public class Man10Shop {
         return true;
     }
 
-
-    //shop type
-    public boolean setShopType(Man10ShopType type){
-        shopType = type;
-        if(!Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET shop_type ='" + type.name() + "' WHERE shop_id = '" + shopId + "'")){
-            return false;
-        }
-        Man10ShopV2API.closeInventoryGroup(shopId);
-        return true;
-    }
-
     //price
 
     public boolean setPrice(int value){
@@ -163,14 +156,6 @@ public class Man10Shop {
 
     public UUID getShopId(){
         return shopId;
-    }
-
-    public String getShopName(){
-        return name;
-    }
-
-    public Man10ShopType getShopType(){
-        return shopType;
     }
 
 
@@ -196,7 +181,7 @@ public class Man10Shop {
             return false;
         }
 
-        if(shopType == Man10ShopType.BUY){
+        if(shopType.getShopType() == Man10ShopType.BUY){
         }else{
             //no money (sell)
             if(money < price && !admin){
@@ -225,7 +210,7 @@ public class Man10Shop {
             }
         }
 
-        if(shopType == Man10ShopType.BUY){
+        if(shopType.getShopType() == Man10ShopType.BUY){
             int totalPrice = price*amount;
             if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
               p.sendMessage(Man10ShopV2.prefix + "§c§l残高が不足しています");
@@ -256,7 +241,7 @@ public class Man10Shop {
             permission.notifyModerators(amount*item.getAmount());
             coolDown.setCoolDown(p); //set coolDown
 
-        }else if(shopType == Man10ShopType.SELL){
+        }else if(shopType.getShopType() == Man10ShopType.SELL){
             SItemStack item = new SItemStack(targetItem.build().clone());
             if(!p.getInventory().containsAtLeast(targetItem.build(), amount*item.getAmount())){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l買い取るためのアイテムを持っていません");
@@ -292,7 +277,7 @@ public class Man10Shop {
             coolDown.setCoolDown(p); //set coolDown
 
 
-        }else if(shopType == Man10ShopType.STOPPED){
+        }else if(shopType.getShopType() == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
     }
@@ -301,14 +286,6 @@ public class Man10Shop {
         Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET `deleted` = 1 WHERE shop_id = '" + shopId + "'");
         Man10ShopV2API.shopCache.remove(shopId);
         Man10ShopV2API.closeInventoryGroup(shopId);
-    }
-
-    //name
-
-    public boolean setName(String name){
-        if(name.length() > 64 || name.length() == 0) return false;
-        this.name = name;
-        return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET name = '" + MySQLAPI.escapeString(name) + "' WHERE shop_id = '" + shopId + "'");
     }
 
     //signs

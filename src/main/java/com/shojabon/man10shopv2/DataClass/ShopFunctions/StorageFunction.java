@@ -139,7 +139,7 @@ public class StorageFunction extends ShopFunction {
     public boolean isAllowedToUseShop(Player p) {
 
         //sell shop check
-        if(shop.getShopType() == Man10ShopType.SELL){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
             if(itemCount >= calculateCurrentStorageSize(0) && !shop.isAdminShop()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫がいっぱいです");
                 return false;
@@ -147,7 +147,7 @@ public class StorageFunction extends ShopFunction {
         }
 
         //buy shop check
-        if(shop.getShopType() == Man10ShopType.BUY){
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
             if(itemCount <= 0 && !shop.isAdminShop()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫がありません");
                 return false;
@@ -158,13 +158,13 @@ public class StorageFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
-        if(shop.getShopType() == Man10ShopType.BUY){
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
             if(amount > itemCount && !shop.isAdminShop()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l在庫が不足しています");
                 return false;
             }
         }
-        if(shop.getShopType() == Man10ShopType.SELL){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
             if(itemCount + amount > calculateCurrentStorageSize(0) && !shop.isAdminShop()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return false;

@@ -27,13 +27,13 @@ public class ShopActionMenu extends SInventory{
     int itemsTradedPerMinute = 0;
 
     public ShopActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(shop.name, 6, plugin);
+        super(shop.name.getName(), 6, plugin);
         this.player = p;
         this.shop = shop;
         this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownTotalAmountInTime(player);
         this.plugin = plugin;
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
-        if(shop.shopType == Man10ShopType.BUY){
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
             builder.text("§a§lを買う");
             if(!shop.admin)builder.text("残り在庫 " + shop.storage.itemCount).text("個");
         }else{
@@ -67,12 +67,12 @@ public class ShopActionMenu extends SInventory{
 
     public void renderConfirmButton(){
         Material buttonMaterial = Material.LIME_STAINED_GLASS_PANE;
-        if(shop.shopType == Man10ShopType.SELL){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
             buttonMaterial = Material.RED_STAINED_GLASS_PANE;
         }
         SItemStack item = new SItemStack(buttonMaterial).setDisplayName("§a§l確認");
         SStringBuilder lore = new SStringBuilder().yellow().text(itemCount).text("個を").text(itemCount*shop.price).text("円で");
-        if(shop.shopType == Man10ShopType.BUY){
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
             lore.text("買う");
         }else{
             lore.text("売る");
