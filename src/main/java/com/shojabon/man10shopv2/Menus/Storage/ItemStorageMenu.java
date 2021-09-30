@@ -23,7 +23,7 @@ public class ItemStorageMenu extends SInventory{
     boolean fillItem;
 
     public ItemStorageMenu(boolean fillItem, Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(new SStringBuilder().darkGray().text(shop.name + "倉庫 ").green().text("上限").text(String.valueOf(shop.storage.storageSize)).text("個").build(), 6, plugin);
+        super(new SStringBuilder().darkGray().text(shop.name.getName() + "倉庫 ").green().text("上限").text(String.valueOf(shop.storage.storageSize)).text("個").build(), 6, plugin);
         this.player = p;
         this.fillItem = fillItem;
         this.shop = shop;

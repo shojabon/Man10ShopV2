@@ -47,6 +47,7 @@ public class Man10Shop {
     public NameFunction name;
     public ShopTypeFunction shopType;
     public MoneyFunction money;
+    public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
 
     public boolean currentlyEditingStorage = false;
 
@@ -112,6 +113,9 @@ public class Man10Shop {
         this.money = new MoneyFunction(this);
         this.money.money = money;
         functions.add(this.money);
+
+        totalPerMinuteCoolDown = new TotalPerMinuteCoolDownFunction(this);
+        functions.add(totalPerMinuteCoolDown);
     }
 
 
@@ -213,6 +217,7 @@ public class Man10Shop {
 
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+            totalPerMinuteCoolDown.addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
             permission.notifyModerators(amount*item.getAmount());
@@ -248,6 +253,7 @@ public class Man10Shop {
 
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
             perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+            totalPerMinuteCoolDown.addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
             permission.notifyModerators(amount*item.getAmount());

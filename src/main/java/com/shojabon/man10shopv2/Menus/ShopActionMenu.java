@@ -30,7 +30,7 @@ public class ShopActionMenu extends SInventory{
         super(shop.name.getName(), 6, plugin);
         this.player = p;
         this.shop = shop;
-        this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownTotalAmountInTime(player);
+        this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownAmountInTime(player);
         this.plugin = plugin;
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
         if(shop.shopType.getShopType() == Man10ShopType.BUY){

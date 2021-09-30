@@ -33,6 +33,8 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
         loadPerMinuteMap();
     }
 
+    //functions
+
     public void loadPerMinuteMap(){
         perMinuteCoolDownMap.clear();
         if(getPerMinuteCoolDownTime() == 0 || getPerMinuteCoolDownAmount() == 0){
@@ -52,7 +54,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
         perMinuteCoolDownMap.get(uuid).addFirst(obj);
     }
 
-    public int perMinuteCoolDownTotalAmountInTime(Player p){
+    public int perMinuteCoolDownAmountInTime(Player p){
         if(getPerMinuteCoolDownTime() == 0 || getPerMinuteCoolDownAmount() == 0){
             return 0;
         }
@@ -93,7 +95,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
             return false;
         }
 
-        return perMinuteCoolDownTotalAmountInTime(p) + addingAmount > getPerMinuteCoolDownAmount();
+        return perMinuteCoolDownAmountInTime(p) + addingAmount > getPerMinuteCoolDownAmount();
     }
 
     //====================
