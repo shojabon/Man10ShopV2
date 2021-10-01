@@ -49,11 +49,37 @@ public class StorageRefillMenu extends SInventory{
 
             moveToMenu(player, menu);
         });
-        setItem(12, timeSetting);
+        setItem(11, timeSetting);
+
+
+        SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS).setDisplayName(new SStringBuilder().green().text("補充開始の基準時間を現在とする").build()).build());
+        setRefillStartingTime.clickable(false);
+        setItem(4, setRefillStartingTime);
+        setRefillStartingTime.setEvent(e -> {
+            if(!shop.storageRefill.setLastRefillTime(System.currentTimeMillis()/1000L)){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                return;
+            }
+            player.sendMessage(Man10ShopV2.prefix + "§a§l最新の補充開始時間を現在に設定しました");
+        });
+
+
+        SInventoryItem forceRefill = new SInventoryItem(new SItemStack(Material.REDSTONE_BLOCK).setDisplayName(new SStringBuilder().green().text("強制的に在庫を補充する").build())
+                .addLore("§f補充スケジュールは保持したままアイテムを補充する").build());
+        forceRefill.clickable(false);
+        setItem(22, forceRefill);
+        forceRefill.setEvent(e -> {
+            if(!shop.storageRefill.setItemLeft(shop.storageRefill.getRefillAmount())){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                return;
+            }
+            player.sendMessage(Man10ShopV2.prefix + "§a§l在庫を補充しました");
+        });
+
 
         SInventoryItem amountSetting = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("個数設定").build()).build());
         amountSetting.clickable(false);
-        setItem(14, amountSetting);
+        setItem(15, amountSetting);
         amountSetting.setEvent(e -> {
 
             NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);

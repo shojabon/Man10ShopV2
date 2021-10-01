@@ -11,6 +11,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -42,10 +43,17 @@ public class StorageRefillFunction extends ShopFunction {
     public int transactionsLeft(){
         if(System.currentTimeMillis()/1000L - getLastRefillTime() >= getRefillTimeMinute()*60L){
             //refill
-            setLastRefillTime(System.currentTimeMillis()/1000L);
+            setLastRefillTime(calculateLastRefillTime());
             setItemLeft(getRefillAmount());
         }
         return getItemLeft();
+    }
+
+    public long calculateLastRefillTime(){
+        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - getLastRefillTime();
+        long skippedRefills = secondsSinceLastRefill/(getRefillTimeMinute()*60L);
+
+        return getLastRefillTime() + skippedRefills*getRefillTimeMinute()*60L;
     }
 
     public long getNextRefillTime(){
@@ -56,6 +64,7 @@ public class StorageRefillFunction extends ShopFunction {
 
     public String getNextRefillTimeString(){
         long unixSeconds = getNextRefillTime();
+        if(unixSeconds == 0) return "";
         Date date = new java.util.Date(unixSeconds*1000L);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
@@ -123,6 +132,10 @@ public class StorageRefillFunction extends ShopFunction {
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         if(!checkCanTrade(amount)){
+            if(getItemLeft() != 0) {
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫不足です");
+                return false;
+            }
             p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは品切れです 次の入荷は " + getNextRefillTimeString());
             return false;
         }

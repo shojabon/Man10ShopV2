@@ -39,7 +39,7 @@ public class ShopActionMenu extends SInventory {
 
             //storage refill
             if(shop.storageRefill.isFunctionEnabled()){
-                if(itemCount > shop.storageRefill.getItemLeft()) itemCount = shop.storageRefill.getItemLeft();
+                if(itemCount > shop.storageRefill.getItemLeft()) itemCount = shop.storageRefill.transactionsLeft();
                 if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り在庫 " + itemCount).text("個");
             }
 
@@ -50,7 +50,7 @@ public class ShopActionMenu extends SInventory {
 
             //storage refill
             if(shop.storageRefill.isFunctionEnabled()){
-                if(buying > shop.storageRefill.getItemLeft()) buying = shop.storageRefill.getItemLeft();
+                if(buying > shop.storageRefill.getItemLeft()) buying = shop.storageRefill.transactionsLeft();
                 if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り買取 " + buying).text("個");
             }
 
