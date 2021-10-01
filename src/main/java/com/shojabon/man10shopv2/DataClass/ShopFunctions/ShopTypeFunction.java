@@ -7,11 +7,11 @@ import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.ShopTypeSelectorMenu;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
-import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -40,6 +40,10 @@ public class ShopTypeFunction extends ShopFunction {
 
     //functions
 
+    public String buySellToString(Man10ShopType type){
+        if(type == Man10ShopType.BUY) return "販売ショップ";
+        return "買取ショップ";
+    }
 
     //====================
     // settings
@@ -60,7 +64,7 @@ public class ShopTypeFunction extends ShopFunction {
     @Override
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
         SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.buySellToString(getShopType())).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(buySellToString(getShopType())).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 

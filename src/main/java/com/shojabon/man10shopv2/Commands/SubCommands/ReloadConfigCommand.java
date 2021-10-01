@@ -2,8 +2,8 @@ package com.shojabon.man10shopv2.Commands.SubCommands;
 
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Utils.MySQL.ThreadedMySQLAPI;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.MySQL.ThreadedMySQLAPI;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

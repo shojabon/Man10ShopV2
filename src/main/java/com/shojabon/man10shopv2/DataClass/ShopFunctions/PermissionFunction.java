@@ -6,8 +6,8 @@ import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
+import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -174,4 +174,8 @@ public class PermissionFunction extends ShopFunction {
         }
     }
 
+    @Override
+    public void performAction(Player p, int amount) {
+        notifyModerators(amount);
+    }
 }

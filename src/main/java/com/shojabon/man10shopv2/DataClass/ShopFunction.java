@@ -1,10 +1,10 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
+import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +33,8 @@ public abstract class ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
 
     public SInventoryItem getAdminSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
+
+    public void performAction(Player p, int amount){}
 
 
     //setting
@@ -72,6 +74,10 @@ public abstract class ShopFunction {
     }
 
     public boolean setSetting(String key, int value){
+        return setSetting(key, String.valueOf(value));
+    }
+
+    public boolean setSetting(String key, long value){
         return setSetting(key, String.valueOf(value));
     }
 

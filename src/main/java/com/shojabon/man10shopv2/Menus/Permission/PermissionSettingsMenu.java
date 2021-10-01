@@ -1,16 +1,16 @@
 package com.shojabon.man10shopv2.Menus.Permission;
 
+import ToolMenu.BooleanInputMenu;
+import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.BooleanInputMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
-import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

@@ -1,16 +1,16 @@
 package com.shojabon.man10shopv2.Listeners;
 
+import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.AdminShopSelectorMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.ShopActionMenu;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

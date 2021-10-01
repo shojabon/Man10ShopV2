@@ -3,11 +3,11 @@ package com.shojabon.man10shopv2.Menus;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Utils.BannerDictionary;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
-import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.mcutils.Utils.BannerDictionary;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.Consumer;
 
-public class ShopActionMenu extends SInventory{
+public class ShopActionMenu extends SInventory {
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
@@ -35,12 +35,29 @@ public class ShopActionMenu extends SInventory{
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
         if(shop.shopType.getShopType() == Man10ShopType.BUY){
             builder.text("§a§lを買う");
-            if(!shop.admin)builder.text("残り在庫 " + shop.storage.itemCount).text("個");
+            int itemCount = shop.storage.itemCount;
+
+            //storage refill
+            if(shop.storageRefill.isFunctionEnabled()){
+                if(itemCount > shop.storageRefill.getItemLeft()) itemCount = shop.storageRefill.getItemLeft();
+                if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り在庫 " + itemCount).text("個");
+            }
+
+            if(!shop.admin)builder.text("残り在庫 " + itemCount).text("個");
         }else{
             builder.text("§c§lを売る");
             int buying = shop.storage.calculateCurrentStorageSize(0);
+
+            //storage refill
+            if(shop.storageRefill.isFunctionEnabled()){
+                if(buying > shop.storageRefill.getItemLeft()) buying = shop.storageRefill.getItemLeft();
+                if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り買取 " + buying).text("個");
+            }
+
+            //sell cap
             if(shop.storageCap.getStorageCap() != 0) buying = shop.storageCap.getStorageCap();
-            if(!shop.admin)builder.text("残り買取 " + (buying - shop.storage.itemCount)).text("個");
+            if(!shop.admin)builder.text("残り買取 " + buying).text("個");
+
         }
         setTitle(builder.build());
 

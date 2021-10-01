@@ -1,30 +1,26 @@
 package com.shojabon.man10shopv2.Menus.Settings;
 
+import ToolMenu.ConfirmationMenu;
+import ToolMenu.LargeSInventoryMenu;
+import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.PerMinuteCoolDownSelectorMenu;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.ShopTypeSelectorMenu;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.WeekdayShopToggleMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.BooleanInputMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.LargeSInventoryMenu;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.Menus.ShopMainMenu;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
-import com.shojabon.man10shopv2.Utils.SLongTextInput;
-import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SLongTextInput;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 
-public class SettingsMainMenu extends LargeSInventoryMenu{
+public class SettingsMainMenu extends LargeSInventoryMenu {
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;

@@ -7,11 +7,11 @@ import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.WeekdayShopToggleMenu;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventory;
-import com.shojabon.man10shopv2.Utils.SInventory.SInventoryItem;
-import com.shojabon.man10shopv2.Utils.SItemStack;
-import com.shojabon.man10shopv2.Utils.SStringBuilder;
+import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
+import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -30,6 +30,9 @@ public class WeekDayToggleFunction extends ShopFunction {
 
     //functions
 
+    public String weekToString(int week){
+        return new String[]{"日曜日", "月曜日", "火曜日", "水曜日","木曜日", "金曜日", "土曜日"}[week];
+    }
 
     //====================
     // settings
@@ -69,7 +72,7 @@ public class WeekDayToggleFunction extends ShopFunction {
             int i = 0;
             for(boolean enabled: getWeekdayShopToggle()){
                 if(enabled){
-                    availableWeekDays.append(BaseUtils.weekToString(i)).append(" ");
+                    availableWeekDays.append(weekToString(i)).append(" ");
                 }
                 i++;
             }
@@ -88,7 +91,7 @@ public class WeekDayToggleFunction extends ShopFunction {
         int i = 0;
         for(boolean res: getWeekdayShopToggle()){
             SStringBuilder builder = new SStringBuilder();
-            builder.yellow().text(BaseUtils.weekToString(i) + ": ");
+            builder.yellow().text(weekToString(i) + ": ");
             if(res){
                 builder.green().text("有効");
             }else{

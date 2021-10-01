@@ -1,11 +1,11 @@
 package com.shojabon.man10shopv2.Commands.SubCommands;
 
+import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Utils.SInventory.ToolMenu.ConfirmationMenu;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.SItemStack;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

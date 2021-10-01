@@ -5,10 +5,11 @@ import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Utils.BaseUtils;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLAPI;
-import com.shojabon.man10shopv2.Utils.MySQL.MySQLCachedResultSet;
-import com.shojabon.man10shopv2.Utils.SItemStack;
+import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.StorageRefillMenu;
+import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
+import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.mcutils.Utils.SItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
@@ -48,6 +49,8 @@ public class Man10Shop {
     public ShopTypeFunction shopType;
     public MoneyFunction money;
     public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
+    public StorageRefillFunction storageRefill;
+
 
     public boolean currentlyEditingStorage = false;
 
@@ -116,6 +119,9 @@ public class Man10Shop {
 
         totalPerMinuteCoolDown = new TotalPerMinuteCoolDownFunction(this);
         functions.add(totalPerMinuteCoolDown);
+
+        storageRefill = new StorageRefillFunction(this);
+        functions.add(storageRefill);
     }
 
 
@@ -216,12 +222,8 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-            perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
-            totalPerMinuteCoolDown.addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
 
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
-            permission.notifyModerators(amount*item.getAmount());
-            coolDown.setCoolDown(p); //set coolDown
 
         }else if(shopType.getShopType() == Man10ShopType.SELL){
             SItemStack item = new SItemStack(targetItem.build().clone());
@@ -252,16 +254,14 @@ public class Man10Shop {
             }
 
             Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-            perMinuteCoolDown.addPerMinuteCoolDownLog(p.getUniqueId(), new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
-            totalPerMinuteCoolDown.addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
-
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
-            permission.notifyModerators(amount*item.getAmount());
-            coolDown.setCoolDown(p); //set coolDown
 
 
         }else if(shopType.getShopType() == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
+        }
+        for(ShopFunction func: functions){
+            func.performAction(p, amount);
         }
     }
 

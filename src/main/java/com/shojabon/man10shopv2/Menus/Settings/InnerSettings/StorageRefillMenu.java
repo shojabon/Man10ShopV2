@@ -11,14 +11,14 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class TotalPerMinuteCoolDownSelectorMenu extends SInventory{
+public class StorageRefillMenu extends SInventory{
 
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
 
-    public TotalPerMinuteCoolDownSelectorMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super("分間毎ごとの総クールダウン設定",3, plugin);
+    public StorageRefillMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+        super("分間毎ごとの倉庫補充設定",3, plugin);
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
@@ -37,16 +37,15 @@ public class TotalPerMinuteCoolDownSelectorMenu extends SInventory{
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.totalPerMinuteCoolDown.setTotalPerMinuteCoolDownTime(number)){
+                if(!shop.storageRefill.setRefillTimeMinute(number)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l時間を設定しました");
-                shop.totalPerMinuteCoolDown.loadTotalPerMinuteMap();
-                moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin));
+                moveToMenu(player, new StorageRefillMenu(player, shop, plugin));
             });
-            menu.setOnCancel(ee -> moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin)));
-            menu.setOnClose(ee -> moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> moveToMenu(player, new StorageRefillMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> moveToMenu(player, new StorageRefillMenu(player, shop, plugin)));
 
             moveToMenu(player, menu);
         });
@@ -59,15 +58,15 @@ public class TotalPerMinuteCoolDownSelectorMenu extends SInventory{
 
             NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.totalPerMinuteCoolDown.setTotalPerMinuteCoolDownAmount(number)){
+                if(!shop.storageRefill.setRefillAmount(number)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l個数を設定しました");
-                moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin));
+                moveToMenu(player, new StorageRefillMenu(player, shop, plugin));
             });
-            menu.setOnCancel(ee -> moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin)));
-            menu.setOnClose(ee -> moveToMenu(player, new TotalPerMinuteCoolDownSelectorMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> moveToMenu(player, new StorageRefillMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> moveToMenu(player, new StorageRefillMenu(player, shop, plugin)));
 
             moveToMenu(player, menu);
         });
