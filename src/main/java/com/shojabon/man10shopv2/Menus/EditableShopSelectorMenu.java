@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.Menus;
 import ToolMenu.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
@@ -36,6 +37,9 @@ public class EditableShopSelectorMenu extends LargeSInventoryMenu {
             SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
             icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(shop.permission.getPermissionString(shop.permission.getPermission(player.getUniqueId()))).build());
+            icon.addLore("");
+            icon.addLore(new SStringBuilder().red().bold().text("在庫: ").yellow().bold().text(shop.storage.getItemCount()).text("個").build());
+            icon.addLore(new SStringBuilder().red().bold().text("残金: ").yellow().bold().text(BaseUtils.priceString(shop.money.getMoney())).text("円").build());
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);

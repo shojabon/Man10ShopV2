@@ -6,6 +6,7 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.AdminShopSelectorMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
@@ -168,18 +169,20 @@ public class SignListeners implements @NotNull Listener {
         if(e.getClickedBlock() == null) return;
         if(!(e.getClickedBlock().getState() instanceof Sign)) return;
 
-        Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
-        if(sign == null) return;
-        Man10Shop shop = plugin.api.getShop(sign.shopId);
-        if(shop == null) return;
+        Man10ShopV2.threadPool.execute(()->{
+            Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
+            if(sign == null) return;
+            Man10Shop shop = plugin.api.getShop(sign.shopId);
+            if(shop == null) return;
 
 
 
-        ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+            ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
 
-        if(!shop.allowedToUseShop(e.getPlayer())) return;
+            if(!shop.allowedToUseShop(e.getPlayer())) return;
 
-        menu.open(e.getPlayer());
+            menu.open(e.getPlayer());
+        });
     }
 
     @EventHandler
@@ -204,7 +207,7 @@ public class SignListeners implements @NotNull Listener {
         }
 
 
-        SInventory.threadPool.execute(()->{
+        Man10ShopV2.threadPool.execute(()->{
             Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
 
             if(sign == null) return;
@@ -236,7 +239,7 @@ public class SignListeners implements @NotNull Listener {
             sign.update(true);
 
             Location l = e.getBlock().getLocation();
-            SInventory.threadPool.execute(() -> {
+            Man10ShopV2.threadPool.execute(() -> {
                 plugin.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
             });
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を作成しました");

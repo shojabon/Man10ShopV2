@@ -17,10 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class Man10ShopV2 extends JavaPlugin {
 
     public static ThreadedMySQLAPI mysql;
+    public static ExecutorService threadPool = Executors.newCachedThreadPool();
     public Man10ShopV2API api;
     public static String prefix;
     public static VaultAPI vault;

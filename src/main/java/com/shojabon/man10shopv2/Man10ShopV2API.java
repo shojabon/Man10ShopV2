@@ -29,6 +29,7 @@ public class Man10ShopV2API {
 
     public Man10ShopV2API(Man10ShopV2 plugin){
         this.plugin = plugin;
+        loadAllShops();
     }
 
     public Man10Shop getShop(UUID shopId){
@@ -74,11 +75,11 @@ public class Man10ShopV2API {
         Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, 1, shopType, admin);
 
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put("shop_id", shop.shopId);
-        payload.put("name", shop.name);
+        payload.put("shop_id", shop.getShopId());
+        payload.put("name", shop.name.getName());
         payload.put("item_count", shop.storage.itemCount);
         payload.put("price", shop.price);
-        payload.put("money", shop.money);
+        payload.put("money", shop.money.getMoney());
         payload.put("target_item", shop.targetItem.getItemTypeBase64(true));
         payload.put("target_item_hash", shop.targetItem.getItemTypeMD5(true));
         payload.put("target_item_count", 1);
@@ -116,6 +117,13 @@ public class Man10ShopV2API {
             ids.add(UUID.fromString(rs.getString("shop_id")));
         }
         return getShops(ids);
+    }
+
+    public void loadAllShops(){
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_shops WHERE deleted = 0;");
+        for(MySQLCachedResultSet rs: result){
+            Man10ShopV2.threadPool.execute(()-> {getShop(UUID.fromString(rs.getString("shop_id")));});
+        }
     }
 
 
