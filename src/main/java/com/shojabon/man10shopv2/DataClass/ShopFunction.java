@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.DataClass;
 
+import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
@@ -33,6 +34,16 @@ public abstract class ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
 
     public SInventoryItem getAdminSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin){return null;}
+
+    public int itemCount(Player p){
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            return shop.storage.getStorageSize();
+        }else{
+            return shop.storage.getItemCount();
+        }
+    }
+
+    public boolean isFunctionEnabled(){return true;}
 
     public void performAction(Player p, int amount){}
 

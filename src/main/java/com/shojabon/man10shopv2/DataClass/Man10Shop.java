@@ -179,11 +179,26 @@ public class Man10Shop {
 
         //all function check
         for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
             if(!func.isAllowedToUseShop(p)){
                 return false;
             }
         }
         return true;
+    }
+
+    public int getPlayerAvailableTransactionCount(Player p){
+        int amount = storage.getStorageSize(); //if sell
+        if(shopType.getShopType() == Man10ShopType.BUY) amount = storage.getItemCount(); //if buy
+
+        //all function check
+        for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
+            int funcItemCount = func.itemCount(p);
+            if(funcItemCount < amount) amount = funcItemCount;
+        }
+        if(amount < 0) amount = -amount;
+        return amount;
     }
 
     public void performAction(Player p, int amount){
@@ -192,6 +207,7 @@ public class Man10Shop {
 
         //all function check
         for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
             if(!func.isAllowedToUseShopWithAmount(p, amount)){
                 return;
             }
@@ -261,6 +277,7 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
         for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
             func.performAction(p, amount);
         }
     }

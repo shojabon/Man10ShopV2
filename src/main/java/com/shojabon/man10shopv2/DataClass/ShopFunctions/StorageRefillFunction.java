@@ -30,10 +30,6 @@ public class StorageRefillFunction extends ShopFunction {
 
     //functions
 
-    public boolean isFunctionEnabled(){
-        return getRefillAmount() != 0 && getRefillTimeMinute() != 0;
-    }
-
     public boolean checkCanTrade(int amount){
         if(!isFunctionEnabled()) return false;
         if(transactionsLeft() < amount) return false;
@@ -116,6 +112,18 @@ public class StorageRefillFunction extends ShopFunction {
     public boolean setItemLeft(int storageCap){
         if(getItemLeft() == storageCap) return true;
         return setSetting("storage.refill.itemFilled", storageCap);
+    }
+
+    @Override
+    public boolean isFunctionEnabled(){
+        return getRefillAmount() != 0 && getRefillTimeMinute() != 0;
+    }
+
+    @Override
+    public int itemCount(Player p) {
+        if(!isFunctionEnabled()) return super.itemCount(p);
+        if(shop.isAdminShop()) return -getItemLeft();
+        return getItemLeft();
     }
 
     @Override

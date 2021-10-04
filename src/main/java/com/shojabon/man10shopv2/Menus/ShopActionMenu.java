@@ -33,31 +33,17 @@ public class ShopActionMenu extends SInventory {
         this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownAmountInTime(player);
         this.plugin = plugin;
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
+
+        int maxTradeItemCount = shop.getPlayerAvailableTransactionCount(p);
+
         if(shop.shopType.getShopType() == Man10ShopType.BUY){
             builder.text("§a§lを買う");
-            int itemCount = shop.storage.itemCount;
-
-            //storage refill
-            if(shop.storageRefill.isFunctionEnabled()){
-                if(shop.isAdminShop() || itemCount > shop.storageRefill.getItemLeft()) itemCount = shop.storageRefill.transactionsLeft();
-                if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り在庫 " + itemCount).text("個");
-            }
-
-            if(!shop.admin)builder.text("残り在庫 " + itemCount).text("個");
         }else{
             builder.text("§c§lを売る");
-            int buying = shop.storage.calculateCurrentStorageSize(0);
 
-            //storage refill
-            if(shop.storageRefill.isFunctionEnabled()){
-                if(shop.isAdminShop() || buying > shop.storageRefill.getItemLeft()) buying = shop.storageRefill.transactionsLeft();
-                if(shop.admin && shop.storageRefill.isFunctionEnabled()) builder.text("残り買取 " + buying).text("個");
-            }
-
-            //sell cap
-            if(shop.storageCap.getStorageCap() != 0) buying = shop.storageCap.getStorageCap();
-            if(!shop.admin)builder.text("残り買取 " + buying).text("個");
-
+        }
+        if(maxTradeItemCount != 0){
+            builder.text(" 残り " + maxTradeItemCount + "個");
         }
         setTitle(builder.build());
 

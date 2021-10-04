@@ -36,22 +36,22 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
     public void loadTotalPerMinuteMap(){
         perMinuteCoolDownMap.clear();
-        if(getTotalPerMinuteCoolDownTime() == 0 || getTotalPerMinuteCoolDownAmount() == 0){
+        if(!isFunctionEnabled()){
             return;
         }
 
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + getTotalPerMinuteCoolDownTime()*60L + " GROUP BY YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
         for(MySQLCachedResultSet rs: result){
-            addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(rs.getLong("time"), rs.getInt("amount")));
+            addTotalPerMinuteCoolDownLog(new Man10ShopLogObject(rs.getLong("time"), rs.getInt("amount")));
         }
     }
 
-    public void addTotalPerMinuteCoolDownLog(UUID uuid, Man10ShopLogObject obj){
+    public void addTotalPerMinuteCoolDownLog(Man10ShopLogObject obj){
         perMinuteCoolDownMap.addFirst(obj);
     }
 
     public int totalPerMinuteCoolDownTotalAmountInTime(){
-        if(getTotalPerMinuteCoolDownTime() == 0 || getTotalPerMinuteCoolDownAmount() == 0){
+        if(!isFunctionEnabled()){
             return 0;
         }
 
@@ -78,7 +78,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public boolean checkTotalPerMinuteCoolDown(int addingAmount){
-        if(getTotalPerMinuteCoolDownTime() == 0 || getTotalPerMinuteCoolDownAmount() == 0){
+        if(!isFunctionEnabled()){
             return false;
         }
         if(addingAmount > getTotalPerMinuteCoolDownAmount()) return true;
@@ -113,6 +113,17 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     }
 
     @Override
+    public boolean isFunctionEnabled() {
+        return getTotalPerMinuteCoolDownTime() != 0 && getTotalPerMinuteCoolDownAmount() != 0;
+    }
+
+    @Override
+    public int itemCount(Player p) {
+        if(!isFunctionEnabled()) return super.itemCount(p);
+        return getTotalPerMinuteCoolDownAmount() - totalPerMinuteCoolDownTotalAmountInTime();
+    }
+
+    @Override
     public boolean isAllowedToUseShop(Player p) {
         if(checkTotalPerMinuteCoolDown(1)){
             p.sendMessage(Man10ShopV2.prefix + "§c§l時間内ショップ取引上限に達しました");
@@ -132,7 +143,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
     @Override
     public void performAction(Player p, int amount) {
-        addTotalPerMinuteCoolDownLog(null, new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
+        addTotalPerMinuteCoolDownLog(new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
     }
 
     @Override

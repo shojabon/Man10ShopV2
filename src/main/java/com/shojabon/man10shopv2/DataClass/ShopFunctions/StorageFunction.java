@@ -136,6 +136,15 @@ public class StorageFunction extends ShopFunction {
 
 
     @Override
+    public int itemCount(Player p) {
+        if(shop.isAdminShop()) return 0;
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
+            return getItemCount();
+        }
+        return getStorageSize();
+    }
+
+    @Override
     public boolean isAllowedToUseShop(Player p) {
 
         //sell shop check

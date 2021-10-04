@@ -37,9 +37,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
 
     public void loadPerMinuteMap(){
         perMinuteCoolDownMap.clear();
-        if(getPerMinuteCoolDownTime() == 0 || getPerMinuteCoolDownAmount() == 0){
-            return;
-        }
+        if(!isFunctionEnabled()) return;
 
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,uuid,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + getPerMinuteCoolDownTime()*60L + " GROUP BY UUID, YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
         for(MySQLCachedResultSet rs: result){
@@ -55,9 +53,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public int perMinuteCoolDownAmountInTime(Player p){
-        if(getPerMinuteCoolDownTime() == 0 || getPerMinuteCoolDownAmount() == 0){
-            return 0;
-        }
+        if(!isFunctionEnabled())return 0;
 
         if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
             return 0;
@@ -86,9 +82,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
-        if(getPerMinuteCoolDownTime() == 0 || getPerMinuteCoolDownAmount() == 0){
-            return false;
-        }
+        if(!isFunctionEnabled())return false;
 
         if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
             if(addingAmount > getPerMinuteCoolDownAmount()) return true;//if not trade within time and amount is bigger than limit
@@ -122,6 +116,18 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     public boolean setPerMinuteCoolDownAmount(int amount){
         if(getPerMinuteCoolDownAmount() == amount) return true;
         return setSetting("shop.perminute.cooldown.amount", amount);
+    }
+
+    @Override
+    public boolean isFunctionEnabled() {
+        return getPerMinuteCoolDownTime() != 0 && getPerMinuteCoolDownAmount() != 0;
+    }
+
+    @Override
+    public int itemCount(Player p) {
+        if(!isFunctionEnabled()) return super.itemCount(p);
+        return getPerMinuteCoolDownAmount() - perMinuteCoolDownAmountInTime(p);
+
     }
 
     @Override

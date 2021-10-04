@@ -43,6 +43,15 @@ public class MoneyFunction extends ShopFunction {
 
 
     @Override
+    public int itemCount(Player p) {
+        if(shop.isAdminShop()) return 0;
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            return getMoney()/shop.price;
+        }
+        return super.itemCount(p);
+    }
+
+    @Override
     public boolean isAllowedToUseShop(Player p) {
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
             if(money < shop.price && !shop.isAdminShop()){

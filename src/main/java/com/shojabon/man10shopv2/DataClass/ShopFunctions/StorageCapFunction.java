@@ -43,6 +43,21 @@ public class StorageCapFunction extends ShopFunction {
         return setSetting("storage.sell.cap", storageCap);
     }
 
+
+    @Override
+    public boolean isFunctionEnabled() {
+        return getStorageCap() != 0;
+    }
+
+    @Override
+    public int itemCount(Player p) {
+        if(!isFunctionEnabled()) return super.itemCount(p);
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            return getStorageCap();
+        }
+        return super.itemCount(p);
+    }
+
     @Override
     public boolean isAllowedToUseShop(Player p) {
         if(shop.shopType.getShopType() == Man10ShopType.SELL){

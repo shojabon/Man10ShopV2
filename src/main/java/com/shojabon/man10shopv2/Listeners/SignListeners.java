@@ -181,7 +181,7 @@ public class SignListeners implements @NotNull Listener {
 
             if(!shop.allowedToUseShop(e.getPlayer())) return;
 
-            menu.open(e.getPlayer());
+            Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
         });
     }
 
