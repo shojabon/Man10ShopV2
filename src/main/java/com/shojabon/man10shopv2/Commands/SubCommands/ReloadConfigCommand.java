@@ -27,7 +27,7 @@ public class ReloadConfigCommand implements CommandExecutor {
 
         SInventory.closeAllSInventories();
 
-        plugin.api.clearCache();
+        Man10ShopV2.api.clearCache();
 
         Man10ShopV2.mysql = new ThreadedMySQLAPI(plugin);
         Man10ShopV2.prefix = Man10ShopV2.config.getString("prefix");

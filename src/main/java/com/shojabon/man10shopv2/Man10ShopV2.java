@@ -24,7 +24,7 @@ public final class Man10ShopV2 extends JavaPlugin {
 
     public static ThreadedMySQLAPI mysql;
     public static ExecutorService threadPool = Executors.newCachedThreadPool();
-    public Man10ShopV2API api;
+    public static Man10ShopV2API api;
     public static String prefix;
     public static VaultAPI vault;
     public static FileConfiguration config;
@@ -34,7 +34,7 @@ public final class Man10ShopV2 extends JavaPlugin {
         // Plugin startup logic
         saveDefaultConfig();
         mysql = new ThreadedMySQLAPI(this);
-        this.api = new Man10ShopV2API(this);
+        Man10ShopV2.api = new Man10ShopV2API(this);
         prefix = getConfig().getString("prefix");
         vault = new VaultAPI();
         config = getConfig();
@@ -49,6 +49,7 @@ public final class Man10ShopV2 extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        Man10ShopV2.api.stopTransactionThread();
         SInventory.closeAllSInventories();
     }
 

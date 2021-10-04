@@ -141,6 +141,9 @@ public class StorageFunction extends ShopFunction {
         if(shop.shopType.getShopType() == Man10ShopType.BUY){
             return getItemCount();
         }
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            return getStorageSize() - getItemCount();
+        }
         return getStorageSize();
     }
 

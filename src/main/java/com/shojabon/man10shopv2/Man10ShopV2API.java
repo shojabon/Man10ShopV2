@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopModerator;
+import com.shojabon.man10shopv2.DataClass.Man10ShopOrder;
 import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -10,6 +11,7 @@ import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -18,6 +20,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Man10ShopV2API {
 
@@ -30,6 +33,7 @@ public class Man10ShopV2API {
     public Man10ShopV2API(Man10ShopV2 plugin){
         this.plugin = plugin;
         loadAllShops();
+        startTransactionThread();
     }
 
     public Man10Shop getShop(UUID shopId){
@@ -126,7 +130,45 @@ public class Man10ShopV2API {
         }
     }
 
+    //perform thread
+    public static LinkedBlockingQueue<Man10ShopOrder> orders = new LinkedBlockingQueue<>();
+    public static boolean transactionThreadActive = false;
+    public static Thread transactionThread = new Thread(()->{
+        while(transactionThreadActive){
+            try {
+                Man10ShopOrder order = orders.take();
+                if(order.amount == -1) {
+                    transactionThreadActive = false;
+                    return;
+                }
+                if(order.player == null || !order.player.isOnline()) continue;
+                if(order.amount <= 0) continue;
+                Man10Shop shop = Man10ShopV2.api.getShop(order.shopId);
+                if(shop == null) continue;
+                shop.performAction(order.player, order.amount);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
 
+    public void startTransactionThread(){
+        if(transactionThread.isAlive()) return;
+        if(transactionThreadActive) return;
+        transactionThreadActive = true;
+        transactionThread.start();
+    }
+
+    public void stopTransactionThread(){
+        if(!transactionThreadActive) return;
+        if(!transactionThread.isAlive()) return;
+        orders.add(new Man10ShopOrder(null, null, -1));
+    }
+
+    public void addTransaction(Man10ShopOrder order){
+        if(!transactionThreadActive) return;
+        orders.add(order);
+    }
 
     //sign
 
@@ -265,5 +307,6 @@ public class Man10ShopV2API {
         shopCache.clear();
         userModeratingShopList.clear();
         signs.clear();
+        orders.clear();
     }
 }

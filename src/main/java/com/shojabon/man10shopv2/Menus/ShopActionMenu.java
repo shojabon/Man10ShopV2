@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.Menus;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
+import com.shojabon.man10shopv2.DataClass.Man10ShopOrder;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.BannerDictionary;
@@ -21,6 +22,7 @@ public class ShopActionMenu extends SInventory {
     Man10ShopV2 plugin;
     Player player;
     int itemCount = 1;
+    boolean orderRequested = false;
     BannerDictionary dictionary = new BannerDictionary();
 
     //per minute cool down counter
@@ -85,7 +87,9 @@ public class ShopActionMenu extends SInventory {
         confirm.clickable(false);
 
         confirm.setAsyncEvent(e -> {
-            shop.performAction(player, itemCount);
+            if(orderRequested) return;
+            Man10ShopV2.api.addTransaction(new Man10ShopOrder(player, shop.getShopId(), itemCount));
+            orderRequested = true;
             close(player);
         });
 
