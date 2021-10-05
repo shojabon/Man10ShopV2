@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Commands.SubCommands;
 
+import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.WeekdayShopToggleMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
@@ -28,6 +29,11 @@ public class TestCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        TimeSelectorMenu menu = new TimeSelectorMenu(0, "a", plugin);
+        menu.setOnConfirm(e -> {
+            Bukkit.broadcastMessage(String.valueOf(e));
+        });
+        menu.open(((Player)sender));
         return true;
     }
 }

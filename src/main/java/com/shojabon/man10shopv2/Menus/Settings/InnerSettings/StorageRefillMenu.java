@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.Menus.Settings.InnerSettings;
 
 import ToolMenu.NumericInputMenu;
+import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
@@ -10,6 +11,10 @@ import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class StorageRefillMenu extends SInventory{
 
@@ -52,15 +57,24 @@ public class StorageRefillMenu extends SInventory{
         setItem(11, timeSetting);
 
 
-        SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS).setDisplayName(new SStringBuilder().green().text("補充開始の基準時間を現在とする").build()).build());
+        SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS)
+                .setDisplayName(new SStringBuilder().green().text("最終補充時間を設定する").build())
+                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.storageRefill.getLastRefillTime()*1000L)))
+                .build());
         setRefillStartingTime.clickable(false);
         setItem(4, setRefillStartingTime);
         setRefillStartingTime.setEvent(e -> {
-            if(!shop.storageRefill.setLastRefillTime(System.currentTimeMillis()/1000L)){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                return;
-            }
-            player.sendMessage(Man10ShopV2.prefix + "§a§l最新の補充開始時間を現在に設定しました");
+            TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終補充時間を設定してくださ", plugin);
+            menu.setOnConfirm(lastRefillTime -> {
+                if(!shop.storageRefill.setLastRefillTime(lastRefillTime)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l最新の補充開始時間を現在に設定しました");
+                moveToMenu(player, new StorageRefillMenu(player, shop, plugin));
+            });
+            menu.setOnCloseEvent(ee -> moveToMenu(player, new StorageRefillMenu(player, shop, plugin)));
+            moveToMenu(player, menu);
         });
 
 
