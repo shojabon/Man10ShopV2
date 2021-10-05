@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 public class StorageRefillFunction extends ShopFunction {
 
@@ -115,6 +116,11 @@ public class StorageRefillFunction extends ShopFunction {
     }
 
     @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
+    }
+
+    @Override
     public boolean isFunctionEnabled(){
         return getRefillAmount() != 0 && getRefillTimeMinute() != 0;
     }
@@ -174,7 +180,7 @@ public class StorageRefillFunction extends ShopFunction {
         inventoryItem.clickable(false);
 
         inventoryItem.setEvent(e -> {
-            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!hasPermissionToEdit(player.getUniqueId())){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }

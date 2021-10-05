@@ -259,7 +259,7 @@ public class Man10ShopV2API {
                 }
 
                 if(shop.shopEnabled.getShopEnabled()){
-                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
+                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
                 }else{
                     sign.setLine(1, "§c取引停止中");
                 }

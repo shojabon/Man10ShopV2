@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
@@ -58,6 +59,11 @@ public class CoolDownFunction extends ShopFunction {
     }
 
     @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
+    }
+
+    @Override
     public boolean isAllowedToUseShop(Player p) {
         //if player is in coolDown
         if(checkCoolDown(p)){
@@ -84,7 +90,10 @@ public class CoolDownFunction extends ShopFunction {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setEvent(e -> {
-
+            if(!hasPermissionToEdit(player.getUniqueId())){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引クールダウン").build(), plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));

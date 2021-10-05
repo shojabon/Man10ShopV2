@@ -2,9 +2,12 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class MoneyFunction extends ShopFunction {
 
@@ -41,12 +44,18 @@ public class MoneyFunction extends ShopFunction {
     // settings
     //====================
 
+    @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        if(!shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.ACCOUNTANT)) return false;
+        if(shop.permission.hasPermission(uuid, Man10ShopPermission.STORAGE_ACCESS)) return false;
+        return true;
+    }
 
     @Override
     public int itemCount(Player p) {
         if(shop.isAdminShop()) return 0;
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
-            return getMoney()/shop.price;
+            return getMoney()/shop.price.getPrice();
         }
         return super.itemCount(p);
     }
@@ -54,7 +63,7 @@ public class MoneyFunction extends ShopFunction {
     @Override
     public boolean isAllowedToUseShop(Player p) {
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
-            if(money < shop.price && !shop.isAdminShop()){
+            if(money < shop.price.getPrice() && !shop.isAdminShop()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lショップの残高が不足しています");
                 return false;
             }

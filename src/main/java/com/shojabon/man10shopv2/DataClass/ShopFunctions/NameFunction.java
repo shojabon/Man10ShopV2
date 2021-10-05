@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
@@ -11,6 +12,8 @@ import com.shojabon.mcutils.Utils.SLongTextInput;
 import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class NameFunction extends ShopFunction {
 
@@ -37,6 +40,10 @@ public class NameFunction extends ShopFunction {
     // settings
     //====================
 
+    @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
+    }
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
@@ -46,7 +53,10 @@ public class NameFunction extends ShopFunction {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
-
+            if(!hasPermissionToEdit(player.getUniqueId())){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
             //text input
             SLongTextInput textInput = new SLongTextInput("§d§lショップ名を入力してください", plugin);
             textInput.setOnConfirm(shopName -> {

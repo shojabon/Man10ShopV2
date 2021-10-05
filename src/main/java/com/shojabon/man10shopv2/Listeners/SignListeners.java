@@ -170,9 +170,9 @@ public class SignListeners implements @NotNull Listener {
         if(!(e.getClickedBlock().getState() instanceof Sign)) return;
 
         Man10ShopV2.threadPool.execute(()->{
-            Man10ShopSign sign = plugin.api.getSign(e.getClickedBlock().getLocation());
+            Man10ShopSign sign = Man10ShopV2.api.getSign(e.getClickedBlock().getLocation());
             if(sign == null) return;
-            Man10Shop shop = plugin.api.getShop(sign.shopId);
+            Man10Shop shop = Man10ShopV2.api.getShop(sign.shopId);
             if(shop == null) return;
 
 
@@ -231,7 +231,7 @@ public class SignListeners implements @NotNull Listener {
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
             if(shop.shopEnabled.getShopEnabled()){
-                sign.setLine(1, "§b" + BaseUtils.priceString(shop.price) + "円");
+                sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
             }else{
                 sign.setLine(1, "§c取引停止中");
             }
@@ -240,7 +240,7 @@ public class SignListeners implements @NotNull Listener {
 
             Location l = e.getBlock().getLocation();
             Man10ShopV2.threadPool.execute(() -> {
-                plugin.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+                Man10ShopV2.api.createSign(new Man10ShopSign(shop.shopId, l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ()));
             });
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を作成しました");
             e.getPlayer().closeInventory();

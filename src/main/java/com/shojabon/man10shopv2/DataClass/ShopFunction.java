@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.DataClass;
 
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
@@ -15,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class ShopFunction {
 
@@ -41,6 +43,10 @@ public abstract class ShopFunction {
         }else{
             return shop.storage.getItemCount();
         }
+    }
+
+    public boolean hasPermissionToEdit(UUID uuid){
+        return false;
     }
 
     public boolean isFunctionEnabled(){return true;}

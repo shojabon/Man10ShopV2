@@ -1,6 +1,6 @@
 package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 
-import ToolMenu.BooleanInputMenu;
+import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -17,35 +17,32 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class ShopEnabledFunction extends ShopFunction {
+public class SetPriceFunction extends ShopFunction {
 
     //variables
+    public int price = 0;
 
     //init
-    public ShopEnabledFunction(Man10Shop shop) {
+    public SetPriceFunction(Man10Shop shop) {
         super(shop);
     }
 
 
     //functions
+    public boolean setPrice(int value){
+        if(value < 0) return false;
+        price = value;
+        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
+        return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET price = " + value + " WHERE shop_id = '" + shop.getShopId() + "'");
+    }
 
+    public int getPrice(){
+        return price;
+    }
 
     //====================
     // settings
     //====================
-
-    public boolean getShopEnabled(){
-        String currentSetting = getSetting("shop.enabled");
-        if(!BaseUtils.isBoolean(currentSetting)) return true;
-        return Boolean.parseBoolean(currentSetting);
-    }
-
-    public boolean setShopEnabled(boolean enabled){
-        if(getShopEnabled() == enabled) return true;
-        if(!setSetting("shop.enabled", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
 
     @Override
     public boolean hasPermissionToEdit(UUID uuid) {
@@ -54,42 +51,40 @@ public class ShopEnabledFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        //shop disabled
-        if(!getShopEnabled()){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
-            return false;
-        }
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         return true;
     }
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
-        SItemStack item = new SItemStack(Material.LEVER).setDisplayName(new SStringBuilder().gray().text("ショップ取引有効").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(getShopEnabled())).build());
+        SItemStack item = new SItemStack(Material.EMERALD).setDisplayName(new SStringBuilder().green().text("取引価格設定").build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.priceString(getPrice())).text("円").build());
+
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
-
         inventoryItem.setEvent(e -> {
             if(!hasPermissionToEdit(player.getUniqueId())){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
-            //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(getShopEnabled(), "ショップ有効化設定", plugin);
+            //number input menu
+            NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引値段設定").build(), plugin);
             menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnConfirm(bool -> {
-                if(setShopEnabled(bool)){
-                    Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
+            menu.setOnConfirm(newValue -> {
+                if(setPrice(newValue)){
+                    Man10ShopV2API.log(shop.shopId, "setPrice", newValue, player.getName(), player.getUniqueId()); //log
                 }
-                plugin.api.updateAllSigns(shop);
+                Man10ShopV2.api.updateAllSigns(shop);
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
             });
-
             sInventory.moveToMenu(player, menu);
 
         });
-
 
         return inventoryItem;
     }

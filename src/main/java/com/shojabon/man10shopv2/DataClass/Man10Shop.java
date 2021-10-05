@@ -23,7 +23,6 @@ import java.util.*;
 public class Man10Shop {
 
     public UUID shopId;
-    public int price;
 
     public boolean admin = false;
 
@@ -50,7 +49,8 @@ public class Man10Shop {
     public MoneyFunction money;
     public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
     public StorageRefillFunction storageRefill;
-
+    public SetPriceFunction price;
+    public DeleteShopFunction deleteShop;
 
     public boolean currentlyEditingStorage = false;
 
@@ -67,7 +67,6 @@ public class Man10Shop {
         if(targetItem == null){
             targetItem = new SItemStack(Material.DIAMOND);
         }
-        this.price = price;
         this.shopId = shopId;
         this.targetItem = targetItem;
         this.targetItemCount = targetItemCount;
@@ -77,6 +76,10 @@ public class Man10Shop {
         loadSigns();
 
         //load functions
+        this.price = new SetPriceFunction(this);
+        this.price.price = price;
+        functions.add(this.price);
+
         permission = new PermissionFunction(this);
         functions.add(permission);
 
@@ -122,6 +125,9 @@ public class Man10Shop {
 
         storageRefill = new StorageRefillFunction(this);
         functions.add(storageRefill);
+
+        deleteShop = new DeleteShopFunction(this);
+        functions.add(deleteShop);
     }
 
 
@@ -134,15 +140,6 @@ public class Man10Shop {
         if(!result) return false;
         Man10ShopV2API.closeInventoryGroup(shopId);
         return true;
-    }
-
-    //price
-
-    public boolean setPrice(int value){
-        if(value < 0) return false;
-        price = value;
-        Man10ShopV2API.closeInventoryGroup(shopId);
-        return Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET price = " + value + " WHERE shop_id = '" + shopId + "'");
     }
 
     //base gets
@@ -214,7 +211,7 @@ public class Man10Shop {
         }
 
         if(shopType.getShopType() == Man10ShopType.BUY){
-            int totalPrice = price*amount;
+            int totalPrice = price.getPrice()*amount;
             if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
               p.sendMessage(Man10ShopV2.prefix + "§c§l残高が不足しています");
               return;
@@ -247,7 +244,7 @@ public class Man10Shop {
                 p.sendMessage(Man10ShopV2.prefix + "§c§l買い取るためのアイテムを持っていません");
                 return;
             }
-            int totalPrice = price*amount;
+            int totalPrice = price.getPrice()*amount;
             if(totalPrice > money.getMoney() && !admin){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップの現金が不足しています");
                 return;

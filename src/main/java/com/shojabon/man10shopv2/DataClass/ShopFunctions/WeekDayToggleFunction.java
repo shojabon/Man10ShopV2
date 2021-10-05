@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.UUID;
 
 public class WeekDayToggleFunction extends ShopFunction {
 
@@ -61,6 +62,11 @@ public class WeekDayToggleFunction extends ShopFunction {
         }
         if(Arrays.equals(getWeekdayShopToggle(), results)) return true;
         return setSetting("shop.weekday.toggle", result.toString());
+    }
+
+    @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
 
     @Override
@@ -109,7 +115,7 @@ public class WeekDayToggleFunction extends ShopFunction {
         inventoryItem.clickable(false);
 
         inventoryItem.setEvent(e -> {
-            if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.MODERATOR)){
+            if(!hasPermissionToEdit(player.getUniqueId())){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }

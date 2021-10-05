@@ -108,6 +108,12 @@ public class PermissionFunction extends ShopFunction {
         return userPermissionLevel >= requiredPermissionLevel;
     }
 
+    public boolean hasPermissionAtLeast(Man10ShopPermission targetPermission, Man10ShopPermission owningPermission){
+        int userPermissionLevel = calculatePermissionLevel(owningPermission);
+        int requiredPermissionLevel = calculatePermissionLevel(targetPermission);
+        return userPermissionLevel >= requiredPermissionLevel;
+    }
+
     public boolean hasPermission(UUID uuid, Man10ShopPermission permission){
         Man10ShopPermission actualPerm = getPermission(uuid);
         if(actualPerm == null) return false;

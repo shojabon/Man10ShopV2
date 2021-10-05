@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions;
 import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
+import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
@@ -16,6 +17,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+
+import java.util.UUID;
 
 public class StorageFunction extends ShopFunction {
     //variables
@@ -129,11 +132,18 @@ public class StorageFunction extends ShopFunction {
     }
 
     public int getItemCount(){
+        if(itemCount < 0) return 0;
         return itemCount;
     }
 
     //allowed
 
+    @Override
+    public boolean hasPermissionToEdit(UUID uuid) {
+        if(!shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.STORAGE_ACCESS)) return false;
+        if(shop.permission.hasPermission(uuid, Man10ShopPermission.ACCOUNTANT)) return false;
+        return true;
+    }
 
     @Override
     public int itemCount(Player p) {
@@ -203,6 +213,10 @@ public class StorageFunction extends ShopFunction {
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
         inventoryItem.setAsyncEvent(e -> {
+            if(!hasPermissionToEdit(player.getUniqueId())){
+                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                return;
+            }
             int buyingUnits = 1;
 
             if(e.getClick() == ClickType.SHIFT_LEFT) buyingUnits = unitsTillMax;
