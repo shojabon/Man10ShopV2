@@ -29,6 +29,11 @@ public class FunctionTemplate extends ShopFunction {
 
 
     @Override
+    public String settingCategory() {
+        return "その他";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }

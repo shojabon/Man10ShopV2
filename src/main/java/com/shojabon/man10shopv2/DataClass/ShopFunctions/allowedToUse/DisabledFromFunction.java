@@ -1,6 +1,6 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse;
 
-import ToolMenu.BooleanInputMenu;
+import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -17,12 +17,12 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class ShopEnabledFunction extends ShopFunction {
+public class DisabledFromFunction extends ShopFunction {
 
     //variables
 
     //init
-    public ShopEnabledFunction(Man10Shop shop) {
+    public DisabledFromFunction(Man10Shop shop) {
         super(shop);
     }
 
@@ -34,22 +34,27 @@ public class ShopEnabledFunction extends ShopFunction {
     // settings
     //====================
 
-    public boolean getShopEnabled(){
-        String currentSetting = getSetting("shop.enabled");
-        if(!BaseUtils.isBoolean(currentSetting)) return true;
-        return Boolean.parseBoolean(currentSetting);
+    public long getDisabledTime(){
+        String currentSetting = getSetting("shop.disabledFrom");
+        if(!BaseUtils.isLong(currentSetting)) return 0;
+        return Long.parseLong(currentSetting);
     }
 
-    public boolean setShopEnabled(boolean enabled){
-        if(getShopEnabled() == enabled) return true;
-        if(!setSetting("shop.enabled", enabled)) return false;
+    public boolean setDisabledTime(long enabled){
+        if(getDisabledTime() == enabled) return true;
+        if(!setSetting("shop.disabledFrom", enabled)) return false;
         Man10ShopV2API.closeInventoryGroup(shop.getShopId());
         return true;
     }
 
     @Override
+    public boolean isFunctionEnabled() {
+        return getDisabledTime() != 0;
+    }
+
+    @Override
     public String settingCategory() {
-        return "一般設定";
+        return "使用可条件設定";
     }
 
     @Override
@@ -59,8 +64,7 @@ public class ShopEnabledFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        //shop disabled
-        if(!getShopEnabled()){
+        if(System.currentTimeMillis()/1000L >= getDisabledTime()) {
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return false;
         }
@@ -69,8 +73,12 @@ public class ShopEnabledFunction extends ShopFunction {
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
-        SItemStack item = new SItemStack(Material.LEVER).setDisplayName(new SStringBuilder().gray().text("ショップ取引有効").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(BaseUtils.booleanToJapaneseText(getShopEnabled())).build());
+        SItemStack item = new SItemStack(Material.REDSTONE_BLOCK).setDisplayName(new SStringBuilder().gray().text("無効化開始時間設定").build());
+
+        String currentSetting = BaseUtils.unixTimeToString(getDisabledTime());
+        if(!isFunctionEnabled())currentSetting = "なし";
+
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(currentSetting).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 
@@ -79,15 +87,18 @@ public class ShopEnabledFunction extends ShopFunction {
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
-            //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(getShopEnabled(), "ショップ有効化設定", plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
-            menu.setOnConfirm(bool -> {
-                if(setShopEnabled(bool)){
-                    Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
+
+            TimeSelectorMenu menu = new TimeSelectorMenu(getDisabledTime(), "有効化開始時間を設定してください", plugin);
+            menu.setOnCloseEvent(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnConfirm(time -> {
+                if(time == -1L){
+                    deleteSetting("shop.disabledFrom");
+                }else{
+                    if(setDisabledTime(time)){
+                        Man10ShopV2API.log(shop.shopId, "disabledFrom", time, player.getName(), player.getUniqueId()); //log
+                    }
                 }
-                Man10ShopV2.api.updateAllSigns(shop);
+                player.sendMessage(Man10ShopV2.prefix + "§a§l時間を設定しました");
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
 
@@ -98,4 +109,5 @@ public class ShopEnabledFunction extends ShopFunction {
 
         return inventoryItem;
     }
+
 }

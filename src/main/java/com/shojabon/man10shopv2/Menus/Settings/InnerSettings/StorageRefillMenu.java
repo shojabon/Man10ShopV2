@@ -66,9 +66,13 @@ public class StorageRefillMenu extends SInventory{
         setRefillStartingTime.setEvent(e -> {
             TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終補充時間を設定してくださ", plugin);
             menu.setOnConfirm(lastRefillTime -> {
-                if(!shop.storageRefill.setLastRefillTime(lastRefillTime)){
-                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                    return;
+                if(lastRefillTime == -1L){
+                    shop.storageRefill.deleteSetting("storage.refill.lastRefillTime");
+                }else{
+                    if(!shop.storageRefill.setLastRefillTime(lastRefillTime)){
+                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        return;
+                    }
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l最新の補充開始時間を現在に設定しました");
                 moveToMenu(player, new StorageRefillMenu(player, shop, plugin));

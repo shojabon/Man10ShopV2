@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
@@ -66,7 +66,7 @@ public class WeekDayToggleFunction extends ShopFunction {
 
     @Override
     public String settingCategory() {
-        return "取引有効化設定";
+        return "使用可条件設定";
     }
 
     @Override

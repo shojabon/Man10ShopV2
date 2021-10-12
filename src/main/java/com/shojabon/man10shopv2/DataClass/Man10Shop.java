@@ -1,10 +1,18 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.AllowedPermissionFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.DisabledFromFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFromFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayToggleFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.CoolDownFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.PerMinuteCoolDownFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.SingleTransactionModeFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.TotalPerMinuteCoolDownFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
@@ -31,23 +39,34 @@ public class Man10Shop {
     //functions
 
     public ArrayList<ShopFunction> functions = new ArrayList<>();
-    public PermissionFunction permission;
-    public StorageFunction storage;
-    public CoolDownFunction coolDown;
-    public PerMinuteCoolDownFunction perMinuteCoolDown;
-    public WeekDayToggleFunction weekDayToggle;
+
+    //allowed to use shop settings
     public AllowedPermissionFunction allowedPermission;
-    public SingleTransactionModeFunction singleTransactionMode;
-    public ShopEnabledFunction shopEnabled;
-    public StorageCapFunction storageCap;
-    public NameFunction name;
-    public ShopTypeFunction shopType;
-    public MoneyFunction money;
-    public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
-    public StorageRefillFunction storageRefill;
+    public EnabledFromFunction enabledFrom;
+    public DisabledFromFunction disabledFrom;
+    public WeekDayToggleFunction weekDayToggle;
+
+    //general
     public SetPriceFunction price;
     public DeleteShopFunction deleteShop;
+    public NameFunction name;
+    public ShopTypeFunction shopType;
+    public ShopEnabledFunction shopEnabled;
 
+    //storage
+    public StorageRefillFunction storageRefill;
+    public StorageCapFunction storageCap;
+    public StorageFunction storage;
+
+    //tradeAmount
+    public CoolDownFunction coolDown;
+    public PerMinuteCoolDownFunction perMinuteCoolDown;
+    public SingleTransactionModeFunction singleTransactionMode;
+    public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
+
+
+    public PermissionFunction permission;
+    public MoneyFunction money;
     public boolean currentlyEditingStorage = false;
 
     public Man10Shop(UUID shopId,
@@ -124,6 +143,12 @@ public class Man10Shop {
 
         deleteShop = new DeleteShopFunction(this);
         functions.add(deleteShop);
+
+        enabledFrom = new EnabledFromFunction(this);
+        functions.add(enabledFrom);
+
+        disabledFrom = new DisabledFromFunction(this);
+        functions.add(disabledFrom);
     }
 
 
