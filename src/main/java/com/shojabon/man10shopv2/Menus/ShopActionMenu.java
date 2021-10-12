@@ -34,7 +34,7 @@ public class ShopActionMenu extends SInventory {
         this.shop = shop;
         this.itemsTradedPerMinute = shop.perMinuteCoolDown.perMinuteCoolDownAmountInTime(player);
         this.plugin = plugin;
-        SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getDisplayName());
+        SStringBuilder builder = new SStringBuilder().darkGray().text(shop.targetItem.getTargetItem().getDisplayName());
 
         int maxTradeItemCount = shop.getPlayerAvailableTransactionCount(p);
 
@@ -100,12 +100,12 @@ public class ShopActionMenu extends SInventory {
         return e -> {
             if(add){
                 if(e.getClick() == ClickType.LEFT){
-                    if(itemCount+1 > shop.targetItem.getMaxStackSize()){
+                    if(itemCount+1 > shop.targetItem.getTargetItem().getMaxStackSize()){
                         return;
                     }
                     itemCount++;
                 }else if (e.getClick() == ClickType.SHIFT_LEFT){
-                    itemCount = shop.targetItem.getMaxStackSize();
+                    itemCount = shop.targetItem.getTargetItem().getMaxStackSize();
                 }
             }else{
                 if(e.getClick() == ClickType.LEFT){
@@ -146,7 +146,7 @@ public class ShopActionMenu extends SInventory {
     }
 
     public void renderDisplay(){
-        SInventoryItem item = new SInventoryItem(new SItemStack(shop.targetItem.build().clone()).setAmount(itemCount).build());
+        SInventoryItem item = new SInventoryItem(new SItemStack(shop.targetItem.getTargetItem().build().clone()).setAmount(itemCount).build());
         item.clickable(false);
         setItem(13, item);
     }

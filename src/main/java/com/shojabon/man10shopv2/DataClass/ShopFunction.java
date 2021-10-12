@@ -51,7 +51,7 @@ public abstract class ShopFunction {
 
     public boolean isFunctionEnabled(){return true;}
 
-    public void performAction(Player p, int amount){}
+    public boolean performAction(Player p, int amount){return true;}
 
     public String settingCategory(){
         return "その他";

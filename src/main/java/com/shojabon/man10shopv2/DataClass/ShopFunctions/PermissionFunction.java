@@ -181,7 +181,8 @@ public class PermissionFunction extends ShopFunction {
     }
 
     @Override
-    public void performAction(Player p, int amount) {
+    public boolean performAction(Player p, int amount) {
         notifyModerators(amount);
+        return true;
     }
 }

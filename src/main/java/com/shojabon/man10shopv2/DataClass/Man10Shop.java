@@ -30,10 +30,6 @@ public class Man10Shop {
 
     public boolean admin = false;
 
-    public SItemStack targetItem;
-    public int targetItemCount;
-    public ItemStack icon;
-
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
 
     //functions
@@ -52,6 +48,7 @@ public class Man10Shop {
     public NameFunction name;
     public ShopTypeFunction shopType;
     public ShopEnabledFunction shopEnabled;
+    public TargetItemFunction targetItem;
 
     //storage
     public StorageRefillFunction storageRefill;
@@ -75,17 +72,10 @@ public class Man10Shop {
                      int price,
                      int money,
                      SItemStack targetItem,
-                     int targetItemCount,
                      Man10ShopType shopType,
                      boolean admin){
 
-        if(targetItem == null){
-            targetItem = new SItemStack(Material.DIAMOND);
-        }
         this.shopId = shopId;
-        this.targetItem = targetItem;
-        this.targetItemCount = targetItemCount;
-        this.icon = new ItemStack(targetItem.getType());
         this.admin = admin;
 
         loadSigns();
@@ -149,19 +139,17 @@ public class Man10Shop {
 
         disabledFrom = new DisabledFromFunction(this);
         functions.add(disabledFrom);
+
+        this.targetItem = new TargetItemFunction(this);
+        this.targetItem.targetItem = targetItem;
+        if(this.targetItem.getTargetItem() == null){
+            this.targetItem.targetItem = new SItemStack(Material.DIAMOND);
+        }
+        functions.add(this.targetItem);
     }
 
 
     //itemstack setting
-
-    public boolean setTargetItem(ItemStack item){
-        SItemStack sItem = new SItemStack(item);
-        targetItem = sItem;
-        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET target_item = '" + sItem.getItemTypeBase64(true) + "', target_item_hash ='" + sItem.getItemTypeMD5(true) + "' WHERE shop_id = '" + shopId + "'");
-        if(!result) return false;
-        Man10ShopV2API.closeInventoryGroup(shopId);
-        return true;
-    }
 
     //base gets
     public boolean isAdminShop(){
@@ -231,73 +219,30 @@ public class Man10Shop {
             }
         }
 
+        for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
+            if(!func.performAction(p, amount)){
+                //operation failed
+                break;
+            }
+        }
+
+
+
         if(shopType.getShopType() == Man10ShopType.BUY){
-            int totalPrice = price.getPrice()*amount;
-            if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
-              p.sendMessage(Man10ShopV2.prefix + "§c§l残高が不足しています");
-              return;
-            }
-            if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                return;
-            }
-            money.addMoney(totalPrice);
             //remove items from shop storage
-
-            SItemStack item = new SItemStack(targetItem.build().clone());
-            boolean removeItemResult =  storage.removeItemCount(amount*item.getAmount());
-            if(!removeItemResult){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                return;
-            }
-
-            for(int i = 0; i < amount; i++){
-                p.getInventory().addItem(item.build());
-            }
-
-            Man10ShopV2API.tradeLog(shopId,"BUY", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個購入しました");
+            int totalPrice = price.getPrice()*amount;
+            Man10ShopV2API.tradeLog(shopId,"BUY", amount , totalPrice, p.getName(), p.getUniqueId()); //log
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個購入しました");
 
         }else if(shopType.getShopType() == Man10ShopType.SELL){
-            SItemStack item = new SItemStack(targetItem.build().clone());
-            if(!p.getInventory().containsAtLeast(targetItem.build(), amount*item.getAmount())){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l買い取るためのアイテムを持っていません");
-                return;
-            }
             int totalPrice = price.getPrice()*amount;
-            if(totalPrice > money.getMoney() && !admin){
-                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップの現金が不足しています");
-                return;
-            }
-            if(!money.removeMoney(totalPrice)){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                return;
-            }
-            Man10ShopV2.vault.deposit(p.getUniqueId(), totalPrice);
-            //remove items from shop storage
-            boolean addItemResult =  storage.addItemCount(amount);
-            if(!addItemResult){
-                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
-                return;
-            }
-
-            //perform transaction
-            for( int i =0; i < amount; i++){
-                p.getInventory().removeItemAnySlot(item.build());
-            }
-
-            Man10ShopV2API.tradeLog(shopId,"SELL", amount*item.getAmount() , totalPrice, p.getName(), p.getUniqueId()); //log
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + item.getDisplayName() + "§a§lを" + amount*item.getAmount() + "個売却しました");
-
-
+            Man10ShopV2API.tradeLog(shopId,"SELL", amount , totalPrice, p.getName(), p.getUniqueId()); //log
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個売却しました");
         }else if(shopType.getShopType() == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
-        for(ShopFunction func: functions){
-            if(!func.isFunctionEnabled()) continue;
-            func.performAction(p, amount);
-        }
+
     }
 
     public void deleteShop(){

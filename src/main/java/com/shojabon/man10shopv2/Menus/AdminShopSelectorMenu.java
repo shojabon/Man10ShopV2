@@ -33,7 +33,7 @@ public class AdminShopSelectorMenu extends LargeSInventoryMenu {
         ArrayList<Man10Shop> shops = plugin.api.getAdminShops();
         for(Man10Shop shop: shops){
 
-            SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
+            SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
 
             SInventoryItem item = new SInventoryItem(icon.build());

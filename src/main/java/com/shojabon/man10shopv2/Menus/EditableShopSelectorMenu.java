@@ -31,10 +31,10 @@ public class EditableShopSelectorMenu extends LargeSInventoryMenu {
     public void renderMenu(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
 
-        ArrayList<Man10Shop> shops = plugin.api.getShopsWithPermission(player.getUniqueId());
+        ArrayList<Man10Shop> shops = Man10ShopV2.api.getShopsWithPermission(player.getUniqueId());
         for(Man10Shop shop: shops){
 
-            SItemStack icon = new SItemStack(shop.targetItem.getTypeItem());
+            SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
             icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(shop.permission.getPermissionString(shop.permission.getPermission(player.getUniqueId()))).build());
             icon.addLore("");

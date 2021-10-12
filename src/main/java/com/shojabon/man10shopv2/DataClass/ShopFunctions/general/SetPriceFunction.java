@@ -4,6 +4,7 @@ import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
@@ -50,17 +51,52 @@ public class SetPriceFunction extends ShopFunction {
     }
 
     @Override
+    public boolean performAction(Player p, int amount) {
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
+            int totalPrice = getPrice()*amount;
+            if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
+                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                return false;
+            }
+            shop.money.addMoney(totalPrice);
+        }
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            int totalPrice = getPrice()*amount;
+            if(!shop.money.removeMoney(totalPrice)){
+                p.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                return false;
+            }
+            Man10ShopV2.vault.deposit(p.getUniqueId(), totalPrice);
+        }
+        return true;
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        return true;
+        return isAllowedToUseShopWithAmount(p, 1);
     }
 
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
+        if(shop.shopType.getShopType() == Man10ShopType.BUY){
+            int totalPrice = getPrice()*amount;
+            if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < totalPrice){
+                p.sendMessage(Man10ShopV2.prefix + "§c§l残高が不足しています");
+                return false;
+            }
+        }
+        if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            int totalPrice = getPrice()*amount;
+            if(totalPrice > shop.money.getMoney() && !shop.isAdminShop()){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップの現金が不足しています");
+                return false;
+            }
+        }
         return true;
     }
 

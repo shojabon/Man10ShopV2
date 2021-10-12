@@ -36,10 +36,10 @@ public class ItemStorageMenu extends SInventory{
         if(!fillItem) return;
         int nextSlot = 0;
 
-        int stacks = shop.storage.itemCount/shop.targetItem.getMaxStackSize();
+        int stacks = shop.storage.itemCount/shop.targetItem.getTargetItem().getMaxStackSize();
         if(stacks > 6*9) stacks = 6*9;
-        ItemStack targetItemSingle = shop.targetItem.build().clone();
-        SItemStack maxStackedItem = new SItemStack(targetItemSingle).setAmount(shop.targetItem.getMaxStackSize());
+        ItemStack targetItemSingle = shop.targetItem.getTargetItem().build().clone();
+        SItemStack maxStackedItem = new SItemStack(targetItemSingle).setAmount(shop.targetItem.getTargetItem().getMaxStackSize());
         for(int i = 0; i < stacks; i++){
             setItem(i, maxStackedItem.build());
             nextSlot++;
@@ -47,7 +47,7 @@ public class ItemStorageMenu extends SInventory{
 
         //add remaining non full stacked item
         if(stacks != 6*9){
-            int remainingItemCount = shop.storage.itemCount - stacks*shop.targetItem.getMaxStackSize();
+            int remainingItemCount = shop.storage.itemCount - stacks*shop.targetItem.getTargetItem().getMaxStackSize();
             setItem(nextSlot, new SItemStack(targetItemSingle.clone()).setAmount(remainingItemCount).build());
         }
         renderInventory();
@@ -59,7 +59,7 @@ public class ItemStorageMenu extends SInventory{
         for(int i = 0; i < 6*9; i++){
             ItemStack item = activeInventory.getItem(i);
             if(item == null) continue;
-            if(!new SItemStack(item).getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true))) continue;
+            if(!new SItemStack(item).getItemTypeMD5(true).equals(shop.targetItem.getTargetItem().getItemTypeMD5(true))) continue;
             result += item.getAmount();
         }
         return result;
@@ -70,7 +70,7 @@ public class ItemStorageMenu extends SInventory{
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory() == null) return;
             SItemStack item = new SItemStack(e.getCurrentItem());
-            if(!item.getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true))){
+            if(!item.getItemTypeMD5(true).equals(shop.targetItem.getTargetItem().getItemTypeMD5(true))){
                 e.setCancelled(true);
                 return;
             }

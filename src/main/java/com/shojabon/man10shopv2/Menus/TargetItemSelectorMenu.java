@@ -34,7 +34,7 @@ public class TargetItemSelectorMenu extends SInventory{
         fillItem(background);
 
 
-        SInventoryItem target = new SInventoryItem(shop.targetItem.build());
+        SInventoryItem target = new SInventoryItem(shop.targetItem.getTargetItem().build());
         target.clickable(false);
         setItem(13, target);
         renderInventory();
@@ -58,12 +58,12 @@ public class TargetItemSelectorMenu extends SInventory{
                     player.sendMessage(Man10ShopV2.prefix + "§c§lあなたにはこの項目を設定する権限がありません");
                     return;
                 }
-                if(!new SItemStack(e.getCurrentItem()).getItemTypeMD5(true).equals(shop.targetItem.getItemTypeMD5(true)) && shop.storage.itemCount != 0 && !shop.admin){
+                if(!new SItemStack(e.getCurrentItem()).getItemTypeMD5(true).equals(shop.targetItem.getTargetItem().getItemTypeMD5(true)) && shop.storage.itemCount != 0 && !shop.admin){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lショップ在庫があるときは取引アイテムを変更することはできません");
                     return;
                 }
 
-                if(!shop.setTargetItem(newTargetItem)) {
+                if(!shop.targetItem.setTargetItem(newTargetItem)) {
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }

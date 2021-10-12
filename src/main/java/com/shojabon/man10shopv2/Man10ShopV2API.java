@@ -50,7 +50,6 @@ public class Man10ShopV2API {
                     rs.getInt("price"),
                     rs.getInt("money"),
                     SItemStack.fromBase64(rs.getString("target_item")),
-                    rs.getInt("target_item_count"),
                     Man10ShopType.valueOf(rs.getString("shop_type")),
                     rs.getBoolean("admin"));
         }
@@ -76,7 +75,7 @@ public class Man10ShopV2API {
 
     public UUID createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType, boolean admin){
         UUID shopId = UUID.randomUUID();
-        Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, 1, shopType, admin);
+        Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, shopType, admin);
 
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shop.getShopId());
@@ -84,9 +83,8 @@ public class Man10ShopV2API {
         payload.put("item_count", shop.storage.getItemCount());
         payload.put("price", shop.price.getPrice());
         payload.put("money", shop.money.getMoney());
-        payload.put("target_item", shop.targetItem.getItemTypeBase64(true));
-        payload.put("target_item_hash", shop.targetItem.getItemTypeMD5(true));
-        payload.put("target_item_count", 1);
+        payload.put("target_item", shop.targetItem.getTargetItem().getItemTypeBase64(true));
+        payload.put("target_item_hash", shop.targetItem.getTargetItem().getItemTypeMD5(true));
         payload.put("shop_type", shop.shopType.getShopType().name());
         payload.put("deleted", 0);
         payload.put("admin", admin);

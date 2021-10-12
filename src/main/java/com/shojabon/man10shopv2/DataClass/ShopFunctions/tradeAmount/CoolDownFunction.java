@@ -64,6 +64,11 @@ public class CoolDownFunction extends ShopFunction {
     }
 
     @Override
+    public boolean isFunctionEnabled() {
+        return getCoolDownTime() != 0;
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -79,8 +84,10 @@ public class CoolDownFunction extends ShopFunction {
     }
 
     @Override
-    public void performAction(Player p, int amount) {
+    public boolean performAction(Player p, int amount) {
+        if(!isFunctionEnabled()) return true;
         setCoolDown(p);
+        return true;
     }
 
     @Override

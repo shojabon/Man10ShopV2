@@ -147,7 +147,7 @@ public class StorageRefillFunction extends ShopFunction {
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         if(!checkCanTrade(amount)){
-            if(getItemLeft() == 0 && !shop.isAdminShop()) {
+            if(shop.storage.getItemCount() == 0 && !shop.isAdminShop()) {
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫不足です");
                 return false;
             }
@@ -162,9 +162,9 @@ public class StorageRefillFunction extends ShopFunction {
     }
 
     @Override
-    public void performAction(Player p, int amount) {
-        if(!isFunctionEnabled()) return;
-        setItemLeft(getItemLeft()-amount);
+    public boolean performAction(Player p, int amount) {
+        if(!isFunctionEnabled()) return true;
+        return setItemLeft(getItemLeft()-amount);
     }
 
     @Override
