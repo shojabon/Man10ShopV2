@@ -1,23 +1,19 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.StorageRefillMenu;
-import com.shojabon.mcutils.Utils.BaseUtils;
-import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SItemStack;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.units.qual.A;
 
-import javax.naming.Name;
 import java.util.*;
 
 public class Man10Shop {

@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.storage;
 
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
@@ -44,6 +44,11 @@ public class StorageCapFunction extends ShopFunction {
     public boolean setStorageCap(int storageCap){
         if(getStorageCap() == storageCap) return true;
         return setSetting("storage.sell.cap", storageCap);
+    }
+
+    @Override
+    public String settingCategory() {
+        return "倉庫設定";
     }
 
     @Override
@@ -108,8 +113,8 @@ public class StorageCapFunction extends ShopFunction {
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("購入制限設定").build(), plugin);
             if(!shop.admin) menu.setMaxValue(shop.storage.storageSize);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(newValue -> {
                 if(newValue > shop.storage.storageSize && !shop.admin){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l購入制限は倉庫以上の数にはできません");
@@ -123,7 +128,7 @@ public class StorageCapFunction extends ShopFunction {
                 if(setStorageCap(newValue)){
                     Man10ShopV2API.log(shop.shopId, "setStorageCap", newValue, player.getName(), player.getUniqueId()); //log
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
             sInventory.moveToMenu(player, menu);
 

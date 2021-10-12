@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
 
 import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
@@ -33,6 +33,10 @@ public class DeleteShopFunction extends ShopFunction {
     // settings
     //====================
 
+    @Override
+    public String settingCategory() {
+        return "一般設定";
+    }
 
     @Override
     public boolean hasPermissionToEdit(UUID uuid) {
@@ -65,7 +69,7 @@ public class DeleteShopFunction extends ShopFunction {
             }
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(ee -> {
                 //delete shop
                 shop.deleteShop();

@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.storage;
 
 import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
@@ -139,6 +139,11 @@ public class StorageFunction extends ShopFunction {
     //allowed
 
     @Override
+    public String settingCategory() {
+        return "倉庫設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         if(!shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.STORAGE_ACCESS)) return false;
         if(shop.permission.hasPermission(uuid, Man10ShopPermission.ACCOUNTANT)) return false;
@@ -224,8 +229,8 @@ public class StorageFunction extends ShopFunction {
 
             //confirmation menu
             ConfirmationMenu menu = new ConfirmationMenu("確認", plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
 
 
             int finalBuyingUnits = buyingUnits;
@@ -233,7 +238,7 @@ public class StorageFunction extends ShopFunction {
                 if(buyStorageSpace(player, finalBuyingUnits)){
                     Man10ShopV2API.log(shop.getShopId(), "buyStorageSpace", 1, player.getName(), player.getUniqueId()); //log
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
 
             sInventory.moveToMenu(player, menu);

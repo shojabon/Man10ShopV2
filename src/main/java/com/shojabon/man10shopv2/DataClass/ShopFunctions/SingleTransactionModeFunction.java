@@ -48,6 +48,11 @@ public class SingleTransactionModeFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "取引量制限設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -76,13 +81,13 @@ public class SingleTransactionModeFunction extends ShopFunction {
             }
             //confirmation menu
             BooleanInputMenu menu = new BooleanInputMenu(shop.singleTransactionMode.isSingleTransactionMode(), "単品取引モード", plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(bool -> {
                 if(shop.singleTransactionMode.setSingleSellMode(bool)){
                     Man10ShopV2API.log(shop.shopId, "setSingleSellMode", bool, player.getName(), player.getUniqueId()); //log
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
 
             sInventory.moveToMenu(player, menu);

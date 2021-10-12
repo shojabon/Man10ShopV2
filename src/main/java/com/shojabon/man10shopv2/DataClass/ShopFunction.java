@@ -53,6 +53,10 @@ public abstract class ShopFunction {
 
     public void performAction(Player p, int amount){}
 
+    public String settingCategory(){
+        return "その他";
+    }
+
 
     //setting
     private HashMap<String, String> settings = new HashMap<>();

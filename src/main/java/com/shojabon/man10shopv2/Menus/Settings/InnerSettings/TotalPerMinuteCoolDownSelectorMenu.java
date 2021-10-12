@@ -71,7 +71,7 @@ public class TotalPerMinuteCoolDownSelectorMenu extends SInventory{
 
             moveToMenu(player, menu);
         });
-        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.totalPerMinuteCoolDown.settingCategory(), plugin)));
 
     }
 

@@ -45,6 +45,11 @@ public class MoneyFunction extends ShopFunction {
     //====================
 
     @Override
+    public String settingCategory() {
+        return "一般設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         if(!shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.ACCOUNTANT)) return false;
         if(shop.permission.hasPermission(uuid, Man10ShopPermission.STORAGE_ACCESS)) return false;
@@ -55,6 +60,7 @@ public class MoneyFunction extends ShopFunction {
     public int itemCount(Player p) {
         if(shop.isAdminShop()) return 0;
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            if(shop.price.getPrice() == 0) return super.itemCount(p);
             return getMoney()/shop.price.getPrice();
         }
         return super.itemCount(p);

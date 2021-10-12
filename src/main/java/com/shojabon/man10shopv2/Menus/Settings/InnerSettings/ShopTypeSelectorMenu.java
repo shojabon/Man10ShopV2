@@ -87,7 +87,7 @@ public class ShopTypeSelectorMenu extends SInventory{
         SInventoryItem buyMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("買取モード").build()).build());
         buyMode.clickable(false);
         setItem(14, buyMode);
-        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
 
         renderButtons();
     }

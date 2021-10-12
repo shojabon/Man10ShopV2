@@ -81,8 +81,8 @@ public class Man10ShopV2API {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shop.getShopId());
         payload.put("name", shop.name.getName());
-        payload.put("item_count", shop.storage.itemCount);
-        payload.put("price", shop.price);
+        payload.put("item_count", shop.storage.getItemCount());
+        payload.put("price", shop.price.getPrice());
         payload.put("money", shop.money.getMoney());
         payload.put("target_item", shop.targetItem.getItemTypeBase64(true));
         payload.put("target_item_hash", shop.targetItem.getItemTypeMD5(true));

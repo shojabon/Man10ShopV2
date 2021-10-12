@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
 
 import ToolMenu.BooleanInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
@@ -48,6 +48,11 @@ public class ShopEnabledFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "一般設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -76,14 +81,14 @@ public class ShopEnabledFunction extends ShopFunction {
             }
             //confirmation menu
             BooleanInputMenu menu = new BooleanInputMenu(getShopEnabled(), "ショップ有効化設定", plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(bool -> {
                 if(setShopEnabled(bool)){
                     Man10ShopV2API.log(shop.shopId, "enableShop", bool, player.getName(), player.getUniqueId()); //log
                 }
                 plugin.api.updateAllSigns(shop);
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
 
             sInventory.moveToMenu(player, menu);

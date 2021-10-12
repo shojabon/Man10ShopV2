@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
 
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
@@ -45,6 +45,11 @@ public class SetPriceFunction extends ShopFunction {
     //====================
 
     @Override
+    public String settingCategory() {
+        return "一般設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -73,14 +78,14 @@ public class SetPriceFunction extends ShopFunction {
             }
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引値段設定").build(), plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(newValue -> {
                 if(setPrice(newValue)){
                     Man10ShopV2API.log(shop.shopId, "setPrice", newValue, player.getName(), player.getUniqueId()); //log
                 }
                 Man10ShopV2.api.updateAllSigns(shop);
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
             sInventory.moveToMenu(player, menu);
 

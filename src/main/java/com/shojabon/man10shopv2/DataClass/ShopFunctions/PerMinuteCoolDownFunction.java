@@ -119,6 +119,11 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "取引量制限設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -131,6 +136,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     @Override
     public int itemCount(Player p) {
         if(!isFunctionEnabled()) return super.itemCount(p);
+        if(shop.isAdminShop()) return -(getPerMinuteCoolDownAmount() - perMinuteCoolDownAmountInTime(p));
         return getPerMinuteCoolDownAmount() - perMinuteCoolDownAmountInTime(p);
 
     }

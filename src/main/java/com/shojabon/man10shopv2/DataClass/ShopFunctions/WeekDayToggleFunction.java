@@ -65,6 +65,11 @@ public class WeekDayToggleFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "取引有効化設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -127,7 +132,7 @@ public class WeekDayToggleFunction extends ShopFunction {
                     Man10ShopV2API.log(shop.getShopId(), "setWeekdayShopToggle", getWeekdayShopToggle(), player.getName(), player.getUniqueId()); //log
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l曜日設定をしました");
-                sInventory.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                sInventory.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
 
             sInventory.moveToMenu(player, menu);

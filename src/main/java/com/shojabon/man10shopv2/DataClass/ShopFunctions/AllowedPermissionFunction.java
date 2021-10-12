@@ -45,6 +45,11 @@ public class AllowedPermissionFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "使用可条件設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }

@@ -1,8 +1,9 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.storage;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.PerMinuteCoolDownSelectorMenu;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.StorageRefillMenu;
@@ -116,6 +117,11 @@ public class StorageRefillFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "倉庫設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -134,23 +140,22 @@ public class StorageRefillFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(!isFunctionEnabled()) return true;
-        if(!checkCanTrade(1)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは品切れです 次の入荷は " + getNextRefillTimeString());
-            return false;
-        }
-        return true;
+        return isAllowedToUseShopWithAmount(p, 1);
     }
 
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         if(!checkCanTrade(amount)){
-            if(getItemLeft() != 0) {
+            if(getItemLeft() == 0 && !shop.isAdminShop()) {
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫不足です");
                 return false;
             }
-            p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは品切れです 次の入荷は " + getNextRefillTimeString());
+            if(shop.shopType.getShopType() == Man10ShopType.SELL){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは買取を停止しています 次回の売却は " + getNextRefillTimeString());
+            }else{
+                p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは品切れです 次の入荷は " + getNextRefillTimeString());
+            }
             return false;
         }
         return true;

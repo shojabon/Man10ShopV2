@@ -107,7 +107,7 @@ public class ShopMainMenu extends SInventory {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+            moveToMenu(player, new SettingsMainMenu(player, shop, "その他", plugin));
         });
 
 

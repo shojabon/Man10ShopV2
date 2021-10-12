@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Menus.Settings;
 
+import ToolMenu.CategoricalSInventoryMenu;
 import ToolMenu.ConfirmationMenu;
 import ToolMenu.LargeSInventoryMenu;
 import ToolMenu.NumericInputMenu;
@@ -22,14 +23,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
-public class SettingsMainMenu extends LargeSInventoryMenu {
+public class SettingsMainMenu extends CategoricalSInventoryMenu {
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
 
 
-    public SettingsMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin) {
-        super(new SStringBuilder().darkGray().text("ショップ設定").build(), plugin);
+    public SettingsMainMenu(Player p, Man10Shop shop, String startingCategory, Man10ShopV2 plugin) {
+        super(new SStringBuilder().darkGray().text("ショップ設定").build(), startingCategory, plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
@@ -44,7 +45,7 @@ public class SettingsMainMenu extends LargeSInventoryMenu {
     }
 
     public void renderMenu(){
-        ArrayList<SInventoryItem> items = new ArrayList<>();
+        //ArrayList<SInventoryItem> items = new ArrayList<>();
 
         //set items from function
         for(ShopFunction func: shop.functions){
@@ -55,7 +56,8 @@ public class SettingsMainMenu extends LargeSInventoryMenu {
                 item = new SInventoryItem(createNoPermissionItem(item.getItemStack()));
                 item.clickable(false);
             }
-            items.add(item);
+            addItem(func.settingCategory(), item);
+            //items.add(item);
         }
 
         //admin items
@@ -68,11 +70,9 @@ public class SettingsMainMenu extends LargeSInventoryMenu {
                 item = new SInventoryItem(createNoPermissionItem(item.getItemStack()));
                 item.clickable(false);
             }
-            items.add(item);
+            addItem(func.settingCategory(), item);
         }
 
-
-        setItems(items);
         setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
     }
 }

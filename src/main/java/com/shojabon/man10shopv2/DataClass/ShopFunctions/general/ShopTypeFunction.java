@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.DataClass.ShopFunctions;
+package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
@@ -51,6 +51,10 @@ public class ShopTypeFunction extends ShopFunction {
     // settings
     //====================
 
+    @Override
+    public String settingCategory() {
+        return "一般設定";
+    }
 
     @Override
     public boolean hasPermissionToEdit(UUID uuid) {

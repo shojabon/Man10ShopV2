@@ -59,6 +59,11 @@ public class CoolDownFunction extends ShopFunction {
     }
 
     @Override
+    public String settingCategory() {
+        return "取引量制限設定";
+    }
+
+    @Override
     public boolean hasPermissionToEdit(UUID uuid) {
         return shop.permission.hasPermissionAtLeast(uuid, Man10ShopPermission.MODERATOR);
     }
@@ -96,8 +101,8 @@ public class CoolDownFunction extends ShopFunction {
             }
             //number input menu
             NumericInputMenu menu = new NumericInputMenu(new SStringBuilder().green().text("取引クールダウン").build(), plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+            menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(newValue -> {
                 if(newValue < 0){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lクールダウンタイムは正の数でなくてはならない");
@@ -107,7 +112,7 @@ public class CoolDownFunction extends ShopFunction {
                 if(shop.coolDown.setCoolDown(newValue)){
                     Man10ShopV2API.log(shop.shopId, "setCoolDownTime", newValue, player.getName(), player.getUniqueId()); //log
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, plugin));
+                menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
             });
             sInventory.moveToMenu(player, menu);
 

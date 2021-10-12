@@ -252,7 +252,7 @@ public class SignListeners implements @NotNull Listener {
     }
 
     public String formatSignString(String original, Man10Shop shop){
-        return original.replace("{price}", String.valueOf(shop.price))
+        return original.replace("{price}", String.valueOf(shop.price.getPrice()))
                 .replace("{iName}", shop.targetItem.getDisplayName())
                 .replace("{sName}", shop.name.getName())
                 .replace("&", "§");
