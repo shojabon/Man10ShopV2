@@ -15,6 +15,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SLongTextInput;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -51,6 +52,7 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
         for(ShopFunction func: shop.functions){
             SInventoryItem item = func.getSettingItem(player, this, plugin);
             if(item == null)continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shop.shopType.getShopType())) continue;
             if(!func.hasPermissionToEdit(player.getUniqueId())){
                 //if no permission to edit
                 item = new SInventoryItem(createNoPermissionItem(item.getItemStack()));
@@ -65,6 +67,7 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
             if(!shop.isAdminShop()) continue;
             SInventoryItem item = func.getAdminSettingItem(player, this, plugin);
             if(item == null)continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shop.shopType.getShopType())) continue;
             if(!func.hasPermissionToEdit(player.getUniqueId())){
                 //if no permission to edit
                 item = new SInventoryItem(createNoPermissionItem(item.getItemStack()));

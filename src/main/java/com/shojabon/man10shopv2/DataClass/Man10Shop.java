@@ -18,6 +18,7 @@ import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SItemStack;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -81,6 +82,12 @@ public class Man10Shop {
         loadSigns();
 
         //load functions
+
+        this.shopType = new ShopTypeFunction(this);
+        this.shopType.shopType = shopType;
+        functions.add(this.shopType);
+
+
         this.price = new SetPriceFunction(this);
         this.price.price = price;
         functions.add(this.price);
@@ -116,10 +123,6 @@ public class Man10Shop {
         this.name = new NameFunction(this);
         this.name.name = name;
         functions.add(this.name);
-
-        this.shopType = new ShopTypeFunction(this);
-        this.shopType.shopType = shopType;
-        functions.add(this.shopType);
 
         this.money = new MoneyFunction(this);
         this.money.money = money;
@@ -214,6 +217,7 @@ public class Man10Shop {
         //all function check
         for(ShopFunction func: functions){
             if(!func.isFunctionEnabled()) continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
             if(!func.isAllowedToUseShopWithAmount(p, amount)){
                 return;
             }
@@ -221,6 +225,7 @@ public class Man10Shop {
 
         for(ShopFunction func: functions){
             if(!func.isFunctionEnabled()) continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
             if(!func.performAction(p, amount)){
                 //operation failed
                 break;

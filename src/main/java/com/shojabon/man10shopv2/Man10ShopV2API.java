@@ -252,12 +252,18 @@ public class Man10ShopV2API {
 
                 if(shop.shopType.getShopType() == Man10ShopType.BUY){
                     sign.setLine(0, "§a§l販売ショップ");
-                }else{
+                }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
                     sign.setLine(0, "§c§l買取ショップ");
+                }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
+                    sign.setLine(0, "§b§lトレードショップ");
                 }
 
                 if(shop.shopEnabled.getShopEnabled()){
-                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                    if(shop.shopType.getShopType() != Man10ShopType.BARTER){
+                        sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                    }else{
+                        sign.setLine(1, "");
+                    }
                 }else{
                     sign.setLine(1, "§c取引停止中");
                 }

@@ -139,6 +139,11 @@ public class StorageFunction extends ShopFunction {
     //allowed
 
     @Override
+    public Man10ShopType[] enabledShopTypes() {
+        return new Man10ShopType[]{Man10ShopType.BUY, Man10ShopType.SELL};
+    }
+
+    @Override
     public String settingCategory() {
         return "倉庫設定";
     }

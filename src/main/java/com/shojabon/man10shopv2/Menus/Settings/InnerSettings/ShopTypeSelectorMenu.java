@@ -39,10 +39,10 @@ public class ShopTypeSelectorMenu extends SInventory{
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
             player.getServer().getScheduler().runTask(plugin, ()-> {
                 player.closeInventory();
-                plugin.api.updateAllSigns(shop);
+                Man10ShopV2.api.updateAllSigns(shop);
             });
         });
-        setItem(21, buyMode);
+        setItem(20, buyMode);
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
         sellMode.clickable(false);
@@ -53,22 +53,41 @@ public class ShopTypeSelectorMenu extends SInventory{
             }
             Man10ShopV2API.log(shop.shopId, "setShopType", "SELL", player.getName(), player.getUniqueId()); //log
             player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
-            player.getServer().getScheduler().runTask(plugin, ()-> plugin.api.updateAllSigns(shop));
             player.getServer().getScheduler().runTask(plugin, ()-> {
                 player.closeInventory();
-                plugin.api.updateAllSigns(shop);
+                Man10ShopV2.api.updateAllSigns(shop);
             });
         });
-        setItem(23, sellMode);
+        setItem(24, sellMode);
+
+        if(shop.isAdminShop()){
+            SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
+            barterMode.clickable(false);
+            barterMode.setAsyncEvent(e -> {
+                if(!shop.shopType.setShopType(Man10ShopType.BARTER)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                Man10ShopV2API.log(shop.shopId, "setShopType", "BARTER", player.getName(), player.getUniqueId()); //log
+                player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
+                player.getServer().getScheduler().runTask(plugin, ()-> {
+                    player.closeInventory();
+                    Man10ShopV2.api.updateAllSigns(shop);
+                });
+            });
+            setItem(22, barterMode);
+        }
 
 
 
         SInventoryItem current = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().text("現在の設定").build()).build());
         current.clickable(false);
         if(shop.shopType.getShopType() == Man10ShopType.BUY){
-            setItem(21, current);
-        }else{
-            setItem(23, current);
+            setItem(20, current);
+        }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
+            setItem(24, current);
+        }else if(shop.shopType.getShopType() == Man10ShopType.BARTER && shop.isAdminShop()){
+            setItem(22, current);
         }
 
         renderInventory();
@@ -82,12 +101,20 @@ public class ShopTypeSelectorMenu extends SInventory{
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.DROPPER).setDisplayName(new SStringBuilder().green().text("販売モード").build()).build());
         sellMode.clickable(false);
-        setItem(12, sellMode);
+        setItem(11, sellMode);
 
         SInventoryItem buyMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("買取モード").build()).build());
         buyMode.clickable(false);
-        setItem(14, buyMode);
+        setItem(15, buyMode);
         setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
+
+        if(shop.isAdminShop()){
+            //barter
+            SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
+            barterMode.clickable(false);
+            setItem(13, barterMode);
+            setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
+        }
 
         renderButtons();
     }

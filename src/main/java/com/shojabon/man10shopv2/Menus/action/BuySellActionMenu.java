@@ -1,4 +1,4 @@
-package com.shojabon.man10shopv2.Menus;
+package com.shojabon.man10shopv2.Menus.action;
 
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopOrder;
@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.Consumer;
 
-public class ShopActionMenu extends SInventory {
+public class BuySellActionMenu extends SInventory {
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
@@ -28,7 +28,7 @@ public class ShopActionMenu extends SInventory {
     //per minute cool down counter
     int itemsTradedPerMinute = 0;
 
-    public ShopActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+    public BuySellActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
         super(shop.name.getName(), 6, plugin);
         this.player = p;
         this.shop = shop;

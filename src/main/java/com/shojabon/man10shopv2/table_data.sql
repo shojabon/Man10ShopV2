@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS `man10shop_shops` (
   `shop_id` varchar(64) DEFAULT NULL,
   `name` varchar(128) DEFAULT NULL,
   `money` int DEFAULT NULL,
-  `item_count` int DEFAULT NULL,
   `target_item` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `target_item_hash` varchar(64) DEFAULT NULL,
   `target_item_count` int DEFAULT NULL,

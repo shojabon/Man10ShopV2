@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -55,6 +56,10 @@ public abstract class ShopFunction {
 
     public String settingCategory(){
         return "その他";
+    }
+
+    public Man10ShopType[] enabledShopTypes(){
+        return new Man10ShopType[]{};
     }
 
 

@@ -6,11 +6,10 @@ import com.shojabon.man10shopv2.DataClass.Man10ShopSign;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.AdminShopSelectorMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
-import com.shojabon.man10shopv2.Menus.ShopActionMenu;
+import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,8 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.FaceAttachable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -27,7 +24,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.Attachable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -177,7 +173,7 @@ public class SignListeners implements @NotNull Listener {
 
 
 
-            ShopActionMenu menu = new ShopActionMenu(e.getPlayer(), shop, plugin);
+            BuySellActionMenu menu = new BuySellActionMenu(e.getPlayer(), shop, plugin);
 
             if(!shop.allowedToUseShop(e.getPlayer())) return;
 

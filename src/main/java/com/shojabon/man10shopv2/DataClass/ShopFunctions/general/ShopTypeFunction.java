@@ -42,9 +42,11 @@ public class ShopTypeFunction extends ShopFunction {
 
     //functions
 
-    public String buySellToString(Man10ShopType type){
+    public String shopTypeToString(Man10ShopType type){
         if(type == Man10ShopType.BUY) return "販売ショップ";
-        return "買取ショップ";
+        if(type == Man10ShopType.SELL) return "買取ショップ";
+        if(type == Man10ShopType.BARTER) return "トレードショップ";
+        return "不明";
     }
 
     //====================
@@ -74,7 +76,7 @@ public class ShopTypeFunction extends ShopFunction {
     @Override
     public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
         SItemStack item = new SItemStack(Material.OAK_FENCE_GATE).setDisplayName(new SStringBuilder().yellow().text("ショップタイプ設定").build());
-        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(buySellToString(getShopType())).build());
+        item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(shopTypeToString(getShopType())).build());
         SInventoryItem inventoryItem = new SInventoryItem(item.build());
         inventoryItem.clickable(false);
 
