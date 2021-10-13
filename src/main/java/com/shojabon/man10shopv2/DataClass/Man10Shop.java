@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.AllowedPerm
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.DisabledFromFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFromFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayToggleFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
@@ -62,6 +63,8 @@ public class Man10Shop {
     public SingleTransactionModeFunction singleTransactionMode;
     public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
 
+    //barter
+    public SetBarterFunction setBarter;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -149,6 +152,9 @@ public class Man10Shop {
             this.targetItem.targetItem = new SItemStack(Material.DIAMOND);
         }
         functions.add(this.targetItem);
+
+        setBarter = new SetBarterFunction(this);
+        functions.add(setBarter);
     }
 
 
@@ -228,7 +234,7 @@ public class Man10Shop {
             if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
             if(!func.performAction(p, amount)){
                 //operation failed
-                break;
+                return;
             }
         }
 
@@ -244,6 +250,9 @@ public class Man10Shop {
             int totalPrice = price.getPrice()*amount;
             Man10ShopV2API.tradeLog(shopId,"SELL", amount , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個売却しました");
+        }else if(shopType.getShopType() == Man10ShopType.BARTER) {
+            Man10ShopV2API.tradeLog(shopId,"BARTER", amount , 0, p.getName(), p.getUniqueId()); //log
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + new SItemStack(setBarter.getResultItems()[0]).getDisplayName() + "§a§lにトレードしました");
         }else if(shopType.getShopType() == Man10ShopType.STOPPED){
             p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }

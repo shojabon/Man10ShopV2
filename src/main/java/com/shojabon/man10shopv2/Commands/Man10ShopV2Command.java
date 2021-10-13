@@ -120,11 +120,11 @@ public class Man10ShopV2Command extends SCommandRouter {
                         .setExecutor(new ReloadConfigCommand(plugin))
         );
 
-//        addCommand(
-//                new SCommandObject()
-//                        .addArgument(new SCommandArgument().addAllowedString("test"))
-//                        .setExecutor(new TestCommand(plugin))
-//        );
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("test"))
+                        .setExecutor(new TestCommand(plugin))
+        );
 
     }
 

@@ -7,10 +7,12 @@ import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.AdminShopSelectorMenu;
+import com.shojabon.man10shopv2.Menus.action.BarterActionMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +26,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -172,12 +175,17 @@ public class SignListeners implements @NotNull Listener {
             if(shop == null) return;
 
 
+            if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
+                if(!shop.allowedToUseShop(e.getPlayer())) return;
+                BuySellActionMenu menu = new BuySellActionMenu(e.getPlayer(), shop, plugin);
+                Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
+            }
 
-            BuySellActionMenu menu = new BuySellActionMenu(e.getPlayer(), shop, plugin);
-
-            if(!shop.allowedToUseShop(e.getPlayer())) return;
-
-            Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
+            if(shop.shopType.getShopType() == Man10ShopType.BARTER){
+                if(!shop.allowedToUseShop(e.getPlayer())) return;
+                BarterActionMenu menu = new BarterActionMenu(e.getPlayer(), shop, plugin);
+                Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
+            }
         });
     }
 
@@ -221,13 +229,21 @@ public class SignListeners implements @NotNull Listener {
             Sign sign = ((Sign) e.getBlock().getState());
             if(shop.shopType.getShopType() == Man10ShopType.BUY){
                 sign.setLine(0, "§a§l販売ショップ");
-            }else{
+            }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
                 sign.setLine(0, "§c§l買取ショップ");
+            }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
+                sign.setLine(0, "§b§lトレードショップ");
             }
+
+            sign.update();
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
             if(shop.shopEnabled.getShopEnabled()){
-                sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                if(shop.shopType.getShopType() != Man10ShopType.BARTER){
+                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                }else{
+                    sign.setLine(1, "");
+                }
             }else{
                 sign.setLine(1, "§c取引停止中");
             }

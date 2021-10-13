@@ -110,7 +110,7 @@ public class ShopTypeSelectorMenu extends SInventory{
 
         if(shop.isAdminShop()){
             //barter
-            SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
+            SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.VILLAGER_SPAWN_EGG).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
             barterMode.clickable(false);
             setItem(13, barterMode);
             setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
