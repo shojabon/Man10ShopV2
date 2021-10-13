@@ -154,7 +154,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     }
 
     @Override
-    public boolean performAction(Player p, int amount) {
+    public boolean afterPerformAction(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         addTotalPerMinuteCoolDownLog(new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
         return true;

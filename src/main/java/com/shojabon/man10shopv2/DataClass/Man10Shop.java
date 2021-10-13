@@ -195,6 +195,7 @@ public class Man10Shop {
         //all function check
         for(ShopFunction func: functions){
             if(!func.isFunctionEnabled()) continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
             if(!func.isAllowedToUseShop(p)){
                 return false;
             }
@@ -236,6 +237,12 @@ public class Man10Shop {
                 //operation failed
                 return;
             }
+        }
+
+        for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
+            func.afterPerformAction(p, amount);
         }
 
 

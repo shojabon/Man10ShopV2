@@ -162,7 +162,7 @@ public class StorageRefillFunction extends ShopFunction {
     }
 
     @Override
-    public boolean performAction(Player p, int amount) {
+    public boolean afterPerformAction(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         return setItemLeft(getItemLeft()-amount);
     }

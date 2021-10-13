@@ -54,6 +54,8 @@ public abstract class ShopFunction {
 
     public boolean performAction(Player p, int amount){return true;}
 
+    public boolean afterPerformAction(Player p, int amount){return true;}
+
     public String settingCategory(){
         return "その他";
     }

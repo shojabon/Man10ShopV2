@@ -173,16 +173,14 @@ public class SignListeners implements @NotNull Listener {
             if(sign == null) return;
             Man10Shop shop = Man10ShopV2.api.getShop(sign.shopId);
             if(shop == null) return;
-
+            if(!shop.allowedToUseShop(e.getPlayer())) return;
 
             if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
-                if(!shop.allowedToUseShop(e.getPlayer())) return;
                 BuySellActionMenu menu = new BuySellActionMenu(e.getPlayer(), shop, plugin);
                 Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
             }
 
             if(shop.shopType.getShopType() == Man10ShopType.BARTER){
-                if(!shop.allowedToUseShop(e.getPlayer())) return;
                 BarterActionMenu menu = new BarterActionMenu(e.getPlayer(), shop, plugin);
                 Bukkit.getScheduler().runTask(plugin, ()->menu.open(e.getPlayer()));
             }

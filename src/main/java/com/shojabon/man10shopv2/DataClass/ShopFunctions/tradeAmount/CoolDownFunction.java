@@ -85,7 +85,7 @@ public class CoolDownFunction extends ShopFunction {
     }
 
     @Override
-    public boolean performAction(Player p, int amount) {
+    public boolean afterPerformAction(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
         setCoolDown(p);
         return true;
