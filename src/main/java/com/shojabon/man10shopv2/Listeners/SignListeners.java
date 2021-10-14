@@ -238,7 +238,11 @@ public class SignListeners implements @NotNull Listener {
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
             if(shop.shopEnabled.getShopEnabled()){
                 if(shop.shopType.getShopType() != Man10ShopType.BARTER){
-                    sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                    if(shop.secretPrice.isFunctionEnabled()){
+                        sign.setLine(1, "§b??????円");
+                    }else{
+                        sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
+                    }
                 }else{
                     sign.setLine(1, "");
                 }

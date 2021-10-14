@@ -53,6 +53,7 @@ public class Man10Shop {
     public ShopEnabledFunction shopEnabled;
     public TargetItemFunction targetItem;
     public RandomPriceFunction randomPrice;
+    public SecretPriceModeFunction secretPrice;
 
     //storage
     public StorageRefillFunction storageRefill;
@@ -161,6 +162,8 @@ public class Man10Shop {
         randomPrice = new RandomPriceFunction(this);
         functions.add(randomPrice);
 
+        secretPrice = new SecretPriceModeFunction(this);
+        functions.add(secretPrice);
 
         //async timer task
     }
