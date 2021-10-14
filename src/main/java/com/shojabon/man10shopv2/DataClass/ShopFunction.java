@@ -64,6 +64,8 @@ public abstract class ShopFunction {
         return new Man10ShopType[]{};
     }
 
+    public void perMinuteExecuteTask(){}
+
 
     //setting
     private HashMap<String, String> settings = new HashMap<>();

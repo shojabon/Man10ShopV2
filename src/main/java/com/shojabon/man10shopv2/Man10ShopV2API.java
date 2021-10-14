@@ -17,6 +17,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,9 +33,10 @@ public class Man10ShopV2API {
     public static HashMap<String, Man10ShopSign> signs = new HashMap<>();
 
     public Man10ShopV2API(Man10ShopV2 plugin){
-        this.plugin = plugin;
+        Man10ShopV2API.plugin = plugin;
         loadAllShops();
         startTransactionThread();
+        startPerMinuteExecutionTask();
     }
 
     public Man10Shop getShop(UUID shopId){
@@ -126,6 +129,15 @@ public class Man10ShopV2API {
         for(MySQLCachedResultSet rs: result){
             Man10ShopV2.threadPool.execute(()-> {getShop(UUID.fromString(rs.getString("shop_id")));});
         }
+    }
+
+    //per minute task
+    public void startPerMinuteExecutionTask(){
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, ()->{
+            for(Man10Shop shop: shopCache.values()){
+                shop.perMinuteExecuteTask();
+            }
+        }, (60- LocalDateTime.now().getSecond())*20, 20*60L);
     }
 
     //perform thread

@@ -20,6 +20,7 @@ import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -51,6 +52,7 @@ public class Man10Shop {
     public ShopTypeFunction shopType;
     public ShopEnabledFunction shopEnabled;
     public TargetItemFunction targetItem;
+    public RandomPriceFunction randomPrice;
 
     //storage
     public StorageRefillFunction storageRefill;
@@ -155,10 +157,13 @@ public class Man10Shop {
 
         setBarter = new SetBarterFunction(this);
         functions.add(setBarter);
+
+        randomPrice = new RandomPriceFunction(this);
+        functions.add(randomPrice);
+
+
+        //async timer task
     }
-
-
-    //itemstack setting
 
     //base gets
     public boolean isAdminShop(){
@@ -169,6 +174,14 @@ public class Man10Shop {
         return shopId;
     }
 
+
+    public void perMinuteExecuteTask(){
+        for(ShopFunction func: functions){
+            if(!func.isFunctionEnabled()) continue;
+            if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shopType.getShopType())) continue;
+            func.perMinuteExecuteTask();
+        }
+    }
 
     public boolean allowedToUseShop(Player p){
         //permission to use

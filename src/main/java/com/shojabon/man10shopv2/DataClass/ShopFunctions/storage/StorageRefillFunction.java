@@ -145,7 +145,6 @@ public class StorageRefillFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
-        if(!isFunctionEnabled()) return true;
         if(!checkCanTrade(amount)){
             if(shop.storage.getItemCount() == 0 && !shop.isAdminShop()) {
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは在庫不足です");
