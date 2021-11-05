@@ -13,6 +13,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
@@ -111,7 +112,9 @@ public class StorageFunction extends ShopFunction {
 
     public boolean setBoughtStorageUnits(int units){
         if(getBoughtStorageUnits() == units) return true;
-        return setSetting("storage.bought", units);
+        boolean result = setSetting("storage.bought", units);
+        if(result)storageSize = calculateCurrentStorageSize(0);
+        return result;
     }
 
     //item count functions

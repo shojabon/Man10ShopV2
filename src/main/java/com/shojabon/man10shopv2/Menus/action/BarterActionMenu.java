@@ -43,6 +43,12 @@ public class BarterActionMenu extends SInventory{
             builder.text(" 残り " + maxTradeItemCount + "個");
         }
         setTitle(builder.build());
+
+        setOnClickEvent(e -> {
+            if(e.getClickedInventory() == null) return;
+            if(e.getClickedInventory().getType() == InventoryType.PLAYER)e.setCancelled(true);
+        });
+
     }
 
     public void renderMenu(){

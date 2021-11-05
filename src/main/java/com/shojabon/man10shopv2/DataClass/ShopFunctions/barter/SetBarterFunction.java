@@ -14,6 +14,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import it.unimi.dsi.fastutil.Hash;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -22,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class SetBarterFunction extends ShopFunction {
@@ -115,9 +117,17 @@ public class SetBarterFunction extends ShopFunction {
     @Override
     public boolean performAction(Player p, int amount) {
         //remove items
+        HashMap<String, Integer> checkingMap = new HashMap<>();
         for(ItemStack requiredItem: getRequiredItems()){
             if(requiredItem == null) continue;
-            if(!p.getInventory().containsAtLeast(requiredItem, requiredItem.getAmount())){
+
+            String itemHash = new SItemStack(requiredItem).getItemTypeMD5(true);
+            if(!checkingMap.containsKey(itemHash)){
+                checkingMap.put(itemHash, 0);
+            }
+            checkingMap.put(itemHash, checkingMap.get(itemHash) + requiredItem.getAmount());
+
+            if(!p.getInventory().containsAtLeast(requiredItem, checkingMap.get(itemHash))){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lトレードのためのアイテムが不足しています");
                 return false;
             }

@@ -123,7 +123,7 @@ public class RandomPriceFunction extends ShopFunction {
     }
 
     @Override
-    public SInventoryItem getSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
+    public SInventoryItem getAdminSettingItem(Player player, SInventory sInventory, Man10ShopV2 plugin) {
         SItemStack item = new SItemStack(Material.ENCHANTING_TABLE).setDisplayName(new SStringBuilder().yellow().text("分間毎ごとの値段ランダム決定設定").build());
         if(isFunctionEnabled()){
             item.addLore(new SStringBuilder().lightPurple().text("現在の設定: ").yellow().text(getRandomPickMinute()).text("分毎に値段を決定").build());

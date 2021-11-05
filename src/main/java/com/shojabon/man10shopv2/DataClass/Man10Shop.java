@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.agent.SetStorageSizeFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.AllowedPermissionFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.DisabledFromFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFromFunction;
@@ -59,6 +60,9 @@ public class Man10Shop {
     public StorageRefillFunction storageRefill;
     public StorageCapFunction storageCap;
     public StorageFunction storage;
+
+    //agent
+    public SetStorageSizeFunction setStorageSizeFunction;
 
     //tradeAmount
     public CoolDownFunction coolDown;
@@ -140,9 +144,6 @@ public class Man10Shop {
         storageRefill = new StorageRefillFunction(this);
         functions.add(storageRefill);
 
-        deleteShop = new DeleteShopFunction(this);
-        functions.add(deleteShop);
-
         enabledFrom = new EnabledFromFunction(this);
         functions.add(enabledFrom);
 
@@ -165,7 +166,11 @@ public class Man10Shop {
         secretPrice = new SecretPriceModeFunction(this);
         functions.add(secretPrice);
 
-        //async timer task
+        deleteShop = new DeleteShopFunction(this);
+        functions.add(deleteShop);
+
+        setStorageSizeFunction = new SetStorageSizeFunction(this);
+        functions.add(setStorageSizeFunction);
     }
 
     //base gets

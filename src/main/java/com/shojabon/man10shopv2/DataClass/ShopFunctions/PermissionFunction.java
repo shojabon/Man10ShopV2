@@ -142,6 +142,7 @@ public class PermissionFunction extends ShopFunction {
     }
 
     public String getPermissionString(Man10ShopPermission permission){
+        if(permission == null) return "エラー";
         switch (permission){
             case OWNER:
                 return "オーナー";
