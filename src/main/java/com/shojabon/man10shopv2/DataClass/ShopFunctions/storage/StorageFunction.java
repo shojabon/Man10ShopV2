@@ -134,6 +134,14 @@ public class StorageFunction extends ShopFunction {
         return true;
     }
 
+    public boolean setItemCount(int count){
+        itemCount = count;
+        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET item_count = " + count + " WHERE shop_id = '" + shop.getShopId() + "'");
+        if(!result) return false;
+        //log here
+        return true;
+    }
+
     public int getItemCount(){
         if(itemCount < 0) return 0;
         return itemCount;

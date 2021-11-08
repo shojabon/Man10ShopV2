@@ -120,10 +120,19 @@ public class Man10ShopV2Command extends SCommandRouter {
                         .setExecutor(new ReloadConfigCommand(plugin))
         );
 
+//        addCommand(
+//                new SCommandObject()
+//                        .addArgument(new SCommandArgument().addAllowedString("test"))
+//                        .setExecutor(new TestCommand(plugin))
+//        );
+
+        //open shop for player
         addCommand(
                 new SCommandObject()
-                        .addArgument(new SCommandArgument().addAllowedString("test"))
-                        .setExecutor(new TestCommand(plugin))
+                        .addArgument(new SCommandArgument().addAllowedString("open"))
+                        .addArgument(new SCommandArgument().addAllowedType(SCommandArgumentType.ONLINE_PLAYER))
+                        .addArgument(new SCommandArgument())
+                        .setExecutor(new OpenShopCommand(plugin))
         );
 
     }

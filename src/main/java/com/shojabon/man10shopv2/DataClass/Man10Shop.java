@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass;
 
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.agent.SetStorageSizeFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.AllowedPermissionFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.DisabledFromFunction;
@@ -18,6 +19,8 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.TotalPerMinu
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
+import com.shojabon.man10shopv2.Menus.action.BarterActionMenu;
+import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
@@ -25,11 +28,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
 public class Man10Shop {
 
+    Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10ShopV2");
     public UUID shopId;
 
     public boolean admin = false;
@@ -63,6 +69,7 @@ public class Man10Shop {
 
     //agent
     public SetStorageSizeFunction setStorageSizeFunction;
+    public SetItemCountFunction setItemCountFunction;
 
     //tradeAmount
     public CoolDownFunction coolDown;
@@ -171,6 +178,10 @@ public class Man10Shop {
 
         setStorageSizeFunction = new SetStorageSizeFunction(this);
         functions.add(setStorageSizeFunction);
+
+        setItemCountFunction = new SetItemCountFunction(this);
+        functions.add(setItemCountFunction);
+
     }
 
     //base gets
@@ -294,7 +305,6 @@ public class Man10Shop {
     }
 
     //signs
-
     public void loadSigns(){
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE shop_id = '" + shopId + "'");
         for(MySQLCachedResultSet rs: result){
@@ -308,6 +318,17 @@ public class Man10Shop {
         }
     }
 
+    public void openActionMenu(Player p){
+        if(shopType.getShopType() == Man10ShopType.BUY || shopType.getShopType() == Man10ShopType.SELL){
+            BuySellActionMenu menu = new BuySellActionMenu(p, this, (JavaPlugin) plugin);
+            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+        }
+
+        if(shopType.getShopType() == Man10ShopType.BARTER){
+            BarterActionMenu menu = new BarterActionMenu(p, this, (Man10ShopV2) plugin);
+            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+        }
+    }
 
 
 }

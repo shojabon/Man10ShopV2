@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Consumer;
 
 public class BuySellActionMenu extends SInventory {
     Man10Shop shop;
-    Man10ShopV2 plugin;
+    JavaPlugin plugin;
     Player player;
     int itemCount = 1;
     boolean orderRequested = false;
@@ -28,7 +30,7 @@ public class BuySellActionMenu extends SInventory {
     //per minute cool down counter
     int itemsTradedPerMinute = 0;
 
-    public BuySellActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
+    public BuySellActionMenu(Player p, Man10Shop shop, JavaPlugin plugin){
         super(shop.name.getName(), 6, plugin);
         this.player = p;
         this.shop = shop;
