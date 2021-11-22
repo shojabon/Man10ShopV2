@@ -61,7 +61,7 @@ public class SignListeners implements @NotNull Listener {
         }
 
         if(Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("man10shop")){
-            EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), plugin);
+            EditableShopSelectorMenu menu = new EditableShopSelectorMenu(e.getPlayer(), "その他", plugin);
 
             int signPrice = Man10ShopV2.config.getInt("sign.price");
             UUID uuid = e.getPlayer().getUniqueId();
