@@ -59,7 +59,7 @@ public class ShopMainMenu extends SInventory {
                 menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
                 moveToMenu(player, menu);
             }else{
-                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, plugin);
+                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.getCategory(), plugin);
                 menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
                 moveToMenu(player, menu);
             }

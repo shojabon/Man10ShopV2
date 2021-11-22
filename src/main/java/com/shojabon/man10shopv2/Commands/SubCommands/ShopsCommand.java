@@ -29,7 +29,7 @@ public class ShopsCommand implements CommandExecutor {
 
         Player p = ((Player)sender);
 
-        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, plugin);
+        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, "その他", plugin);
         menu.setOnClick(shop -> menu.moveToMenu(p, new ShopMainMenu(p, Man10ShopV2.api.getShop(shop.shopId), plugin)));
         menu.open(p);
         return true;

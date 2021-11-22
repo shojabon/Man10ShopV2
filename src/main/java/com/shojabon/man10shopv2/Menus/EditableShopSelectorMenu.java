@@ -20,8 +20,8 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
     Player player;
     Consumer<Man10Shop> onClick = null;
 
-    public EditableShopSelectorMenu(Player p, Man10ShopV2 plugin){
-        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), "その他", plugin);
+    public EditableShopSelectorMenu(Player p, String startingCategory, Man10ShopV2 plugin){
+        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), startingCategory, plugin);
         this.player = p;
         this.plugin = plugin;
     }
