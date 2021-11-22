@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Menus;
 
+import ToolMenu.CategoricalSInventoryMenu;
 import ToolMenu.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -10,16 +11,17 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 
-public class EditableShopSelectorMenu extends LargeSInventoryMenu {
+public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
 
     Man10ShopV2 plugin;
     Player player;
     Consumer<Man10Shop> onClick = null;
 
     public EditableShopSelectorMenu(Player p, Man10ShopV2 plugin){
-        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), plugin);
+        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), "その他", plugin);
         this.player = p;
         this.plugin = plugin;
     }
@@ -29,7 +31,7 @@ public class EditableShopSelectorMenu extends LargeSInventoryMenu {
     }
 
     public void renderMenu(){
-        ArrayList<SInventoryItem> items = new ArrayList<>();
+        addInitializedCategory("その他");
 
         ArrayList<Man10Shop> shops = Man10ShopV2.api.getShopsWithPermission(player.getUniqueId());
         for(Man10Shop shop: shops){
@@ -47,12 +49,12 @@ public class EditableShopSelectorMenu extends LargeSInventoryMenu {
                 if(onClick != null) onClick.accept(shop);
             });
 
-            items.add(item);
+            addItem(shop.categoryFunction.getCategory(), item);
         }
-        setItems(items);
+        //setItems(items);
     }
 
-    public void afterRenderMenu() {
-        renderInventory(0);
-    }
+//    public void afterRenderMenu() {
+//        renderInventory();
+//    }
 }

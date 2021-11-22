@@ -61,6 +61,7 @@ public class Man10Shop {
     public TargetItemFunction targetItem;
     public RandomPriceFunction randomPrice;
     public SecretPriceModeFunction secretPrice;
+    public CategoryFunction categoryFunction;
 
     //storage
     public StorageRefillFunction storageRefill;
@@ -172,6 +173,9 @@ public class Man10Shop {
 
         secretPrice = new SecretPriceModeFunction(this);
         functions.add(secretPrice);
+
+        categoryFunction = new CategoryFunction(this);
+        functions.add(categoryFunction);
 
         deleteShop = new DeleteShopFunction(this);
         functions.add(deleteShop);
