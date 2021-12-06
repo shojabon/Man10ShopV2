@@ -36,7 +36,7 @@ public class DeleteShopFunction extends ShopFunction {
 
     @Override
     public String settingCategory() {
-        return "一般設定";
+        return "削除設定";
     }
 
     @Override

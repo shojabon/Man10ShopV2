@@ -3,10 +3,13 @@ package com.shojabon.man10shopv2.DataClass;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.mcutils.Utils.SConfigFile;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -115,6 +118,10 @@ public abstract class ShopFunction {
         return setSetting(key, String.valueOf(value));
     }
 
+    public boolean setSetting(String key, YamlConfiguration config){
+        return setSetting(key, SConfigFile.base64EncodeConfig(config));
+    }
+
     public String getSetting(String key){
         if(settings.containsKey(key)){
             return settings.get(key);
@@ -124,6 +131,17 @@ public abstract class ShopFunction {
             settings.put(rs.getString("key"), rs.getString("value"));
         }
         return settings.get(key);
+    }
+
+    public YamlConfiguration getSettingYaml(String key){
+        try{
+            if(settings.containsKey(key)){
+                return SConfigFile.loadConfigFromBase64(settings.get(key));
+            }
+            return SConfigFile.loadConfigFromBase64(getSetting(key));
+        }catch (Exception e){
+            return null;
+        }
     }
 
 

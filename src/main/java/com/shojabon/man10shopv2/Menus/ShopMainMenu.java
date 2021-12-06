@@ -39,11 +39,22 @@ public class ShopMainMenu extends AutoScaledMenu {
             addItem(getTargetItemSettingsItem());
             addItem(getMoneySelectorMenu());
             addItem(getPermissionSettingsItem());
-        }
-        if(shop.shopType.getShopType() == Man10ShopType.BARTER){
+        }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
             addItem(getShopSettingsItem());
             addItem(getShopInfoItem());
             addItem(getTargetItemSettingsItem());
+            addItem(getPermissionSettingsItem());
+        }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
+            addItem(getShopSettingsItem());
+            addItem(getShopInfoItem());
+            addItem(getTargetItemSettingsItem());
+            addItem(getPermissionSettingsItem());
+        } else{
+            addItem(getShopSettingsItem());
+            addItem(getShopInfoItem());
+            addItem(getStorageSettingsItem());
+            addItem(getTargetItemSettingsItem());
+            addItem(getMoneySelectorMenu());
             addItem(getPermissionSettingsItem());
         }
 

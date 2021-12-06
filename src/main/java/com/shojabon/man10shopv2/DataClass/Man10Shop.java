@@ -9,6 +9,7 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFrom
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayToggleFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.ItemGroupFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
@@ -26,6 +27,7 @@ import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -80,6 +82,9 @@ public class Man10Shop {
 
     //barter
     public SetBarterFunction setBarter;
+
+    //loot Box
+    public ItemGroupFunction lootBoxItemGroupFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -177,14 +182,26 @@ public class Man10Shop {
         categoryFunction = new CategoryFunction(this);
         functions.add(categoryFunction);
 
-        deleteShop = new DeleteShopFunction(this);
-        functions.add(deleteShop);
-
         setStorageSizeFunction = new SetStorageSizeFunction(this);
         functions.add(setStorageSizeFunction);
 
         setItemCountFunction = new SetItemCountFunction(this);
         functions.add(setItemCountFunction);
+
+        lootBoxItemGroupFunction = new ItemGroupFunction(this);
+        functions.add(lootBoxItemGroupFunction);
+
+
+
+
+
+
+
+
+
+
+        deleteShop = new DeleteShopFunction(this);
+        functions.add(deleteShop);
 
     }
 
@@ -294,11 +311,12 @@ public class Man10Shop {
             Man10ShopV2API.tradeLog(shopId,"SELL", amount , totalPrice, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個売却しました");
         }else if(shopType.getShopType() == Man10ShopType.BARTER) {
-            Man10ShopV2API.tradeLog(shopId,"BARTER", amount , 0, p.getName(), p.getUniqueId()); //log
+            Man10ShopV2API.tradeLog(shopId, "BARTER", amount, 0, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + new SItemStack(setBarter.getResultItems()[0]).getDisplayName() + "§a§lにトレードしました");
-        }else if(shopType.getShopType() == Man10ShopType.STOPPED){
-            p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
         }
+//        }else if(shopType.getShopType() == Man10ShopType.STOPPED){
+//            p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
+//        }
 
     }
 

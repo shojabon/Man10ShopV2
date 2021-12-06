@@ -9,6 +9,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import io.papermc.paper.util.TransformingRandomAccessList;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -42,7 +43,7 @@ public class ShopTypeSelectorMenu extends SInventory{
                 Man10ShopV2.api.updateAllSigns(shop);
             });
         });
-        setItem(20, buyMode);
+        setItem(21, buyMode);
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
         sellMode.clickable(false);
@@ -58,7 +59,7 @@ public class ShopTypeSelectorMenu extends SInventory{
                 Man10ShopV2.api.updateAllSigns(shop);
             });
         });
-        setItem(24, sellMode);
+        setItem(23, sellMode);
 
         if(shop.isAdminShop()){
             SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
@@ -75,7 +76,23 @@ public class ShopTypeSelectorMenu extends SInventory{
                     Man10ShopV2.api.updateAllSigns(shop);
                 });
             });
-            setItem(22, barterMode);
+            setItem(25, barterMode);
+
+            SInventoryItem lootBoxMode = new SInventoryItem(new SItemStack(Material.RED_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().red().text("このモードを選択").build()).build());
+            lootBoxMode.clickable(false);
+            lootBoxMode.setAsyncEvent(e -> {
+                if(!shop.shopType.setShopType(Man10ShopType.LOOT_BOX)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                Man10ShopV2API.log(shop.shopId, "setShopType", "LOOTBOX", player.getName(), player.getUniqueId()); //log
+                player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
+                player.getServer().getScheduler().runTask(plugin, ()-> {
+                    player.closeInventory();
+                    Man10ShopV2.api.updateAllSigns(shop);
+                });
+            });
+            setItem(19, lootBoxMode);
         }
 
 
@@ -83,11 +100,13 @@ public class ShopTypeSelectorMenu extends SInventory{
         SInventoryItem current = new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName(new SStringBuilder().green().text("現在の設定").build()).build());
         current.clickable(false);
         if(shop.shopType.getShopType() == Man10ShopType.BUY){
-            setItem(20, current);
+            setItem(21, current);
         }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
-            setItem(24, current);
+            setItem(23, current);
         }else if(shop.shopType.getShopType() == Man10ShopType.BARTER && shop.isAdminShop()){
-            setItem(22, current);
+            setItem(25, current);
+        }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
+            setItem(19, current);
         }
 
         renderInventory();
@@ -101,19 +120,22 @@ public class ShopTypeSelectorMenu extends SInventory{
 
         SInventoryItem sellMode = new SInventoryItem(new SItemStack(Material.DROPPER).setDisplayName(new SStringBuilder().green().text("販売モード").build()).build());
         sellMode.clickable(false);
-        setItem(11, sellMode);
+        setItem(12, sellMode);
 
         SInventoryItem buyMode = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("買取モード").build()).build());
         buyMode.clickable(false);
-        setItem(15, buyMode);
+        setItem(14, buyMode);
         setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
 
         if(shop.isAdminShop()){
             //barter
             SInventoryItem barterMode = new SInventoryItem(new SItemStack(Material.VILLAGER_SPAWN_EGG).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
             barterMode.clickable(false);
-            setItem(13, barterMode);
-            setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.settingCategory(), plugin)));
+            setItem(16, barterMode);
+
+            SInventoryItem lootBoxMode = new SInventoryItem(new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
+            lootBoxMode.clickable(false);
+            setItem(10, lootBoxMode);
         }
 
         renderButtons();
