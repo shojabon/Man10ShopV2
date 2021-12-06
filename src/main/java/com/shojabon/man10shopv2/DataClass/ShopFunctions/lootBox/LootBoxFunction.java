@@ -7,7 +7,6 @@ import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Menus.Settings.lootBoxSettings.LootBoxGroupSelectorMenu;
-import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
@@ -15,17 +14,16 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class ItemGroupFunction extends ShopFunction {
+public class LootBoxFunction extends ShopFunction {
 
     //variables
 
 
     //init
-    public ItemGroupFunction(Man10Shop shop) {
+    public LootBoxFunction(Man10Shop shop) {
         super(shop);
     }
 
@@ -95,7 +93,7 @@ public class ItemGroupFunction extends ShopFunction {
                 return;
             }
             //confirmation menu
-            sInventory.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, shop.lootBoxItemGroupFunction.getLootBox(), plugin));
+            sInventory.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, shop.lootBoxFunction.getLootBox(), plugin));
 
         });
 

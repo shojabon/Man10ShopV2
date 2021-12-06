@@ -75,7 +75,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
                 ConfirmationMenu menu = new ConfirmationMenu("グループを消去しますか？", plugin);
                 menu.setOnConfirm(ee -> {
                     newData.remove(finalI);
-                    if(!shop.lootBoxItemGroupFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
@@ -103,7 +103,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
 
                 numberMenu.setOnConfirm(ee -> {
                     newData.get(finalI).percentageWeight = ee;
-                    if(!shop.lootBoxItemGroupFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
@@ -118,7 +118,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.lootBoxItemGroupFunction.settingCategory(), plugin)));
+        setOnCloseEvent(ee -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.lootBoxFunction.settingCategory(), plugin)));
     }
 
     public Material getRandomMaterial(){
@@ -157,7 +157,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
             if(addingMaterial == null) return;
             newItemGroups.add(new LootBoxGroupData(addingMaterial, 0));
 
-            if(!shop.lootBoxItemGroupFunction.setLootBox(lootBox)){
+            if(!shop.lootBoxFunction.setLootBox(lootBox)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                 return;
             }

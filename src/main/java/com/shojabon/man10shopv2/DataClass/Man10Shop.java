@@ -9,7 +9,9 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFrom
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayToggleFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.ItemGroupFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxPaymentFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxSpinTimeFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
@@ -22,14 +24,14 @@ import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.action.BarterActionMenu;
 import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
+import com.shojabon.man10shopv2.Menus.action.LootBoxActionMenu;
+import com.shojabon.man10shopv2.Menus.action.LootBoxPlayMenu;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -84,7 +86,9 @@ public class Man10Shop {
     public SetBarterFunction setBarter;
 
     //loot Box
-    public ItemGroupFunction lootBoxItemGroupFunction;
+    public LootBoxFunction lootBoxFunction;
+    //public LootBoxSpinTimeFunction lootBoxSpinTimeFunction;
+    public LootBoxPaymentFunction lootBoxPaymentFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -188,10 +192,14 @@ public class Man10Shop {
         setItemCountFunction = new SetItemCountFunction(this);
         functions.add(setItemCountFunction);
 
-        lootBoxItemGroupFunction = new ItemGroupFunction(this);
-        functions.add(lootBoxItemGroupFunction);
+        lootBoxFunction = new LootBoxFunction(this);
+        functions.add(lootBoxFunction);
 
+//        lootBoxSpinTimeFunction = new LootBoxSpinTimeFunction(this);
+//        functions.add(lootBoxSpinTimeFunction);
 
+        lootBoxPaymentFunction = new LootBoxPaymentFunction(this);
+        functions.add(lootBoxPaymentFunction);
 
 
 
@@ -313,6 +321,12 @@ public class Man10Shop {
         }else if(shopType.getShopType() == Man10ShopType.BARTER) {
             Man10ShopV2API.tradeLog(shopId, "BARTER", amount, 0, p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + new SItemStack(setBarter.getResultItems()[0]).getDisplayName() + "§a§lにトレードしました");
+        }else if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
+            Man10ShopV2API.tradeLog(shopId, "LOOTBOX", 1, lootBoxPaymentFunction.getPrice(), p.getName(), p.getUniqueId()); //log
+            Bukkit.getScheduler().runTask(plugin, ()->{
+                LootBoxPlayMenu menu = new LootBoxPlayMenu(p, this, (Man10ShopV2) plugin);
+                menu.open(p);
+            });
         }
 //        }else if(shopType.getShopType() == Man10ShopType.STOPPED){
 //            p.sendMessage(Man10ShopV2.prefix + "§a§lこのショップは現在取引を停止しています");
@@ -348,6 +362,11 @@ public class Man10Shop {
 
         if(shopType.getShopType() == Man10ShopType.BARTER){
             BarterActionMenu menu = new BarterActionMenu(p, this, (Man10ShopV2) plugin);
+            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+        }
+
+        if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
+            LootBoxActionMenu menu = new LootBoxActionMenu(p, this, (Man10ShopV2) plugin);
             Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
         }
     }

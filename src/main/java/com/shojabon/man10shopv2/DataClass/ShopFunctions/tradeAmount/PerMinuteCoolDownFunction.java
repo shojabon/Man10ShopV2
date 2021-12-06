@@ -232,7 +232,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
                     return;
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l個数を設定しました");
-                autoScaledMenu.moveToMenu(player, autoScaledMenu);
+                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
             });
             menu.setOnCancel(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
             menu.setOnClose(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));

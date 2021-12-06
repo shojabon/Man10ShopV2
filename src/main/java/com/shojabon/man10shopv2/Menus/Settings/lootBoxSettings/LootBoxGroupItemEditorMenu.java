@@ -76,7 +76,7 @@ public class LootBoxGroupItemEditorMenu extends LargeSInventoryMenu {
                 lootBox.groupData.get(groupId).itemCountDictionary.put(item.getMD5(), 1);
 
                 //update database here
-                if(!shop.lootBoxItemGroupFunction.setLootBox(lootBox)){
+                if(!shop.lootBoxFunction.setLootBox(lootBox)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }

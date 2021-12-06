@@ -26,6 +26,7 @@ public final class Man10ShopV2 extends JavaPlugin {
     public static ExecutorService threadPool = Executors.newCachedThreadPool();
     public static Man10ShopV2API api;
     public static String prefix;
+    public static String gachaPrefix = "§e§l[§6§lMan10Gacha§e§l]";
     public static VaultAPI vault;
     public static FileConfiguration config;
 

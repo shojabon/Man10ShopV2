@@ -12,6 +12,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.man10shopv2.Menus.EditableShopSelectorMenu;
 import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -223,21 +224,34 @@ public class SignListeners implements @NotNull Listener {
                 sign.setLine(0, "§c§l買取ショップ");
             }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
                 sign.setLine(0, "§b§lトレードショップ");
+            }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
+                sign.setLine(0, "§d§lガチャ");
             }
 
             sign.update();
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
             if(shop.shopEnabled.getShopEnabled()){
-                if(shop.shopType.getShopType() != Man10ShopType.BARTER){
+                if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
                     if(shop.secretPrice.isFunctionEnabled()){
                         sign.setLine(1, "§b??????円");
                     }else{
                         sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
                     }
-                }else{
+                }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
                     sign.setLine(1, "");
+                }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
+                    SStringBuilder priceString = new SStringBuilder().text("§b");
+                    if(shop.lootBoxPaymentFunction.getPrice() != 0){
+                        priceString.text(BaseUtils.priceString(shop.lootBoxPaymentFunction.getPrice()) + "円");
+                    }
+                    if(shop.lootBoxPaymentFunction.getItem() != null){
+                        if(shop.lootBoxPaymentFunction.getPrice() != 0) priceString.text("+");
+                        priceString.text("アイテム");
+                    }
+                    sign.setLine(1, priceString.build());
                 }
+
             }else{
                 sign.setLine(1, "§c取引停止中");
             }
