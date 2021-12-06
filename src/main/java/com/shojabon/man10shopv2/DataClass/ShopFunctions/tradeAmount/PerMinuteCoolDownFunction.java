@@ -1,12 +1,13 @@
 package com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount;
 
+import ToolMenu.AutoScaledMenu;
+import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopLogObject;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
-import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.PerMinuteCoolDownSelectorMenu;
+import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
@@ -189,12 +190,60 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
                 return;
             }
-            //confirmation menu
-            sInventory.moveToMenu(player, new PerMinuteCoolDownSelectorMenu(player, shop, plugin));
 
+            sInventory.moveToMenu(player, getInnerSettingMenu(player, plugin));
         });
 
 
         return inventoryItem;
+    }
+
+    public AutoScaledMenu getInnerSettingMenu(Player player, Man10ShopV2 plugin){
+        AutoScaledMenu autoScaledMenu = new AutoScaledMenu("分間毎ごとのクールダウン設定", plugin);
+
+        SInventoryItem timeSetting = new SInventoryItem(new SItemStack(Material.CLOCK).setDisplayName(new SStringBuilder().green().text("時間設定").build()).build());
+        timeSetting.clickable(false);
+        timeSetting.setEvent(ee -> {
+
+            NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
+            menu.setOnConfirm(number -> {
+                if(!setPerMinuteCoolDownTime(number)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l時間を設定しました");
+                loadPerMinuteMap();
+                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
+            });
+            menu.setOnCancel(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+            menu.setOnClose(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+
+            autoScaledMenu.moveToMenu(player, menu);
+        });
+
+        SInventoryItem amountSetting = new SInventoryItem(new SItemStack(Material.HOPPER).setDisplayName(new SStringBuilder().green().text("個数設定").build()).build());
+        amountSetting.clickable(false);
+        amountSetting.setEvent(ee -> {
+
+            NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);
+            menu.setOnConfirm(number -> {
+                if(!setPerMinuteCoolDownAmount(number)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l個数を設定しました");
+                autoScaledMenu.moveToMenu(player, autoScaledMenu);
+            });
+            menu.setOnCancel(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+            menu.setOnClose(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+
+            autoScaledMenu.moveToMenu(player, menu);
+        });
+        autoScaledMenu.setOnCloseEvent(ee -> autoScaledMenu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
+
+
+        autoScaledMenu.addItem(timeSetting);
+        autoScaledMenu.addItem(amountSetting);
+        return autoScaledMenu;
     }
 }

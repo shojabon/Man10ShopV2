@@ -1,23 +1,23 @@
 package com.shojabon.man10shopv2.DataClass.ShopFunctions.general;
 
+import ToolMenu.AutoScaledMenu;
+import ToolMenu.NumericInputMenu;
+import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
-import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.RandomPriceMenu;
 import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.RandomPricePriceSelector;
-import com.shojabon.man10shopv2.Menus.Settings.InnerSettings.StorageRefillMenu;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.units.qual.A;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -144,12 +144,76 @@ public class RandomPriceFunction extends ShopFunction {
                 return;
             }
             //confirmation menu
-            RandomPriceMenu menu = new RandomPriceMenu(player, shop, plugin);
-            sInventory.moveToMenu(player, menu);
+            sInventory.moveToMenu(player, getInnerSettingMenu(player, plugin));
 
         });
 
 
         return inventoryItem;
+    }
+
+    public AutoScaledMenu getInnerSettingMenu(Player player, Man10ShopV2 plugin){
+
+        AutoScaledMenu autoScaledMenu = new AutoScaledMenu("ランダム値段設定", plugin);
+
+        SInventoryItem timeSetting = new SInventoryItem(new SItemStack(Material.CLOCK).setDisplayName(new SStringBuilder().green().text("時間設定").build()).build());
+        timeSetting.clickable(false);
+        timeSetting.setEvent(e -> {
+
+            NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
+            menu.setOnConfirm(number -> {
+                if(!shop.randomPrice.setRandomPickMinute(number)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l時間を設定しました");
+                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
+            });
+            menu.setOnCancel(ee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+            menu.setOnClose(ee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+
+            autoScaledMenu.moveToMenu(player, menu);
+        });
+
+
+        SInventoryItem priceGroup = new SInventoryItem(new SItemStack(Material.EMERALD_BLOCK).setDisplayName(new SStringBuilder().green().text("値段群を設定").build()).build());
+        priceGroup.clickable(false);
+        priceGroup.setEvent(e -> {
+
+            RandomPricePriceSelector menu = new RandomPricePriceSelector(player, shop, plugin);
+            autoScaledMenu.moveToMenu(player, menu);
+        });
+
+
+        SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS)
+                .setDisplayName(new SStringBuilder().green().text("最終値段選択時間を設定する").build())
+                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.randomPrice.getLastPickedTime()*1000L)))
+                .build());
+        setRefillStartingTime.clickable(false);
+        setRefillStartingTime.setEvent(e -> {
+            TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終値段選択時間を設定してくださ", plugin);
+            menu.setOnConfirm(lastRefillTime -> {
+                if(lastRefillTime == -1L){
+                    shop.randomPrice.deleteSetting("shop.randomPrice.lastRefillTime");
+                }else{
+                    if(!shop.randomPrice.setLastPickedTime(lastRefillTime)){
+                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        return;
+                    }
+                }
+                player.sendMessage(Man10ShopV2.prefix + "§a§l最新の補充開始時間を現在に設定しました");
+                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
+            });
+            menu.setOnCloseEvent(ee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+            autoScaledMenu.moveToMenu(player, menu);
+        });
+
+        autoScaledMenu.setOnCloseEvent(e -> autoScaledMenu.moveToMenu(player, new SettingsMainMenu(player, shop, shop.randomPrice.settingCategory(), plugin)));
+
+        autoScaledMenu.addItem(timeSetting);
+        autoScaledMenu.addItem(setRefillStartingTime);
+        autoScaledMenu.addItem(priceGroup);
+
+        return autoScaledMenu;
     }
 }

@@ -1,8 +1,10 @@
 package com.shojabon.man10shopv2.Menus;
 
+import ToolMenu.AutoScaledMenu;
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
+import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.Menus.Settings.SettingsMainMenu;
@@ -16,56 +18,47 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class ShopMainMenu extends SInventory {
+public class ShopMainMenu extends AutoScaledMenu {
     
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
 
     public ShopMainMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(new SStringBuilder().green().text(shop.name.getName() + "設定").build(), 3, plugin);
+        super(new SStringBuilder().green().text(shop.name.getName() + "設定").build(), plugin);
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
-    }
 
-    public void renderMenu(){
-        SInventoryItem background = new SInventoryItem(new SItemStack(Material.BLUE_STAINED_GLASS_PANE).setDisplayName(" ").build());
-        background.clickable(false);
-        fillItem(background);
 
-        //shop info
-        setItem(13, getShopInfoItem());
 
-        //shop settings
-        setItem(12, getShopSettingsItem());
-
-        //storage
-        setItem(14, getStorageSettingsItem());
-
-        //permission settings
-        setItem(16, getPermissionSettingsItem());
-
-        setItem(22, getMoneySelectorMenu());
-
-        //target item setting settings
-        SInventoryItem targetItemSetting = new SInventoryItem(new SItemStack(Material.BELL).setDisplayName(new SStringBuilder().darkRed().bold().text("取引アイテム設定").build()).build());
-        targetItemSetting.clickable(false);
-        setItem(10, getTargetItemSettingsItem());
+        if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
+            addItem(getShopSettingsItem());
+            addItem(getShopInfoItem());
+            addItem(getStorageSettingsItem());
+            addItem(getTargetItemSettingsItem());
+            addItem(getMoneySelectorMenu());
+            addItem(getPermissionSettingsItem());
+        }
+        if(shop.shopType.getShopType() == Man10ShopType.BARTER){
+            addItem(getShopSettingsItem());
+            addItem(getShopInfoItem());
+            addItem(getTargetItemSettingsItem());
+            addItem(getPermissionSettingsItem());
+        }
 
         setOnCloseEvent(e -> {
             if(shop.admin){
                 AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, plugin);
-                menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
+                menu.setOnClick(selectedShop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin)));
                 moveToMenu(player, menu);
             }else{
                 EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.getCategory(), plugin);
-                menu.setOnClick(shop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(shop.shopId), plugin)));
+                menu.setOnClick(selectedShop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin)));
                 moveToMenu(player, menu);
             }
         });
 
-        renderInventory();
     }
 
     public SInventoryItem getShopInfoItem(){

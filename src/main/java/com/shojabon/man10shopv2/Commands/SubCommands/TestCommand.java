@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.Commands.SubCommands;
 
+import ToolMenu.AutoScaledMenu;
 import ToolMenu.CategoricalSInventoryMenu;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -38,6 +39,15 @@ public class TestCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        AutoScaledMenu menu = new AutoScaledMenu("test", plugin);
+        menu.addItem(new SInventoryItem(new SItemStack(Material.DIAMOND).build()));
+        menu.addItem(new SInventoryItem(new SItemStack(Material.REDSTONE).build()));
+        menu.addItem(new SInventoryItem(new SItemStack(Material.DIAMOND).build()));
+        menu.addItem(new SInventoryItem(new SItemStack(Material.REDSTONE).build()));
+        menu.addItem(new SInventoryItem(new SItemStack(Material.DIAMOND).build()));
+        menu.addItem(new SInventoryItem(new SItemStack(Material.REDSTONE).build()));
+
+        menu.open(((Player) sender));
         return true;
     }
 }

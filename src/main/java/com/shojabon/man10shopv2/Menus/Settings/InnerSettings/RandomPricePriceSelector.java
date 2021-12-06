@@ -56,7 +56,7 @@ public class RandomPricePriceSelector extends LargeSInventoryMenu {
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new RandomPriceMenu(player, shop, plugin)));
+        setOnCloseEvent(ee -> moveToMenu(player, shop.randomPrice.getInnerSettingMenu(player, plugin)));
     }
 
     public void afterRenderMenu() {
