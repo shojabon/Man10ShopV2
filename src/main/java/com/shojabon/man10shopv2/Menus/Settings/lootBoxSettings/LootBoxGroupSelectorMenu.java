@@ -53,6 +53,8 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
 
             icon.addLore("§d確率" + data.getPercentage() + "%");
             icon.addLore("§d" + data.percentageWeight + "/10000");
+            icon.addLore("");
+            icon.addLore("§b§lアイテム数:" + data.itemCountDictionary.size() + "種類");
             //warning
             if(lootBox.getLackingWeight() < 0){
                 icon.addLore("§cウェイト超過: " + Math.abs(lootBox.getLackingWeight()));

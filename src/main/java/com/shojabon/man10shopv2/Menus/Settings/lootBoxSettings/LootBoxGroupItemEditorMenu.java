@@ -44,8 +44,12 @@ public class LootBoxGroupItemEditorMenu extends LargeSInventoryMenu {
             SItemStack icon = new SItemStack(lootBox.itemDictionary.get(itemHash).clone());
             //warning
             float percentage = (float) groupData.itemCountDictionary.get(itemHash)/groupData.getTotalItemCount();
-            icon.addLore("§d§l" + (percentage*100) + "%");
-            icon.addLore("§d§l" + groupData.itemCountDictionary.get(itemHash) + "/" + groupData.getTotalItemCount());
+            icon.addLore("§d========グループ内確率========");
+            icon.addLore("§d" + (percentage*100) + "%");
+            icon.addLore("§d" + groupData.itemCountDictionary.get(itemHash) + "/" + groupData.getTotalItemCount());
+            icon.addLore("");
+            icon.addLore("§d========最終確率========");
+            icon.addLore("§d" + (groupData.getPercentage()*percentage) + "%");
             icon.addLore("");
             icon.addLore("§c§l右クリックで削除");
             icon.addLore("§a§l左クリックで確率設定");
