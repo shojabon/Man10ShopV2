@@ -103,7 +103,7 @@ public class SignListeners implements @NotNull Listener {
                 e.getPlayer().sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");
                 return;
             }
-            AdminShopSelectorMenu menu = new AdminShopSelectorMenu(e.getPlayer(), plugin);
+            AdminShopSelectorMenu menu = new AdminShopSelectorMenu(e.getPlayer(), "その他", plugin);
 
             int signPrice = Man10ShopV2.config.getInt("sign.price");
             UUID uuid = e.getPlayer().getUniqueId();

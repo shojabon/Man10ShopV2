@@ -38,6 +38,7 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
+            icon.addLore("§d§lショップタイプ: " + shop.shopType.shopTypeToString(shop.shopType.getShopType()));
             icon.addLore(new SStringBuilder().lightPurple().bold().text("権限: ").yellow().bold().text(shop.permission.getPermissionString(shop.permission.getPermission(player.getUniqueId()))).build());
             icon.addLore("");
             icon.addLore(new SStringBuilder().red().bold().text("在庫: ").yellow().bold().text(BaseUtils.priceString(shop.storage.getItemCount())).text("個").build());

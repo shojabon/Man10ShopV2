@@ -30,7 +30,7 @@ public class AdminShopsCommand implements CommandExecutor {
 
         Player p = ((Player)sender);
 
-        AdminShopSelectorMenu menu = new AdminShopSelectorMenu(p, plugin);
+        AdminShopSelectorMenu menu = new AdminShopSelectorMenu(p, "その他", plugin);
         menu.setOnClick(shop -> menu.moveToMenu(p, new ShopMainMenu(p, plugin.api.getShop(shop.shopId), plugin)));
         menu.open(p);
         return true;

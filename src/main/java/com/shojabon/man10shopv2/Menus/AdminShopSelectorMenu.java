@@ -1,8 +1,10 @@
 package com.shojabon.man10shopv2.Menus;
 
+import ToolMenu.CategoricalSInventoryMenu;
 import ToolMenu.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
@@ -11,14 +13,14 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class AdminShopSelectorMenu extends LargeSInventoryMenu {
+public class AdminShopSelectorMenu extends CategoricalSInventoryMenu {
 
     Man10ShopV2 plugin;
     Player player;
     Consumer<Man10Shop> onClick = null;
 
-    public AdminShopSelectorMenu(Player p, Man10ShopV2 plugin){
-        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), plugin);
+    public AdminShopSelectorMenu(Player p, String startingCategory, Man10ShopV2 plugin){
+        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), startingCategory, plugin);
         this.player = p;
         this.plugin = plugin;
     }
@@ -28,13 +30,14 @@ public class AdminShopSelectorMenu extends LargeSInventoryMenu {
     }
 
     public void renderMenu(){
-        ArrayList<SInventoryItem> items = new ArrayList<>();
+        addInitializedCategory("その他");
 
-        ArrayList<Man10Shop> shops = plugin.api.getAdminShops();
+        ArrayList<Man10Shop> shops = Man10ShopV2.api.getShopsWithPermission(player.getUniqueId());
         for(Man10Shop shop: shops){
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
+            icon.addLore("§d§lショップタイプ: " + shop.shopType.shopTypeToString(shop.shopType.getShopType()));
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
@@ -42,12 +45,8 @@ public class AdminShopSelectorMenu extends LargeSInventoryMenu {
                 if(onClick != null) onClick.accept(shop);
             });
 
-            items.add(item);
+            addItem(shop.categoryFunction.getCategory(), item);
         }
-        setItems(items);
     }
 
-    public void afterRenderMenu() {
-        renderInventory(0);
-    }
 }
