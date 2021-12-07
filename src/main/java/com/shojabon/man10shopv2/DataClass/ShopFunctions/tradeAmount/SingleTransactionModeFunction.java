@@ -49,6 +49,12 @@ public class SingleTransactionModeFunction extends ShopFunction {
     }
 
     @Override
+    public Man10ShopType[] enabledShopTypes() {
+        return new Man10ShopType[]{Man10ShopType.SELL, Man10ShopType.BUY};
+    }
+
+
+    @Override
     public String settingCategory() {
         return "取引量制限設定";
     }

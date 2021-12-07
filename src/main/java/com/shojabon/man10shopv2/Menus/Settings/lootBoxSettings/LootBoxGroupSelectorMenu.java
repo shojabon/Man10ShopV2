@@ -51,6 +51,11 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
             SItemStack icon = new SItemStack(data.icon);
             icon.setDisplayName("§a§lグループ:" + i);
 
+            if(data.bigWin){
+                icon.addLore("§6通知・花火: §a有効");
+            }else{
+                icon.addLore("§6通知・花火: §c無効");
+            }
             icon.addLore("§d確率" + data.getPercentage() + "%");
             icon.addLore("§d" + data.percentageWeight + "/10000");
             icon.addLore("");
@@ -78,7 +83,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
                 menu.setOnConfirm(ee -> {
                     newData.remove(finalI);
                     if(!shop.lootBoxFunction.setLootBox(lootBox)){
-                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
                     menu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));
@@ -106,7 +111,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
                 numberMenu.setOnConfirm(ee -> {
                     newData.get(finalI).percentageWeight = ee;
                     if(!shop.lootBoxFunction.setLootBox(lootBox)){
-                        player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                        player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
                     moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));
@@ -147,7 +152,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
         addPrice.setAsyncEvent(e -> {
             ArrayList<LootBoxGroupData> newItemGroups = lootBox.groupData;
             if(newItemGroups.size() >= 45){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l45グループ以上は追加できません");
+                player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l45グループ以上は追加できません");
                 return;
             }
             Material addingMaterial;
@@ -160,7 +165,7 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
             newItemGroups.add(new LootBoxGroupData(addingMaterial, 0));
 
             if(!shop.lootBoxFunction.setLootBox(lootBox)){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                 return;
             }
 

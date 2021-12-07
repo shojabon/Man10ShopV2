@@ -12,6 +12,7 @@ public class LootBoxGroupData {
 
     public Material icon;
     public int percentageWeight;
+    public boolean bigWin;
 
     public HashMap<String, Integer> itemCountDictionary = new HashMap<>();
 

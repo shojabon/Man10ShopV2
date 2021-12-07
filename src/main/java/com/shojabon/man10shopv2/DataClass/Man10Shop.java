@@ -9,6 +9,7 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.EnabledFrom
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayToggleFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxBigWinFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxPaymentFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxSpinTimeFunction;
@@ -89,6 +90,7 @@ public class Man10Shop {
     public LootBoxFunction lootBoxFunction;
     //public LootBoxSpinTimeFunction lootBoxSpinTimeFunction;
     public LootBoxPaymentFunction lootBoxPaymentFunction;
+    public LootBoxBigWinFunction lootBoxBigWinFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -201,6 +203,8 @@ public class Man10Shop {
         lootBoxPaymentFunction = new LootBoxPaymentFunction(this);
         functions.add(lootBoxPaymentFunction);
 
+        lootBoxBigWinFunction = new LootBoxBigWinFunction(this);
+        functions.add(lootBoxBigWinFunction);
 
 
 

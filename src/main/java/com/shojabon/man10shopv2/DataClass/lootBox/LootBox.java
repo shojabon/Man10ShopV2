@@ -58,6 +58,7 @@ public class LootBox {
         for(int i = 0; i < groupData.size(); i++){
             config.set("group." + i + ".material", groupData.get(i).icon.toString());
             config.set("group." + i + ".percentageWeight", groupData.get(i).percentageWeight);
+            config.set("group." + i + ".bigWin", groupData.get(i).bigWin);
 
             //export item count
             for(String itemHash: groupData.get(i).itemCountDictionary.keySet()){
@@ -88,6 +89,7 @@ public class LootBox {
                     data.itemCountDictionary.put(itemHash, itemHashSection.getInt(itemHash));
                 }
             }
+            data.bigWin = groupSection.getBoolean(i + ".bigWin");
             groupData.add(data);
         }
 
