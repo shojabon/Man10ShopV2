@@ -10,9 +10,8 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.allowedToUse.WeekDayTogg
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxBigWinFunction;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxGroupFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxPaymentFunction;
-import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxSpinTimeFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
@@ -40,7 +39,7 @@ import java.util.*;
 
 public class Man10Shop {
 
-    Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10ShopV2");
+    public Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10ShopV2");
     public UUID shopId;
 
     public boolean admin = false;
@@ -50,6 +49,7 @@ public class Man10Shop {
     //functions
 
     public ArrayList<ShopFunction> functions = new ArrayList<>();
+    public ArrayList<LootBoxFunction> lootBoxFunctions = new ArrayList<>();
 
     //allowed to use shop settings
     public AllowedPermissionFunction allowedPermission;
@@ -87,7 +87,7 @@ public class Man10Shop {
     public SetBarterFunction setBarter;
 
     //loot Box
-    public LootBoxFunction lootBoxFunction;
+    public LootBoxGroupFunction lootBoxFunction;
     //public LootBoxSpinTimeFunction lootBoxSpinTimeFunction;
     public LootBoxPaymentFunction lootBoxPaymentFunction;
     public LootBoxBigWinFunction lootBoxBigWinFunction;
@@ -194,16 +194,19 @@ public class Man10Shop {
         setItemCountFunction = new SetItemCountFunction(this);
         functions.add(setItemCountFunction);
 
-        lootBoxFunction = new LootBoxFunction(this);
+        lootBoxFunction = new LootBoxGroupFunction(this);
+        lootBoxFunctions.add(lootBoxFunction);
         functions.add(lootBoxFunction);
 
 //        lootBoxSpinTimeFunction = new LootBoxSpinTimeFunction(this);
 //        functions.add(lootBoxSpinTimeFunction);
 
         lootBoxPaymentFunction = new LootBoxPaymentFunction(this);
+        lootBoxFunctions.add(lootBoxPaymentFunction);
         functions.add(lootBoxPaymentFunction);
 
         lootBoxBigWinFunction = new LootBoxBigWinFunction(this);
+        lootBoxFunctions.add(lootBoxBigWinFunction);
         functions.add(lootBoxBigWinFunction);
 
 
@@ -281,6 +284,7 @@ public class Man10Shop {
         if(amount < 0) amount = -amount;
         return amount;
     }
+
 
     public void performAction(Player p, int amount){
 

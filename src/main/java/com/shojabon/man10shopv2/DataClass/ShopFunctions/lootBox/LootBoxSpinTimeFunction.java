@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox;
 
 import ToolMenu.NumericInputMenu;
+import com.shojabon.man10shopv2.DataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class LootBoxSpinTimeFunction extends ShopFunction {
+public class LootBoxSpinTimeFunction extends LootBoxFunction {
 
     //variables
 

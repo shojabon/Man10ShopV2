@@ -1,14 +1,18 @@
 package com.shojabon.man10shopv2.Menus.action;
 
+import com.shojabon.man10shopv2.DataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.Man10ShopOrder;
+import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.DataClass.lootBox.LootBox;
+import com.shojabon.man10shopv2.DataClass.lootBox.LootBoxItem;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,7 +28,7 @@ public class LootBoxPlayMenu extends SInventory{
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
-    ItemStack[] items = new ItemStack[9];
+    LootBoxItem[] items = new LootBoxItem[9];
     int[] slots = new int[]{9,10, 11,12,13,14,15,16,17};
     LootBox box;
 
@@ -105,16 +109,21 @@ public class LootBoxPlayMenu extends SInventory{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            player.getInventory().addItem(items[4]);
-            player.sendMessage(Man10ShopV2.prefix + "§a§lおめでとうございます『" + new SItemStack(items[4]).getDisplayName() + "』§a§lが当たりました!");
+            for(LootBoxFunction func: shop.lootBoxFunctions){
+                if(!func.isFunctionEnabled()) continue;
+                if(func.enabledShopTypes().length != 0 && !ArrayUtils.contains(func.enabledShopTypes(), shop.shopType.getShopType())) continue;
+                func.afterLootBoxSpinFinished(player, items[4].item, items[4].groupId);
+            }
+            player.getInventory().addItem(items[4].item);
+            player.sendMessage(Man10ShopV2.prefix + "§a§lおめでとうございます『" + new SItemStack(items[4].item).getDisplayName() + "』§a§lが当たりました!");
             playerInGame.remove(player.getUniqueId());
         };
         SInventory.threadPool.execute(r);
     }
 
     public void spin(){
-        ItemStack newItem = box.pickRandomItem().clone();
-        SInventoryItem newSItem = new SInventoryItem(newItem.clone());
+        LootBoxItem newItem = box.pickRandomItem();
+        SInventoryItem newSItem = new SInventoryItem(newItem.item.clone());
         newSItem.clickable(false);
 
         for(int i = 0; i < slots.length-1; i ++){
@@ -122,7 +131,7 @@ public class LootBoxPlayMenu extends SInventory{
             items[i] = items[i+1];
         }
         setItem(slots[slots.length-1], newSItem);
-        items[items.length-1] = newItem.clone();
+        items[items.length-1] = newItem;
         renderInventory();
         player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
     }

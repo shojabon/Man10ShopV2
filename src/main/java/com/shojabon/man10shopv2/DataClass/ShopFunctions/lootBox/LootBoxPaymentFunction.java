@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox;
 import ToolMenu.AutoScaledMenu;
 import ToolMenu.NumericInputMenu;
 import ToolMenu.SingleItemStackSelectorMenu;
+import com.shojabon.man10shopv2.DataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.Enums.Man10ShopPermission;
@@ -21,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public class LootBoxPaymentFunction extends ShopFunction {
+public class LootBoxPaymentFunction extends LootBoxFunction {
 
     //init
     public LootBoxPaymentFunction(Man10Shop shop) {

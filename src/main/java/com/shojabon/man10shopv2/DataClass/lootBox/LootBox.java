@@ -36,16 +36,18 @@ public class LootBox {
         return true;
     }
 
-    public ItemStack pickRandomItem(){
+    public LootBoxItem pickRandomItem(){
         if(!canPlay()) return null;
         Random rand = new Random();
         int result = rand.nextInt(10000)+1;
         int currentCompound = 0;
+        int index = 0;
         for(LootBoxGroupData data: groupData){
             currentCompound += data.percentageWeight;
             if(result <= currentCompound){
-                return itemDictionary.get(data.pickRandomItemHash());
+                return new LootBoxItem(itemDictionary.get(data.pickRandomItemHash()).clone(), index);
             }
+            index += 1;
         }
         return null;
     }

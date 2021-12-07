@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox;
 
+import com.shojabon.man10shopv2.DataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.DataClass.Man10Shop;
 import com.shojabon.man10shopv2.DataClass.ShopFunction;
 import com.shojabon.man10shopv2.DataClass.lootBox.LootBox;
@@ -17,13 +18,13 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class LootBoxFunction extends ShopFunction {
+public class LootBoxGroupFunction extends LootBoxFunction {
 
     //variables
 
 
     //init
-    public LootBoxFunction(Man10Shop shop) {
+    public LootBoxGroupFunction(Man10Shop shop) {
         super(shop);
     }
 
