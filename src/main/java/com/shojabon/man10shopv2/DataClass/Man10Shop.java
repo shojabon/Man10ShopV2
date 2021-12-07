@@ -67,6 +67,7 @@ public class Man10Shop {
     public RandomPriceFunction randomPrice;
     public SecretPriceModeFunction secretPrice;
     public CategoryFunction categoryFunction;
+    public IpLimitFunction ipLimitFunction;
 
     //storage
     public StorageRefillFunction storageRefill;
@@ -209,7 +210,8 @@ public class Man10Shop {
         lootBoxFunctions.add(lootBoxBigWinFunction);
         functions.add(lootBoxBigWinFunction);
 
-
+        ipLimitFunction = new IpLimitFunction(this);
+        functions.add(ipLimitFunction);
 
 
 

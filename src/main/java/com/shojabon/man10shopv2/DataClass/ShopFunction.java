@@ -30,6 +30,17 @@ public abstract class ShopFunction {
         this.shop = shop;
     }
 
+    //tools
+
+    public void warn(Player p, String message){
+        p.sendMessage(Man10ShopV2.prefix + "§c§l" + message);
+    }
+
+
+    public void success(Player p, String message){
+        p.sendMessage(Man10ShopV2.prefix + "§a§l" + message);
+    }
+
     // override functions
     public boolean isAllowedToUseShop(Player p){
         return true;
