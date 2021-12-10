@@ -12,6 +12,8 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.general.*;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxBigWinFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxGroupFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.lootBox.LootBoxPaymentFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.mQuest.MQuestGroupFunction;
+import com.shojabon.man10shopv2.DataClass.ShopFunctions.mQuest.MQuestTimeWindowFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.DataClass.ShopFunctions.storage.StorageRefillFunction;
@@ -22,11 +24,10 @@ import com.shojabon.man10shopv2.DataClass.ShopFunctions.tradeAmount.TotalPerMinu
 import com.shojabon.man10shopv2.Enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.Menus.action.BarterActionMenu;
-import com.shojabon.man10shopv2.Menus.action.BuySellActionMenu;
-import com.shojabon.man10shopv2.Menus.action.LootBoxActionMenu;
-import com.shojabon.man10shopv2.Menus.action.LootBoxPlayMenu;
+import com.shojabon.man10shopv2.Menus.Settings.mQuestSettings.MQuestGroupSelectorMenu;
+import com.shojabon.man10shopv2.Menus.action.*;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -92,6 +93,10 @@ public class Man10Shop {
     //public LootBoxSpinTimeFunction lootBoxSpinTimeFunction;
     public LootBoxPaymentFunction lootBoxPaymentFunction;
     public LootBoxBigWinFunction lootBoxBigWinFunction;
+
+    //mquest
+    public MQuestGroupFunction mQuestFunction;
+    public MQuestTimeWindowFunction mQuestTimeWindowFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -213,6 +218,11 @@ public class Man10Shop {
         ipLimitFunction = new IpLimitFunction(this);
         functions.add(ipLimitFunction);
 
+        mQuestFunction = new MQuestGroupFunction(this);
+        functions.add(mQuestFunction);
+
+        mQuestTimeWindowFunction = new MQuestTimeWindowFunction(this);
+        functions.add(mQuestTimeWindowFunction);
 
 
 
@@ -364,21 +374,27 @@ public class Man10Shop {
         }
     }
 
-    public void openActionMenu(Player p){
+    public SInventory getActionMenu(Player p){
         if(shopType.getShopType() == Man10ShopType.BUY || shopType.getShopType() == Man10ShopType.SELL){
-            BuySellActionMenu menu = new BuySellActionMenu(p, this, (JavaPlugin) plugin);
-            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+            return new BuySellActionMenu(p, this, (JavaPlugin) plugin);
         }
 
         if(shopType.getShopType() == Man10ShopType.BARTER){
-            BarterActionMenu menu = new BarterActionMenu(p, this, (Man10ShopV2) plugin);
-            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+            return new BarterActionMenu(p, this, (Man10ShopV2) plugin);
         }
 
         if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
-            LootBoxActionMenu menu = new LootBoxActionMenu(p, this, (Man10ShopV2) plugin);
-            Bukkit.getScheduler().runTask(plugin, ()->menu.open(p));
+            return new LootBoxActionMenu(p, this, (Man10ShopV2) plugin);
         }
+
+        if(shopType.getShopType() == Man10ShopType.QUEST){
+            return new QuestActionMenu(p, this, (Man10ShopV2) plugin);
+        }
+        return null;
+    }
+
+    public void openActionMenu(Player p){
+        Bukkit.getScheduler().runTask(plugin, ()->{getActionMenu(p).open(p);});
     }
 
 

@@ -32,7 +32,7 @@ public class AdminShopSelectorMenu extends CategoricalSInventoryMenu {
     public void renderMenu(){
         addInitializedCategory("その他");
 
-        ArrayList<Man10Shop> shops = Man10ShopV2.api.getShopsWithPermission(player.getUniqueId());
+        ArrayList<Man10Shop> shops = Man10ShopV2.api.getAdminShops();
         for(Man10Shop shop: shops){
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());

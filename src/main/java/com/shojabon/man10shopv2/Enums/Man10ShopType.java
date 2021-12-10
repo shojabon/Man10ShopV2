@@ -4,5 +4,6 @@ public enum Man10ShopType {
     BUY,
     SELL,
     BARTER,
-    LOOT_BOX
+    LOOT_BOX,
+    QUEST
 }

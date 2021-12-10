@@ -55,7 +55,7 @@ public class SetItemCountFunction extends ShopFunction {
         inventoryItem.clickable(false);
         inventoryItem.setEvent(e -> {
             if(!hasPermissionToEdit(player.getUniqueId())){
-                player.sendMessage(Man10ShopV2.prefix + "§c§l権限が不足しています");
+                warn(player, "権限が不足しています");
                 return;
             }
             //number input menu
@@ -64,11 +64,11 @@ public class SetItemCountFunction extends ShopFunction {
             menu.setOnCancel(ee -> menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin)));
             menu.setOnConfirm(newValue -> {
                 if(!shop.storage.setItemCount(newValue)){
-                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    warn(player, "内部エラーが発生しました");
                     return;
                 }
                 menu.moveToMenu(player, new SettingsMainMenu(player, shop, settingCategory(), plugin));
-                player.sendMessage(Man10ShopV2.prefix + "§a§lアイテム数を" + newValue + "に設定しました");
+                success(player, "アイテム数を" + newValue + "に設定しました");
             });
             sInventory.moveToMenu(player, menu);
 

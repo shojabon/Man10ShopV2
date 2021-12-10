@@ -44,7 +44,7 @@ public class OpenShopCommand implements CommandExecutor {
                 return false;
             }
             p.closeInventory();
-            shop.openActionMenu(p);
+            shop.getActionMenu(p).open(p);
         }catch (Exception e){
             sender.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
             return false;

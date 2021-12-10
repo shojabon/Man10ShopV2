@@ -32,6 +32,7 @@ public class Man10ShopV2Command extends SCommandRouter {
                         .addArgument(new SCommandArgument().addAllowedString("shops")).
 
                         addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
+                        addRequiredPermission("man10shopv2.shops").addExplanation("自分が管理できるショップ一覧").
                         setExecutor(new ShopsCommand(plugin))
         );
         addCommand(
@@ -123,6 +124,7 @@ public class Man10ShopV2Command extends SCommandRouter {
         addCommand(
                 new SCommandObject()
                         .addArgument(new SCommandArgument().addAllowedString("test"))
+                        .setInfinity()
                         .setExecutor(new TestCommand(plugin))
         );
 

@@ -47,6 +47,7 @@ public class ShopTypeFunction extends ShopFunction {
         if(type == Man10ShopType.SELL) return "買取ショップ";
         if(type == Man10ShopType.BARTER) return "トレードショップ";
         if(type == Man10ShopType.LOOT_BOX) return "ガチャ";
+        if(type == Man10ShopType.QUEST) return "クエスト";
         return "不明";
     }
 
