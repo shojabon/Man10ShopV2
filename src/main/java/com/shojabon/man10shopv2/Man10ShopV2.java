@@ -1,25 +1,13 @@
 package com.shojabon.man10shopv2;
 
-import com.shojabon.man10shopv2.Commands.Man10ShopV2Command;
-import com.shojabon.man10shopv2.DataClass.Man10Shop;
-import com.shojabon.man10shopv2.Listeners.SignListeners;
+import com.shojabon.man10shopv2.commands.Man10ShopV2Command;
+import com.shojabon.man10shopv2.listeners.SignListeners;
 import com.shojabon.mcutils.Utils.MySQL.ThreadedMySQLAPI;
-import com.shojabon.mcutils.Utils.SCommandRouter.SCommandArgument;
-import com.shojabon.mcutils.Utils.SCommandRouter.SCommandObject;
-import com.shojabon.mcutils.Utils.SCommandRouter.SCommandRouter;
-import com.shojabon.mcutils.Utils.SGlobalLogger;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.VaultAPI;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
