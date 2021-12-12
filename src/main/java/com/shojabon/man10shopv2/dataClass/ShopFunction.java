@@ -52,7 +52,12 @@ public abstract class ShopFunction {
     public SInventoryItem getSettingBaseItem(){
         ShopFunctionDefinition def = getDefinition();
         SItemStack item = new SItemStack(def.iconMaterial()).setDisplayName("§a" + def.name());
-        if(currentSettingString() !=  null) item.addLore("§d現在設定: §e" + currentSettingString());
+        if(currentSettingString() !=  null) item.addLore("§d現在設定");
+        if(currentSettingString() != null){
+            for(String current: currentSettingString().split("\n")){
+                item.addLore("§e" + current);
+            }
+        }
         item.addLore("");
         for(String explanation: def.explanation()){
             item.addLore("§f" + explanation);

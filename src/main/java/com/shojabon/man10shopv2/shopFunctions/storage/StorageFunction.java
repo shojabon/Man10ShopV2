@@ -201,11 +201,11 @@ public class StorageFunction extends ShopFunction {
         String result  = storageSize + "個\n";
         if(calculateNextUnitPrice(1) != -1){
             int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - boughtStorageUnits.get();
-            result += new SStringBuilder().red().text("次のサイズ: ").text(calculateCurrentStorageSize(1)).text("個").build();
-            result += new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(calculateNextUnitPrice(1))).text("円").build();
-            result += new SStringBuilder().white().bold().text("左クリックで購入").build();
+            result += new SStringBuilder().red().text("次のサイズ: ").text(calculateCurrentStorageSize(1)).text("個").build() + "\n";
+            result += new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(calculateNextUnitPrice(1))).text("円").build() + "\n";
+            result += new SStringBuilder().white().bold().text("左クリックで購入").build() + "\n";
             result += new SStringBuilder().white().bold().text("左シフトクリックで最大まで買う").yellow().text("価格:")
-                    .text(BaseUtils.priceString(calculateNextUnitPrice(unitsTillMax))).text("円").build();
+                    .text(BaseUtils.priceString(calculateNextUnitPrice(unitsTillMax))).text("円").build() + "\n";
         }
         return result;
     }

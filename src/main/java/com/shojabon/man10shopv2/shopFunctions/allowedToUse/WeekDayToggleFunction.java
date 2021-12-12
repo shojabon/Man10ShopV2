@@ -69,7 +69,7 @@ public class WeekDayToggleFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int i = 0;
         for(boolean res: enabledDays.get()){
             SStringBuilder builder = new SStringBuilder();
@@ -79,10 +79,10 @@ public class WeekDayToggleFunction extends ShopFunction {
             }else{
                 builder.red().text("無効");
             }
-            result = builder.build() + "\n";
+            result.append(builder.build()).append("\n");
             i++;
         }
-        return result;
+        return result.toString();
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.menus.settings.SettingsMainMenu;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,6 +43,11 @@ public class SecretPriceModeFunction extends ShopFunction {
     @Override
     public boolean isFunctionEnabled() {
         return enabled.get();
+    }
+
+    @Override
+    public String currentSettingString() {
+        return BaseUtils.booleanToJapaneseText(enabled.get());
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.menus.settings.SettingsMainMenu;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,6 +47,11 @@ public class ShopEnabledFunction extends ShopFunction {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String currentSettingString() {
+        return BaseUtils.booleanToJapaneseText(enabled.get());
     }
 
     @Override

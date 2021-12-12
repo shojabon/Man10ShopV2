@@ -47,6 +47,9 @@ public class DisabledFromFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
+        if(BaseUtils.unixTimeToString(disabledFrom.get()) == null){
+            return "無効";
+        }
         return BaseUtils.unixTimeToString(disabledFrom.get());
     }
 

@@ -154,10 +154,10 @@ public class StorageRefillFunction extends ShopFunction {
                     return;
                 }
                 success(player, "時間を設定しました");
-                getInnerSettingMenu(player, plugin);
+                getInnerSettingMenu(player, plugin).open(player);
             });
-            menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin));
-            menu.setOnClose(ee -> getInnerSettingMenu(player, plugin));
+            menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin).open(player));
+            menu.setOnClose(ee -> getInnerSettingMenu(player, plugin).open(player));
 
             menu.open(player);
         });
@@ -180,9 +180,9 @@ public class StorageRefillFunction extends ShopFunction {
                     }
                 }
                 success(player, "最新の補充開始時間を現在に設定しました");
-                getInnerSettingMenu(player, plugin);
+                getInnerSettingMenu(player, plugin).open(player);
             });
-            menu.setOnCloseEvent(ee -> getInnerSettingMenu(player, plugin));
+            menu.setOnCloseEvent(ee -> getInnerSettingMenu(player, plugin).open(player));
             menu.open(player);
         });
 
@@ -210,10 +210,10 @@ public class StorageRefillFunction extends ShopFunction {
                     return;
                 }
                 success(player, "個数を設定しました");
-                getInnerSettingMenu(player, plugin);
+                getInnerSettingMenu(player, plugin).open(player);
             });
-            menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin));
-            menu.setOnClose(ee -> getInnerSettingMenu(player, plugin));
+            menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin).open(player));
+            menu.setOnClose(ee -> getInnerSettingMenu(player, plugin).open(player));
 
             menu.open(player);
         });
