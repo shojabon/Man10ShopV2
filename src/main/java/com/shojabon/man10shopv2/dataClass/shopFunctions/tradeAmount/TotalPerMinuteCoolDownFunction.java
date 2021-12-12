@@ -43,7 +43,11 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     //init
     public TotalPerMinuteCoolDownFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
-        Bukkit.getScheduler().runTask(plugin, this::loadTotalPerMinuteMap);
+    }
+
+    @Override
+    public void init() {
+        loadTotalPerMinuteMap();
     }
 
     //functions

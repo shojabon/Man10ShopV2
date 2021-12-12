@@ -14,6 +14,8 @@ import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxBigWinFun
 import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxGroupFunction;
 import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxPaymentFunction;
 import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestGroupFunction;
+import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestQuestCountFunction;
+import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestRefreshQuest;
 import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestTimeWindowFunction;
 import com.shojabon.man10shopv2.dataClass.shopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.dataClass.shopFunctions.storage.StorageFunction;
@@ -43,6 +45,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class Man10Shop {
+
+    private boolean shopSafety = false;
 
     public Man10ShopV2 plugin = (Man10ShopV2) Bukkit.getPluginManager().getPlugin("Man10ShopV2");
     public UUID shopId;
@@ -102,6 +106,8 @@ public class Man10Shop {
     //mquest
     public MQuestGroupFunction mQuestFunction;
     public MQuestTimeWindowFunction mQuestTimeWindowFunction;
+    public MQuestQuestCountFunction mQuestCountFunction;
+    public MQuestRefreshQuest mQuestForceRefreshButton;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -122,10 +128,9 @@ public class Man10Shop {
         loadSigns();
 
         //load functions
-        try{
-            for(Field field: getClass().getFields()){
+        for(Field field: getClass().getFields()){
+            try{
                 if(ShopFunction.class.isAssignableFrom(field.getType())){
-                    Bukkit.broadcastMessage(field.getName());
                     field.set(this, field.getType().getConstructor(Man10Shop.class, Man10ShopV2.class).newInstance(this, plugin));
 
                     //set shop id in setting fields
@@ -139,9 +144,10 @@ public class Man10Shop {
                         }
                     }
                 }
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
+                e.printStackTrace();
+                shopSafety = true;
             }
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
-            e.printStackTrace();
         }
 
         this.shopType.shopType = shopType;
@@ -156,6 +162,7 @@ public class Man10Shop {
             for(Field field: getClass().getFields()){
                 if(ShopFunction.class.isAssignableFrom(field.getType())) {
                     ShopFunction func = (ShopFunction) field.get(this);
+                    func.init();
                     functions.add(func);
                 }
                 if(LootBoxFunction.class.isAssignableFrom(field.getType())) {
@@ -189,6 +196,10 @@ public class Man10Shop {
     }
 
     public boolean allowedToUseShop(Player p){
+        if(shopSafety) {
+            p.sendMessage(Man10ShopV2.prefix + "§c§lエラーにより停止中です");
+            return false;
+        }
         //permission to use
         if(!p.hasPermission("man10shopv2.use")){
             p.sendMessage(Man10ShopV2.prefix + "§c§lあなたには権限がありません");

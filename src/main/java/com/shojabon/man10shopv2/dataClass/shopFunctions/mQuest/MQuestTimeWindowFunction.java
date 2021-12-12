@@ -16,6 +16,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -47,6 +48,7 @@ public class MQuestTimeWindowFunction extends ShopFunction {
     //functions
 
     public long calculateLastPickTime(){
+        if(!isFunctionEnabled()) return -1;
         long secondsSinceLastRefill = System.currentTimeMillis()/1000L - lastPickedTime.get();
         long skippedRefills = secondsSinceLastRefill/(minutes.get()*60L);
 
@@ -68,7 +70,7 @@ public class MQuestTimeWindowFunction extends ShopFunction {
         if(System.currentTimeMillis()/1000L - lastPickedTime.get() >= minutes.get()*60L){
             //select random price
             lastPickedTime.set(calculateLastPickTime());
-            shop.mQuestFunction.refreshQuests(1);
+            shop.mQuestFunction.refreshQuests(shop.mQuestCountFunction.questCount.get());
         }
     }
 

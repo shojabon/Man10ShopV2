@@ -77,7 +77,7 @@ public class ShopTypeSelectorMenu extends AutoScaledMenu {
             });
             addItem(barterMode);
 
-            SInventoryItem lootBoxMode = new SInventoryItem(new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().green().text("トレードモード").build()).build());
+            SInventoryItem lootBoxMode = new SInventoryItem(new SItemStack(Material.CHEST).setDisplayName(new SStringBuilder().green().text("ガチャモード").build()).build());
             lootBoxMode.clickable(false);
             lootBoxMode.setAsyncEvent(e -> {
                 if(!shop.shopType.setShopType(Man10ShopType.LOOT_BOX)){

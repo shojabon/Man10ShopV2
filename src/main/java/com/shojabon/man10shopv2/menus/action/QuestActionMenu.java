@@ -23,8 +23,6 @@ public class QuestActionMenu extends LargeSInventoryMenu {
         this.player = p;
         this.plugin = plugin;
         this.shop = shop;
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, this::renderMenu, 20, 20);
-        setOnCloseEvent(e -> {task.cancel();});
     }
 
     public void renderMenu(){

@@ -41,10 +41,11 @@ public class StorageFunction extends ShopFunction {
     //init
     public StorageFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
+    }
 
-        Bukkit.getScheduler().runTask(plugin, ()-> {
-           storageSize = calculateCurrentStorageSize(0);
-        });
+    @Override
+    public void init() {
+        storageSize = calculateCurrentStorageSize(0);
     }
 
     //storage space functions

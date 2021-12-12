@@ -1,6 +1,8 @@
 package com.shojabon.man10shopv2.dataClass;
 
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.dataClass.lootBox.LootBox;
+import com.shojabon.man10shopv2.dataClass.quest.MQuest;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.MySQL.MySQLAPI;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
@@ -153,6 +155,36 @@ public class Man10ShopSetting <T>{
 
             public boolean accepts(Type type) {
                 return YamlConfiguration.class.isAssignableFrom(resolveBaseClass(type));
+            }
+        },
+        LOOT_BOX() {
+            public Object parse(Man10ShopSetting context, String raw) {
+                LootBox box = new LootBox();
+                box.loadLootBox(SConfigFile.loadConfigFromBase64(raw));
+                return box;
+            }
+
+            public String toString(Man10ShopSetting context, Object value) {
+                return SConfigFile.base64EncodeConfig(((LootBox) value).exportLootBox());
+            }
+
+            public boolean accepts(Type type) {
+                return LootBox.class.isAssignableFrom(resolveBaseClass(type));
+            }
+        },
+        QUEST() {
+            public Object parse(Man10ShopSetting context, String raw) {
+                MQuest box = new MQuest();
+                box.loadLootBox(SConfigFile.loadConfigFromBase64(raw));
+                return box;
+            }
+
+            public String toString(Man10ShopSetting context, Object value) {
+                return SConfigFile.base64EncodeConfig(((MQuest) value).exportQuest());
+            }
+
+            public boolean accepts(Type type) {
+                return MQuest.class.isAssignableFrom(resolveBaseClass(type));
             }
         };
 
