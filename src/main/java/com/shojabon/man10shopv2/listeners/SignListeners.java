@@ -171,7 +171,7 @@ public class SignListeners implements @NotNull Listener {
             if(shop == null) return;
             if(!shop.allowedToUseShop(e.getPlayer())) return;
 
-            shop.openActionMenu(e.getPlayer(), true);
+            shop.openActionMenu(e.getPlayer());
         });
     }
 
@@ -221,6 +221,8 @@ public class SignListeners implements @NotNull Listener {
                 sign.setLine(0, "§b§lトレードショップ");
             }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
                 sign.setLine(0, "§d§lガチャ");
+            }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
+                sign.setLine(0, "§6§lクエスト");
             }
 
             sign.update();
@@ -245,6 +247,8 @@ public class SignListeners implements @NotNull Listener {
                         priceString.text("アイテム");
                     }
                     sign.setLine(1, priceString.build());
+                }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
+                    sign.setLine(1, "");
                 }
 
             }else{

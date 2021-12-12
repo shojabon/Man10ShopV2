@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.menus.action;
 import ToolMenu.LargeSInventoryMenu;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
@@ -35,6 +36,12 @@ public class QuestActionMenu extends LargeSInventoryMenu {
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
+
+            icon.addLore("");
+            icon.addLore("§d§l残り取引数:" + shop.getPlayerAvailableTransactionCount(player));
+            long time = (this.shop.mQuestTimeWindowFunction.lastPickedTime.get() + Long.parseLong(this.shop.mQuestTimeWindowFunction.minutes.get().toString())*60);
+            String timeUntilString = BaseUtils.unixTimeToString(time);
+            icon.addLore("§c" + timeUntilString + "まで");
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);

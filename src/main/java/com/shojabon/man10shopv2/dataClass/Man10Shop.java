@@ -246,9 +246,6 @@ public class Man10Shop {
         return amount;
     }
 
-
-
-
     public void performAction(Player p, int amount){
 
         if(!allowedToUseShop(p)) return;
@@ -345,7 +342,7 @@ public class Man10Shop {
         return null;
     }
 
-    public void openActionMenu(Player p, boolean closeOnDone){
+    public void openActionMenu(Player p){
         Bukkit.getScheduler().runTask(plugin, ()->{getActionMenu(p).open(p);});
     }
 

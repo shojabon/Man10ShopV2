@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -270,6 +271,8 @@ public class Man10ShopV2API {
                     sign.setLine(0, "§b§lトレードショップ");
                 }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
                     sign.setLine(0, "§d§lガチャ");
+                }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
+                    sign.setLine(0, "§6§lクエスト");
                 }
 
                 if(shop.shopEnabled.enabled.get()){
@@ -291,6 +294,8 @@ public class Man10ShopV2API {
                             priceString.text("アイテム");
                         }
                         sign.setLine(1, priceString.build());
+                    }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
+                        sign.setLine(1, "");
                     }
 
                 }else{
