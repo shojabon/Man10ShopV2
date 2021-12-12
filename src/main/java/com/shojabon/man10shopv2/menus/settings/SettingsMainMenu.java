@@ -38,7 +38,6 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
     }
 
     public void renderMenu(){
-        //ArrayList<SInventoryItem> items = new ArrayList<>();
 
         //set items from function
         for(ShopFunction func: shop.functions){
@@ -50,6 +49,7 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
             if(item == null)continue;
 
             if(shopFunctionDefinition.enabledShopType().length != 0 && !ArrayUtils.contains(shopFunctionDefinition.enabledShopType(), shop.shopType.getShopType())) continue; //shop type check
+
 
             if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), shopFunctionDefinition.allowedPermission())){
                 //if no permission to edit

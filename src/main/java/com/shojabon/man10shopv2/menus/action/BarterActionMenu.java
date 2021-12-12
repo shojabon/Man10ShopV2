@@ -78,8 +78,8 @@ public class BarterActionMenu extends SInventory{
         confirm.setAsyncEvent(e -> {
             if(orderRequested) return;
             Man10ShopV2.api.addTransaction(new Man10ShopOrder(player, shop.getShopId(), 1));
-            orderRequested = true;
-            close(player);
+            //orderRequested = true;
+            //close(player);
         });
         setItem(new int[]{48, 49, 50}, confirm);
 

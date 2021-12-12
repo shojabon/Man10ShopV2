@@ -171,7 +171,7 @@ public class SignListeners implements @NotNull Listener {
             if(shop == null) return;
             if(!shop.allowedToUseShop(e.getPlayer())) return;
 
-            shop.openActionMenu(e.getPlayer());
+            shop.openActionMenu(e.getPlayer(), true);
         });
     }
 

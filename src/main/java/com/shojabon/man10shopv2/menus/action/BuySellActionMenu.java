@@ -29,6 +29,7 @@ public class BuySellActionMenu extends SInventory {
     //per minute cool down counter
     int itemsTradedPerMinute = 0;
 
+
     public BuySellActionMenu(Player p, Man10Shop shop, JavaPlugin plugin){
         super(shop.name.getName(), 6, plugin);
         this.player = p;
@@ -93,8 +94,9 @@ public class BuySellActionMenu extends SInventory {
         confirm.setAsyncEvent(e -> {
             if(orderRequested) return;
             Man10ShopV2.api.addTransaction(new Man10ShopOrder(player, shop.getShopId(), itemCount));
-            orderRequested = true;
-            close(player);
+            setTitle("test");
+            //orderRequested = true;
+            //close(player);
         });
 
         setItem(new int[]{30,31,32,39,40,41,48,49,50}, confirm);

@@ -1,29 +1,29 @@
 package com.shojabon.man10shopv2.dataClass;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.*;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.agent.SetItemCountFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.agent.SetStorageSizeFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse.AllowedPermissionFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse.DisabledFromFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse.EnabledFromFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse.WeekDayToggleFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.barter.SetBarterFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.general.*;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxBigWinFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxGroupFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox.LootBoxPaymentFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestGroupFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestQuestCountFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestRefreshQuest;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest.MQuestTimeWindowFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.storage.StorageCapFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.storage.StorageFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.storage.StorageRefillFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount.CoolDownFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount.PerMinuteCoolDownFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount.SingleTransactionModeFunction;
-import com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount.TotalPerMinuteCoolDownFunction;
+import com.shojabon.man10shopv2.shopFunctions.*;
+import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
+import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
+import com.shojabon.man10shopv2.shopFunctions.allowedToUse.AllowedPermissionFunction;
+import com.shojabon.man10shopv2.shopFunctions.allowedToUse.DisabledFromFunction;
+import com.shojabon.man10shopv2.shopFunctions.allowedToUse.EnabledFromFunction;
+import com.shojabon.man10shopv2.shopFunctions.allowedToUse.WeekDayToggleFunction;
+import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
+import com.shojabon.man10shopv2.shopFunctions.general.*;
+import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxBigWinFunction;
+import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxGroupFunction;
+import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxPaymentFunction;
+import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestGroupFunction;
+import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestQuestCountFunction;
+import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestRefreshQuest;
+import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestTimeWindowFunction;
+import com.shojabon.man10shopv2.shopFunctions.storage.StorageCapFunction;
+import com.shojabon.man10shopv2.shopFunctions.storage.StorageFunction;
+import com.shojabon.man10shopv2.shopFunctions.storage.StorageRefillFunction;
+import com.shojabon.man10shopv2.shopFunctions.tradeAmount.CoolDownFunction;
+import com.shojabon.man10shopv2.shopFunctions.tradeAmount.PerMinuteCoolDownFunction;
+import com.shojabon.man10shopv2.shopFunctions.tradeAmount.SingleTransactionModeFunction;
+import com.shojabon.man10shopv2.shopFunctions.tradeAmount.TotalPerMinuteCoolDownFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
@@ -33,9 +33,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -103,7 +101,7 @@ public class Man10Shop {
     public LootBoxPaymentFunction lootBoxPaymentFunction;
     public LootBoxBigWinFunction lootBoxBigWinFunction;
 
-    //mquest
+    //mquestt
     public MQuestGroupFunction mQuestFunction;
     public MQuestTimeWindowFunction mQuestTimeWindowFunction;
     public MQuestQuestCountFunction mQuestCountFunction;
@@ -261,6 +259,7 @@ public class Man10Shop {
             if(!func.isFunctionEnabled()) continue;
             if(func.getDefinition().enabledShopType().length != 0 && !ArrayUtils.contains(func.getDefinition().enabledShopType(), shopType.getShopType())) continue;
             if(!func.isAllowedToUseShopWithAmount(p, amount)){
+                SInventory.closeNoEvent(p, plugin);
                 return;
             }
         }
@@ -346,7 +345,7 @@ public class Man10Shop {
         return null;
     }
 
-    public void openActionMenu(Player p){
+    public void openActionMenu(Player p, boolean closeOnDone){
         Bukkit.getScheduler().runTask(plugin, ()->{getActionMenu(p).open(p);});
     }
 
