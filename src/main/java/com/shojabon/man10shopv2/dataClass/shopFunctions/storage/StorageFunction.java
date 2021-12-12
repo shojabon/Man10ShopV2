@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.storage;
 import ToolMenu.ConfirmationMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -14,6 +15,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
@@ -21,7 +23,7 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.UUID;
 @ShopFunctionDefinition(
-        name = "買取制限",
+        name = "ストレージを購入する",
         explanation = {},
         enabledShopType = {Man10ShopType.BUY, Man10ShopType.SELL},
         iconMaterial = Material.CHEST,
@@ -31,19 +33,24 @@ import java.util.UUID;
 )
 public class StorageFunction extends ShopFunction {
     //variables
+    public Man10ShopSetting<Integer> boughtStorageUnits = new Man10ShopSetting<>("storage.bought", Man10ShopV2.config.getInt("itemStorage.defaultUnits"));
+
     public int storageSize;
     public int itemCount;
 
     //init
     public StorageFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
-        storageSize = calculateCurrentStorageSize(0);
+
+        Bukkit.getScheduler().runTask(plugin, ()-> {
+           storageSize = calculateCurrentStorageSize(0);
+        });
     }
 
     //storage space functions
 
     public int calculateCurrentStorageSize(int addedUnits){
-        int boughtCurrentStorageCount = getBoughtStorageUnits();
+        int boughtCurrentStorageCount = boughtStorageUnits.get();
         int defaultUnit = Man10ShopV2.config.getInt("itemStorage.unitDefinition");
         if(defaultUnit == 0) defaultUnit = 1;
         return (addedUnits+boughtCurrentStorageCount)*defaultUnit;
@@ -55,7 +62,7 @@ public class StorageFunction extends ShopFunction {
         MemorySection section = ((MemorySection)Man10ShopV2.config.get("itemStorage.prices"));
         if(section == null) return -1;
 
-        int nextUnit = getBoughtStorageUnits();
+        int nextUnit = boughtStorageUnits.get();
 
         if(nextUnit + 1 > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")) return -1;
 
@@ -83,7 +90,7 @@ public class StorageFunction extends ShopFunction {
     }
 
     public boolean buyStorageSpace(Player p, int units){
-        int boughtCurrentStorageCount = getBoughtStorageUnits();
+        int boughtCurrentStorageCount = boughtStorageUnits.get();
         if(boughtCurrentStorageCount+units > Man10ShopV2.config.getInt("itemStorage.maxStorageUnits")){
             p.sendMessage(Man10ShopV2.prefix + "§c§l倉庫ユニットの上限を超えました");
             return false;
@@ -100,7 +107,7 @@ public class StorageFunction extends ShopFunction {
     }
 
     public boolean buyStorageSpace(int units){
-        return setBoughtStorageUnits(getBoughtStorageUnits()+units);
+        return boughtStorageUnits.set(boughtStorageUnits.get()+units);
 
     }
 
@@ -111,19 +118,6 @@ public class StorageFunction extends ShopFunction {
     //====================
     // settings
     //====================
-
-    public int getBoughtStorageUnits(){
-        String currentSetting = getSetting("storage.bought");
-        if(!BaseUtils.isInt(currentSetting)) return Man10ShopV2.config.getInt("itemStorage.defaultUnits");
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setBoughtStorageUnits(int units){
-        if(getBoughtStorageUnits() == units) return true;
-        boolean result = setSetting("storage.bought", units);
-        if(result)storageSize = calculateCurrentStorageSize(0);
-        return result;
-    }
 
     //item count functions
 
@@ -209,7 +203,7 @@ public class StorageFunction extends ShopFunction {
     public String currentSettingString() {
         String result  = storageSize + "個\n";
         if(calculateNextUnitPrice(1) != -1){
-            int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - getBoughtStorageUnits();
+            int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - boughtStorageUnits.get();
             result += new SStringBuilder().red().text("次のサイズ: ").text(calculateCurrentStorageSize(1)).text("個").build();
             result += new SStringBuilder().yellow().text("価格: ").text(BaseUtils.priceString(calculateNextUnitPrice(1))).text("円").build();
             result += new SStringBuilder().white().bold().text("左クリックで購入").build();
@@ -221,7 +215,7 @@ public class StorageFunction extends ShopFunction {
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
-        int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - getBoughtStorageUnits();
+        int unitsTillMax = Man10ShopV2.config.getInt("itemStorage.maxStorageUnits") - boughtStorageUnits.get();
 
         item.setAsyncEvent(e -> {
             int buyingUnits = 1;

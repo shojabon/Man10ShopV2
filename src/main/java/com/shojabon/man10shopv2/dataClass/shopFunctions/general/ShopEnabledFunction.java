@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.general;
 import ToolMenu.BooleanInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -30,7 +31,7 @@ import java.util.UUID;
 public class ShopEnabledFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<Boolean> enabled = new Man10ShopSetting<>("shop.enabled", true);
     //init
     public ShopEnabledFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -44,23 +45,10 @@ public class ShopEnabledFunction extends ShopFunction {
     // settings
     //====================
 
-    public boolean getShopEnabled(){
-        String currentSetting = getSetting("shop.enabled");
-        if(!BaseUtils.isBoolean(currentSetting)) return true;
-        return Boolean.parseBoolean(currentSetting);
-    }
-
-    public boolean setShopEnabled(boolean enabled){
-        if(getShopEnabled() == enabled) return true;
-        if(!setSetting("shop.enabled", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-
     @Override
     public boolean isAllowedToUseShop(Player p) {
         //shop disabled
-        if(!getShopEnabled()){
+        if(!enabled.get()){
             warn(p, "現在このショップは停止しています");
             return false;
         }
@@ -71,11 +59,11 @@ public class ShopEnabledFunction extends ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(getShopEnabled(), "ショップ有効化設定", plugin);
+            BooleanInputMenu menu = new BooleanInputMenu(enabled.get(), "ショップ有効化設定", plugin);
             menu.setOnClose(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnCancel(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(bool -> {
-                if(!setShopEnabled(bool)){
+                if(!enabled.set(bool)){
                     warn(player, "内部エラーが発生しました");
                 }
                 Man10ShopV2.api.updateAllSigns(shop);

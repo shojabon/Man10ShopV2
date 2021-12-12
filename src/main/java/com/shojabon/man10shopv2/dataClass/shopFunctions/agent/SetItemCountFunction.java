@@ -58,7 +58,7 @@ public class SetItemCountFunction extends ShopFunction {
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, getDefinition().category(), plugin));
+                new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);
                 success(player, "アイテム数を" + newValue + "に設定しました");
             });
             menu.open(player);

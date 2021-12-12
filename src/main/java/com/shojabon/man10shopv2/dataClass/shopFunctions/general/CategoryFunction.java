@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.general;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -28,6 +29,7 @@ import java.util.UUID;
 public class CategoryFunction extends ShopFunction {
 
     //variables
+    public Man10ShopSetting<String> category = new Man10ShopSetting<>("shop.category", "その他");
     //init
     public CategoryFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -40,20 +42,9 @@ public class CategoryFunction extends ShopFunction {
     // settings
     //====================
 
-    public String getCategory(){
-        String currentSetting = getSetting("shop.category");
-        if(currentSetting == null) return "その他";
-        return currentSetting;
-    }
-
-    public boolean setCategory(String category){
-        if(Objects.equals(getCategory(), category)) return true;
-        return setSetting("shop.category", category);
-    }
-
     @Override
     public String currentSettingString() {
-        return getCategory();
+        return category.get();
     }
 
     @Override
@@ -67,7 +58,7 @@ public class CategoryFunction extends ShopFunction {
                     return;
                 }
                 if(categoryName.length() == 0) categoryName = "その他";
-                if(!setCategory(categoryName)){
+                if(!category.set(categoryName)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

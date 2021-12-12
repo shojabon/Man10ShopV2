@@ -5,6 +5,7 @@ import ToolMenu.NumericInputMenu;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -33,7 +34,9 @@ import java.util.*;
 public class RandomPriceFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<List<Integer>> prices = new Man10ShopSetting<>("shop.randomPrice.prices", new ArrayList<>());
+    public Man10ShopSetting<Integer> randomPickMinute = new Man10ShopSetting<>("shop.randomPrice.time", 0);
+    public Man10ShopSetting<Long> lastRefillTime = new Man10ShopSetting<>("shop.randomPrice.lastRefillTime", 0L);
     //init
     public RandomPriceFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -43,82 +46,39 @@ public class RandomPriceFunction extends ShopFunction {
     //functions
 
     public long calculateLastPickTime(){
-        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - getLastPickedTime();
-        long skippedRefills = secondsSinceLastRefill/(getRandomPickMinute()*60L);
+        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - lastRefillTime.get();
+        long skippedRefills = secondsSinceLastRefill/(randomPickMinute.get()*60L);
 
-        return getLastPickedTime() + skippedRefills*getRandomPickMinute()*60L;
+        return lastRefillTime.get() + skippedRefills*randomPickMinute.get()*60L;
     }
 
     //====================
     // settings
     //====================
-
-    public ArrayList<Integer> getPrices(){
-        String currentSetting = getSetting("shop.randomPrice.prices");
-        if(currentSetting == null) return new ArrayList<>();
-        ArrayList<Integer> result = new ArrayList<>();
-        for(String candidate: currentSetting.split("\\|")){
-            if(!BaseUtils.isInt(candidate)) continue;
-            result.add(Integer.parseInt(candidate));
-        }
-        return result;
-    }
-
-    public boolean setPrices(ArrayList<Integer> prices){
-        if(getPrices() == prices) return true;
-        StringBuilder result = new StringBuilder();
-        for(int i: prices){
-            result.append(i).append("|");
-        }
-        String finalResult = "";
-        if(result.length() != 0) finalResult = result.substring(0, result.length()-1);
-        return setSetting("shop.randomPrice.prices", finalResult);
-    }
-
-    public int getRandomPickMinute(){
-        String currentSetting = getSetting("shop.randomPrice.time");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setRandomPickMinute(int time){
-        if(getRandomPickMinute() == time) return true;
-        return setSetting("shop.randomPrice.time", time);
-    }
-
-    public long getLastPickedTime(){
-        String currentSetting = getSetting("shop.randomPrice.lastRefillTime");
-        if(!BaseUtils.isLong(currentSetting)) return 0L;
-        return Long.parseLong(currentSetting);
-    }
-
-    public boolean setLastPickedTime(long time){
-        if(getLastPickedTime() == time) return true;
-        return setSetting("shop.randomPrice.lastRefillTime", time);
-    }
+    
 
 
     @Override
     public boolean isFunctionEnabled(){
-        return getRandomPickMinute() != 0 && getPrices().size() != 0;
+        return randomPickMinute.get() != 0 && prices.get().size() != 0;
     }
 
     @Override
     public void perMinuteExecuteTask() {
-        if(System.currentTimeMillis()/1000L - getLastPickedTime() >= getRandomPickMinute()*60L){
+        if(System.currentTimeMillis()/1000L - lastRefillTime.get() >= randomPickMinute.get()*60L){
             //select random price
-            setLastPickedTime(calculateLastPickTime());
-            if(getPrices().size() == 0) return;
-            ArrayList<Integer> prices = getPrices();
-            Collections.shuffle(prices);
-            shop.price.setPrice(prices.get(0));
+            lastRefillTime.set(calculateLastPickTime());
+            if(prices.get().size() == 0) return;
+            ArrayList<Integer> pricesLocal = new ArrayList<>(prices.get());
+            Collections.shuffle(pricesLocal);
+            shop.price.setPrice(pricesLocal.get(0));
             Man10ShopV2.api.updateAllSigns(shop);
         }
     }
 
     @Override
     public String currentSettingString() {
-        return getRandomPickMinute() + "分毎に決定";
+        return randomPickMinute.get() + "分毎に決定";
     }
 
     @Override
@@ -142,12 +102,12 @@ public class RandomPriceFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.randomPrice.setRandomPickMinute(number)){
+                if(!randomPickMinute.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
                 success(player, "時間を設定しました");
-                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
+                getInnerSettingMenu(player, plugin).open(player);
             });
             menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin).open(player));
             menu.setOnClose(ee -> getInnerSettingMenu(player, plugin).open(player));
@@ -167,16 +127,16 @@ public class RandomPriceFunction extends ShopFunction {
 
         SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS)
                 .setDisplayName(new SStringBuilder().green().text("最終値段選択時間を設定する").build())
-                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.randomPrice.getLastPickedTime()*1000L)))
+                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.randomPrice.lastRefillTime.get()*1000L)))
                 .build());
         setRefillStartingTime.clickable(false);
         setRefillStartingTime.setEvent(e -> {
             TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終値段選択時間を設定してくださ", plugin);
-            menu.setOnConfirm(lastRefillTime -> {
-                if(lastRefillTime == -1L){
-                    shop.randomPrice.deleteSetting("shop.randomPrice.lastRefillTime");
+            menu.setOnConfirm(lastRefillTimeLocal -> {
+                if(lastRefillTimeLocal == -1L){
+                    lastRefillTime.delete();
                 }else{
-                    if(!shop.randomPrice.setLastPickedTime(lastRefillTime)){
+                    if(!lastRefillTime.set(lastRefillTimeLocal)){
                         warn(player, "内部エラーが発生しました");
                         return;
                     }

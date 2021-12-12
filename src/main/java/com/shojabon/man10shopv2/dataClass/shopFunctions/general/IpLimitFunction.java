@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.general;
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -18,6 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -51,16 +53,7 @@ public class IpLimitFunction extends ShopFunction{
     // settings
     //====================
 
-    public int getAccountCount(){
-        String currentSetting = getSetting("ipLimit.count");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setAccountCount(int count){
-        if(getAccountCount() == count) return true;
-        return setSetting("ipLimit.count", count);
-    }
+    public Man10ShopSetting<Integer> accountCount = new Man10ShopSetting<>("ipLimit.count", 0);
 
     @Override
     public boolean afterPerformAction(Player p, int amount) {
@@ -85,9 +78,9 @@ public class IpLimitFunction extends ShopFunction{
 
         ArrayList<UUID> allowedAccounts = ipToAccounts.get(address);
         if(!allowedAccounts.contains(p.getUniqueId())) allowedAccounts.add(p.getUniqueId());
-        if(allowedAccounts.size() <= getAccountCount()) return true;
+        if(allowedAccounts.size() <= accountCount.get()) return true;
 
-        allowedAccounts = new ArrayList<>(allowedAccounts.subList(0, getAccountCount()));
+        allowedAccounts = new ArrayList<>(allowedAccounts.subList(0, accountCount.get()));
         if(allowedAccounts.contains(p.getUniqueId())) return true;
 
         StringBuilder accounts = new StringBuilder();
@@ -103,12 +96,12 @@ public class IpLimitFunction extends ShopFunction{
 
     @Override
     public boolean isFunctionEnabled() {
-        return getAccountCount() != 0;
+        return accountCount.get() != 0;
     }
 
     @Override
     public String currentSettingString() {
-        return getAccountCount() + "アカウント";
+        return accountCount.get() + "アカウント";
     }
 
     @Override
@@ -119,7 +112,7 @@ public class IpLimitFunction extends ShopFunction{
             menu.setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnCancel(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(newValue -> {
-                if(!setAccountCount(newValue)){
+                if(!accountCount.set(newValue)){
                     warn(player, "内部エラーが発生しました");
                 }
                 new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);

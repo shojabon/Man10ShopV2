@@ -60,13 +60,13 @@ public class ShopMainMenu extends AutoScaledMenu {
 
         setOnCloseEvent(e -> {
             if(shop.admin){
-                AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, shop.categoryFunction.getCategory(), plugin);
-                menu.setOnClick(selectedShop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin)));
-                moveToMenu(player, menu);
+                AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, shop.categoryFunction.getDefinition().category(), plugin);
+                menu.setOnClick(selectedShop -> new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin).open(player));
+                menu.open(player);
             }else{
-                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.getCategory(), plugin);
-                menu.setOnClick(selectedShop -> menu.moveToMenu(player, new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin)));
-                moveToMenu(player, menu);
+                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.getDefinition().category(), plugin);
+                menu.setOnClick(selectedShop -> new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin).open(player));
+                menu.open(player);
             }
         });
 
@@ -111,7 +111,7 @@ public class ShopMainMenu extends AutoScaledMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            moveToMenu(player, new SettingsMainMenu(player, shop, "その他", plugin));
+            new SettingsMainMenu(player, shop, "その他", plugin).open(player);
         });
 
 
@@ -145,14 +145,14 @@ public class ShopMainMenu extends AutoScaledMenu {
             }
 
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> new ShopMainMenu(player, shop, plugin).open(player));
             menu.setOnInClicked(ee -> {
                 //editing storage
                 if(shop.currentlyEditingStorage){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
                     return;
                 }
-                menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin));
+                new ItemStorageMenu(false, player, shop, plugin).open(player);
             });
             menu.setOnOutClicked(ee -> {
                 //editing storage
@@ -160,12 +160,12 @@ public class ShopMainMenu extends AutoScaledMenu {
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
                     return;
                 }
-                menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin));
+                new ItemStorageMenu(true, player, shop, plugin).open(player);
             });
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
 
-            moveToMenu(player, menu);
+            menu.open(player);
         });
 
 
@@ -199,7 +199,7 @@ public class ShopMainMenu extends AutoScaledMenu {
                 return;
             }
             PermissionSettingsMainMenu menu = new PermissionSettingsMainMenu(player, shop, plugin);
-            moveToMenu(player, menu.renderInventory());
+            menu.renderInventory().open(player);
         });
 
 
@@ -232,7 +232,7 @@ public class ShopMainMenu extends AutoScaledMenu {
                 player.sendMessage(Man10ShopV2.prefix + "§c§lこの項目を開く権限がありません");
                 return;
             }
-            moveToMenu(player, new TargetItemSelectorMenu(player, shop, plugin));
+            new TargetItemSelectorMenu(player, shop, plugin).open(player);
         });
 
 
@@ -270,13 +270,13 @@ public class ShopMainMenu extends AutoScaledMenu {
             menu.setInText("口座に入金する");
             menu.setOutText("口座から出金をする");
 
-            menu.setOnInClicked(ee -> menu.moveToMenu(player, generateMoneyEvent(true)));
-            menu.setOnOutClicked(ee -> menu.moveToMenu(player, generateMoneyEvent(false)));
+            menu.setOnInClicked(ee -> generateMoneyEvent(true).open(player));
+            menu.setOnOutClicked(ee -> generateMoneyEvent(true).open(player));
 
-            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> new ShopMainMenu(player, shop, plugin).open(player));
 
 
-            moveToMenu(player, menu);
+            menu.open(player);
         });
 
 
@@ -293,8 +293,8 @@ public class ShopMainMenu extends AutoScaledMenu {
             menu.setMaxValue((int) Man10ShopV2.vault.getBalance(player.getUniqueId()));
         }
         menu.setAllowZero(false);
-        menu.setOnCancel(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
-        menu.setOnClose(e -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        menu.setOnCancel(e -> new ShopMainMenu(player, shop, plugin).open(player));
+        menu.setOnClose(e -> new ShopMainMenu(player, shop, plugin).open(player));
         menu.setOnConfirm(integer -> {
             if(!shop.permission.hasPermissionAtLeast(player.getUniqueId(), Man10ShopPermission.ACCOUNTANT) || shop.permission.hasPermission(player.getUniqueId(), Man10ShopPermission.STORAGE_ACCESS)){
                 player.sendMessage(Man10ShopV2.prefix + "§c§l権限がありません");
@@ -319,7 +319,7 @@ public class ShopMainMenu extends AutoScaledMenu {
                 Man10ShopV2API.log(shop.shopId, "withdrawMoney", integer, player.getName(), player.getUniqueId());
                 player.sendMessage(Man10ShopV2.prefix + "§a§l" + BaseUtils.priceString(integer) + "円出金しました");
             }
-            menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin));
+            new ShopMainMenu(player, shop, plugin).open(player);
         });
         return menu;
     }

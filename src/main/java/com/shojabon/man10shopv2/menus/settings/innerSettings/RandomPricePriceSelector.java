@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RandomPricePriceSelector extends LargeSInventoryMenu {
 
@@ -29,7 +30,7 @@ public class RandomPricePriceSelector extends LargeSInventoryMenu {
     public void renderMenu(){
         ArrayList<SInventoryItem> items = new ArrayList<>();
 
-        for(int price: shop.randomPrice.getPrices()){
+        for(int price: shop.randomPrice.prices.get()){
 
             SItemStack icon = new SItemStack(Material.EMERALD);
             icon.setDisplayName(new SStringBuilder().green().bold().text(price).build());
@@ -39,20 +40,20 @@ public class RandomPricePriceSelector extends LargeSInventoryMenu {
             item.clickable(false);
             item.setAsyncEvent(e -> {
                 if(e.getClick() != ClickType.RIGHT) return;
-                ArrayList<Integer> newPrices = shop.randomPrice.getPrices();
+                List<Integer> newPrices = shop.randomPrice.prices.get();
                 newPrices.remove((Integer) price);
-                if(!shop.randomPrice.setPrices(newPrices)){
+                if(!shop.randomPrice.prices.set(newPrices)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
 
-                moveToMenu(player, new RandomPricePriceSelector(player, shop, plugin));
+                new RandomPricePriceSelector(player, shop, plugin).open(player);
             });
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, shop.randomPrice.getInnerSettingMenu(player, plugin)));
+        setOnCloseEvent(ee -> shop.randomPrice.getInnerSettingMenu(player, plugin).open(player));
     }
 
     public void afterRenderMenu() {
@@ -61,18 +62,18 @@ public class RandomPricePriceSelector extends LargeSInventoryMenu {
         SInventoryItem addPrice = new SInventoryItem(new SItemStack(Material.DISPENSER).setDisplayName("§a§l値段を追加する").build()).clickable(false);
         addPrice.setEvent(e -> {
             NumericInputMenu priceInput = new NumericInputMenu("§b§l値段を入力してください", plugin);
-            priceInput.setOnCloseEvent(ee -> priceInput.moveToMenu(player, new RandomPricePriceSelector(player, shop, plugin)));
+            priceInput.setOnCloseEvent(ee -> new RandomPricePriceSelector(player, shop, plugin).open(player));
             priceInput.setOnConfirm(number -> {
-                ArrayList<Integer> newPrices = shop.randomPrice.getPrices();
+                List<Integer> newPrices = shop.randomPrice.prices.get();
                 newPrices.add(number);
-                if(!shop.randomPrice.setPrices(newPrices)){
+                if(!shop.randomPrice.prices.set(newPrices)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
 
-                priceInput.moveToMenu(player, new RandomPricePriceSelector(player, shop, plugin));
+                new RandomPricePriceSelector(player, shop, plugin).open(player);
             });
-            moveToMenu(player, priceInput);
+            priceInput.open(player);
         });
 
         setItem(51, addPrice);

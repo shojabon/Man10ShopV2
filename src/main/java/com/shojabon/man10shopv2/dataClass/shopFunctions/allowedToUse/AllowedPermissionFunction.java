@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -28,7 +29,7 @@ import java.util.UUID;
 public class AllowedPermissionFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<String> permission = new Man10ShopSetting<>("shop.permission.allowed", null);
     //init
     public AllowedPermissionFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -42,22 +43,11 @@ public class AllowedPermissionFunction extends ShopFunction {
     // settings
     //====================
 
-    public String getAllowedPermission(){
-        return getSetting("shop.permission.allowed");
-    }
-
-    public boolean setAllowedPermission(String permission){
-        if(getAllowedPermission() != null) {
-            if(getAllowedPermission().equalsIgnoreCase(permission)) return true;
-        }
-        if(permission.equalsIgnoreCase("")) return deleteSetting("shop.permission.allowed");
-        return setSetting("shop.permission.allowed", permission);
-    }
     
     @Override
     public boolean isAllowedToUseShop(Player p) {
         //if player has permission
-        if(getAllowedPermission() != null && !p.hasPermission("man10shopv2.use." + getAllowedPermission())){
+        if(permission.get() != null && !p.hasPermission("man10shopv2.use." + permission.get())){
             p.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのショップを使う権限がありません");
             return false;
         }
@@ -66,7 +56,7 @@ public class AllowedPermissionFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        return "man10shopv2.use." + getAllowedPermission();
+        return "man10shopv2.use." + permission.get();
     }
 
     @Override
@@ -79,7 +69,7 @@ public class AllowedPermissionFunction extends ShopFunction {
                     warn(player, "権限は64文字以内でなくてはなりません");
                     return;
                 }
-                if(!setAllowedPermission(permissionName)){
+                if(!permission.set(permissionName)){
                     warn(player,"内部エラーが発生しました");
                     return;
                 }

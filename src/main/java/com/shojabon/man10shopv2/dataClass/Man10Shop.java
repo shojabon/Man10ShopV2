@@ -36,6 +36,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class Man10Shop {
@@ -46,6 +50,7 @@ public class Man10Shop {
     public boolean admin = false;
 
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
+    public static HashMap<Man10ShopSetting<?>, Type> settingTypeMap = new HashMap<>();
 
     //functions
 
@@ -117,116 +122,50 @@ public class Man10Shop {
         loadSigns();
 
         //load functions
+        try{
+            for(Field field: getClass().getFields()){
+                if(ShopFunction.class.isAssignableFrom(field.getType())){
+                    Bukkit.broadcastMessage(field.getName());
+                    field.set(this, field.getType().getConstructor(Man10Shop.class, Man10ShopV2.class).newInstance(this, plugin));
 
-        this.shopType = new ShopTypeFunction(this, plugin);
-        this.shopType.shopType = shopType;
-        functions.add(this.shopType);
-
-
-        this.price = new SetPriceFunction(this, plugin);
-        this.price.price = price;
-        functions.add(this.price);
-
-        permission = new PermissionFunction(this, plugin);
-        functions.add(permission);
-
-        storage = new StorageFunction(this, plugin);
-        storage.itemCount = itemCount;
-        functions.add(storage);
-
-        coolDown = new CoolDownFunction(this, plugin);
-        functions.add(coolDown);
-
-        perMinuteCoolDown = new PerMinuteCoolDownFunction(this, plugin);
-        functions.add(perMinuteCoolDown);
-
-        weekDayToggle = new WeekDayToggleFunction(this, plugin);
-        functions.add(weekDayToggle);
-
-        allowedPermission = new AllowedPermissionFunction(this, plugin);
-        functions.add(allowedPermission);
-
-        singleTransactionMode = new SingleTransactionModeFunction(this, plugin);
-        functions.add(singleTransactionMode);
-
-        shopEnabled = new ShopEnabledFunction(this, plugin);
-        functions.add(shopEnabled);
-
-        storageCap = new StorageCapFunction(this, plugin);
-        functions.add(storageCap);
-
-        this.name = new NameFunction(this, plugin);
-        this.name.name = name;
-        functions.add(this.name);
-
-        this.money = new MoneyFunction(this, plugin);
-        this.money.money = money;
-        functions.add(this.money);
-
-        totalPerMinuteCoolDown = new TotalPerMinuteCoolDownFunction(this, plugin);
-        functions.add(totalPerMinuteCoolDown);
-
-        storageRefill = new StorageRefillFunction(this, plugin);
-        functions.add(storageRefill);
-
-        enabledFrom = new EnabledFromFunction(this, plugin);
-        functions.add(enabledFrom);
-
-        disabledFrom = new DisabledFromFunction(this, plugin);
-        functions.add(disabledFrom);
-
-        this.targetItem = new TargetItemFunction(this, plugin);
-        this.targetItem.targetItem = targetItem;
-        if(this.targetItem.getTargetItem() == null){
-            this.targetItem.targetItem = new SItemStack(Material.DIAMOND);
+                    //set shop id in setting fields
+                    ShopFunction func = (ShopFunction) field.get(this);
+                    for(Field innerField: func.getClass().getFields()){
+                        if(Man10ShopSetting.class.isAssignableFrom(innerField.getType())) {
+                            Man10ShopSetting setting = ((Man10ShopSetting) innerField.get(func));
+                            settingTypeMap.put(setting, ((ParameterizedType) innerField.getGenericType()).getActualTypeArguments()[0]);
+                            setting.shopId = shopId;
+                            //setting.typeMap = settingTypeMap;
+                        }
+                    }
+                }
+            }
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
+            e.printStackTrace();
         }
-        functions.add(this.targetItem);
 
-        setBarter = new SetBarterFunction(this, plugin);
-        functions.add(setBarter);
-
-        randomPrice = new RandomPriceFunction(this, plugin);
-        functions.add(randomPrice);
-
-        secretPrice = new SecretPriceModeFunction(this, plugin);
-        functions.add(secretPrice);
-
-        categoryFunction = new CategoryFunction(this, plugin);
-        functions.add(categoryFunction);
-
-        setStorageSizeFunction = new SetStorageSizeFunction(this, plugin);
-        functions.add(setStorageSizeFunction);
-
-        setItemCountFunction = new SetItemCountFunction(this, plugin);
-        functions.add(setItemCountFunction);
-
-        lootBoxFunction = new LootBoxGroupFunction(this, plugin);
-        lootBoxFunctions.add(lootBoxFunction);
-        functions.add(lootBoxFunction);
-
-//        lootBoxSpinTimeFunction = new LootBoxSpinTimeFunction(this, plugin);
-//        functions.add(lootBoxSpinTimeFunction);
-
-        lootBoxPaymentFunction = new LootBoxPaymentFunction(this, plugin);
-        lootBoxFunctions.add(lootBoxPaymentFunction);
-        functions.add(lootBoxPaymentFunction);
-
-        lootBoxBigWinFunction = new LootBoxBigWinFunction(this, plugin);
-        lootBoxFunctions.add(lootBoxBigWinFunction);
-        functions.add(lootBoxBigWinFunction);
-
-        ipLimitFunction = new IpLimitFunction(this, plugin);
-        functions.add(ipLimitFunction);
-
-        mQuestFunction = new MQuestGroupFunction(this, plugin);
-        functions.add(mQuestFunction);
-
-        mQuestTimeWindowFunction = new MQuestTimeWindowFunction(this, plugin);
-        functions.add(mQuestTimeWindowFunction);
+        this.shopType.shopType = shopType;
+        this.price.price = price;
+        storage.itemCount = itemCount;
+        this.name.name = name;
+        this.money.money = money;
+        this.targetItem.targetItem = targetItem;
 
 
-        deleteShop = new DeleteShopFunction(this, plugin);
-        functions.add(deleteShop);
+        try {
+            for(Field field: getClass().getFields()){
+                if(ShopFunction.class.isAssignableFrom(field.getType())) {
+                    ShopFunction func = (ShopFunction) field.get(this);
+                    functions.add(func);
+                }
+                if(LootBoxFunction.class.isAssignableFrom(field.getType())) {
+                    lootBoxFunctions.add((LootBoxFunction) field.get(this));
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -346,9 +285,9 @@ public class Man10Shop {
             p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個売却しました");
         }else if(shopType.getShopType() == Man10ShopType.BARTER) {
             Man10ShopV2API.tradeLog(shopId, "BARTER", amount, 0, p.getName(), p.getUniqueId()); //log
-            p.sendMessage(Man10ShopV2.prefix + "§a§l" + new SItemStack(setBarter.getResultItems()[0]).getDisplayName() + "§a§lにトレードしました");
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + new SItemStack(setBarter.resultItems.get().get(0)).getDisplayName() + "§a§lにトレードしました");
         }else if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
-            Man10ShopV2API.tradeLog(shopId, "LOOTBOX", 1, lootBoxPaymentFunction.getPrice(), p.getName(), p.getUniqueId()); //log
+            Man10ShopV2API.tradeLog(shopId, "LOOTBOX", 1, lootBoxPaymentFunction.balancePrice.get(), p.getName(), p.getUniqueId()); //log
             Bukkit.getScheduler().runTask(plugin, ()->{
                 LootBoxPlayMenu menu = new LootBoxPlayMenu(p, this, (Man10ShopV2) plugin);
                 menu.open(p);

@@ -32,7 +32,7 @@ public class QuestActionMenu extends LargeSInventoryMenu {
 
 
         setAfterInventoryOpenEvents(e -> inventoryGroup.put(player.getUniqueId(), shop.shopId));
-        ArrayList<Man10Shop> shops = Man10ShopV2.api.getShops(shop.mQuestFunction.getQuest().currentQuests);
+        ArrayList<Man10Shop> shops = Man10ShopV2.api.getShops(shop.mQuestFunction.quest.get().currentQuests);
         for(Man10Shop shop: shops){
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
@@ -45,9 +45,9 @@ public class QuestActionMenu extends LargeSInventoryMenu {
                     close(player);
                     SInventory inventory = shop.getActionMenu(player);
                     inventory.setOnCloseEvent(ee -> {
-                        inventory.moveToMenu(player, this);
+                        this.open(player);
                     });
-                    moveToMenu(player, inventory);
+                    inventory.open(player);
                 }
             });
 

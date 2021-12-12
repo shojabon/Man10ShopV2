@@ -37,9 +37,9 @@ public class LootBoxPlayMenu extends SInventory{
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
-        this.box = shop.lootBoxFunction.getLootBox();
+        this.box = shop.lootBoxFunction.lootBox.get();
 
-        SStringBuilder builder = new SStringBuilder().darkGray().text(new SItemStack(shop.setBarter.getResultItems()[0]).getDisplayName());
+        SStringBuilder builder = new SStringBuilder().darkGray().text(new SItemStack(shop.setBarter.resultItems.get().get(0)).getDisplayName());
 
 
         setTitle(builder.build());

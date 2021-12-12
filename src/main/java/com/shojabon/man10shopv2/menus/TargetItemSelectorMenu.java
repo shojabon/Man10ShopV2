@@ -75,7 +75,7 @@ public class TargetItemSelectorMenu extends SInventory{
 
         });
 
-        setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        setOnCloseEvent(e -> new ShopMainMenu(player, shop, plugin).open(player));
     }
 
 }

@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.barter;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -14,13 +15,14 @@ import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+
 @ShopFunctionDefinition(
         name = "トレード設定",
         explanation = {"トレード対象のアイテムなどを設定します"},
@@ -34,6 +36,8 @@ public class SetBarterFunction extends ShopFunction {
 
     //variables
 
+    public Man10ShopSetting<List<ItemStack>> requiredItems = new Man10ShopSetting<>("shop.barter.required", new ArrayList<>(Arrays.asList(null,null,null,null,null,null,null,null,null,null,null,null)));
+    public Man10ShopSetting<List<ItemStack>> resultItems = new Man10ShopSetting<>("shop.barter.result", Arrays.asList(new ItemStack[]{null}));
     //init
     public SetBarterFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -47,73 +51,12 @@ public class SetBarterFunction extends ShopFunction {
     // settings
     //====================
 
-    public ItemStack[] getResultItems(){
-        String currentSetting = getSetting("shop.barter.result");
-        if(currentSetting == null) return new ItemStack[1];
-        ItemStack[] result = new ItemStack[1];
-        String[] items = currentSetting.split("\\|");
-        for(int i = 0; i < items.length; i++){
-            try{
-                result[i] = SItemStack.fromBase64(items[i]).build();
-            }catch (Exception e){
-                result[i] = null;
-            }
-        }
-        return result;
-    }
-
-    public boolean setResultItems(ItemStack[] items){
-        if(getResultItems() == items) return true;
-        StringBuilder result = new StringBuilder();
-        for(int i = 0; i < items.length; i++){
-            if(items[i] == null){
-                result.append("|");
-                continue;
-            }
-            result.append(new SItemStack(items[i]).getBase64()).append("|");
-        }
-        if(!setSetting("shop.barter.result", result.substring(0, result.length()-1))) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-
-
-    public ItemStack[] getRequiredItems(){
-        String currentSetting = getSetting("shop.barter.required");
-        if(currentSetting == null) return new ItemStack[12];
-        ItemStack[] result = new ItemStack[12];
-            String[] items = currentSetting.split("\\|");
-            for(int i = 0; i < items.length; i++){
-                try{
-                    result[i] = SItemStack.fromBase64(items[i]).build();
-                }catch (Exception e){
-                    result[i] = null;
-                }
-            }
-        return result;
-    }
-
-    public boolean setRequiredItems(ItemStack[] items){
-        if(getResultItems() == items) return true;
-        StringBuilder result = new StringBuilder();
-        for(int i = 0; i < items.length; i++){
-            if(items[i] == null){
-                result.append("|");
-                continue;
-            }
-            result.append(new SItemStack(items[i]).getBase64()).append("|");
-        }
-        if(!setSetting("shop.barter.required", result.substring(0, result.length()-1))) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-
 
     @Override
     public boolean performAction(Player p, int amount) {
         //remove items
         HashMap<String, Integer> checkingMap = new HashMap<>();
-        for(ItemStack requiredItem: getRequiredItems()){
+        for(ItemStack requiredItem: requiredItems.get()){
             if(requiredItem == null) continue;
 
             String itemHash = new SItemStack(requiredItem).getItemTypeMD5(true);
@@ -127,12 +70,12 @@ public class SetBarterFunction extends ShopFunction {
                 return false;
             }
         }
-        for(ItemStack requiredItem: getRequiredItems()){
+        for(ItemStack requiredItem: requiredItems.get()){
             if(requiredItem == null) continue;
             p.getInventory().removeItemAnySlot(requiredItem);
         }
         //give item
-        for(ItemStack resultItem: getResultItems()){
+        for(ItemStack resultItem: resultItems.get()){
             if(resultItem == null) continue;
             p.getInventory().addItem(resultItem);
         }
@@ -146,10 +89,10 @@ public class SetBarterFunction extends ShopFunction {
 
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
-        for(ItemStack item: getRequiredItems()){
+        for(ItemStack item: requiredItems.get()){
             if(item != null) return true;
         }
-        for(ItemStack item: getResultItems()){
+        for(ItemStack item: resultItems.get()){
             if(item != null) return true;
         }
         p.sendMessage(Man10ShopV2.prefix + "§c§lトレードが設定されていません");
@@ -160,18 +103,26 @@ public class SetBarterFunction extends ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //required
-            ItemStack[] required = getRequiredItems();
-            ItemStack[] result = getResultItems();
-            ItemStack[] both = (ItemStack[]) ArrayUtils.addAll(required, result);
+            List<ItemStack> required = requiredItems.get();
+            System.out.println("a");
+            List<ItemStack> result = resultItems.get();
+            System.out.println("b");
+            List<ItemStack> both = new ArrayList<>();
+            both.addAll(required);
+            both.addAll(result);
+
             //confirmation menu
             BarterSettingMenu menu = new BarterSettingMenu(player, shop, both, plugin);
 
             menu.setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
 
             menu.setOnConfirm(items -> {
-                if(!setRequiredItems(Arrays.copyOfRange(items, 0, 11)) || !setResultItems(new ItemStack[]{items[12]})){
+                if(!requiredItems.set(items.subList(0, 12)) || !resultItems.set(List.of(items.get(12)))){
                     warn(player, "内部エラーが発生しました");
                 }
+                Man10ShopV2API.closeInventoryGroup(shop.getShopId());
+                new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);
+
             });
 
             menu.open(player);

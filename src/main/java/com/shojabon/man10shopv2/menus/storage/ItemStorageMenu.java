@@ -119,14 +119,14 @@ public class ItemStorageMenu extends SInventory{
         //reopen selector
         setAsyncOnCloseEvent(e -> {
             InOutSelectorMenu menu = new InOutSelectorMenu(player, shop, plugin);
-            menu.setOnClose(ee -> menu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            menu.setOnClose(ee -> new ShopMainMenu(player, shop, plugin).open(player));
             menu.setOnInClicked(ee -> {
                 //editing storage
                 if(shop.currentlyEditingStorage){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
                     return;
                 }
-                menu.moveToMenu(player, new ItemStorageMenu(false, player, shop, plugin));
+                new ItemStorageMenu(false, player, shop, plugin).open(player);
             });
             menu.setOnOutClicked(ee -> {
                 //editing storage
@@ -134,11 +134,11 @@ public class ItemStorageMenu extends SInventory{
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在倉庫編集中です");
                     return;
                 }
-                menu.moveToMenu(player, new ItemStorageMenu(true, player, shop, plugin));
+                new ItemStorageMenu(true, player, shop, plugin).open(player);
             });
             menu.setInText("倉庫にアイテムを入れる");
             menu.setOutText("倉庫からアイテムを出す");
-            moveToMenu(player, menu);
+            menu.open(player);
         });
     }
 

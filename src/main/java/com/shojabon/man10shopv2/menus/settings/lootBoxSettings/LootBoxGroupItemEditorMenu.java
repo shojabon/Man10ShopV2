@@ -62,15 +62,15 @@ public class LootBoxGroupItemEditorMenu extends LargeSInventoryMenu {
                 ConfirmationMenu menu = new ConfirmationMenu("グループを消去しますか？", plugin);
                 menu.setOnConfirm(ee -> {
                     groupData.itemCountDictionary.remove(itemHash);
-                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    menu.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));
+                    new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);
                 });
-                menu.setOnCancel(ee -> {menu.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));});
-                menu.setOnCloseEvent(ee -> {menu.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));});
-                moveToMenu(player, menu);
+                menu.setOnCancel(ee -> {new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);});
+                menu.setOnCloseEvent(ee -> {new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);});
+                menu.open(player);
             });
 
             item.setAsyncEvent(e -> {
@@ -82,22 +82,22 @@ public class LootBoxGroupItemEditorMenu extends LargeSInventoryMenu {
 
                 numberMenu.setOnConfirm(ee -> {
                     groupData.itemCountDictionary.put(itemHash, ee);
-                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));
+                    new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);
                 });
-                numberMenu.setOnCancel(ee -> numberMenu.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin)));
-                numberMenu.setOnCloseEvent(ee -> numberMenu.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin)));
+                numberMenu.setOnCancel(ee -> new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player));
+                numberMenu.setOnCloseEvent(ee -> new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player));
 
-                moveToMenu(player, numberMenu);
+                numberMenu.open(player);
             });
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin)));
+        setOnCloseEvent(ee -> new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player));
     }
 
     public void afterRenderMenu() {
@@ -119,26 +119,25 @@ public class LootBoxGroupItemEditorMenu extends LargeSInventoryMenu {
                 SItemStack item = new SItemStack(selectedItem);
                 if(groupData.itemCountDictionary.containsKey(item.getMD5())){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのアイテム種はすでに登録されています");
-                    itemSelector.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));
+                    new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);
                     return;
                 }
                 lootBox.itemDictionary.put(item.getMD5(), selectedItem);
                 groupData.itemCountDictionary.put(item.getMD5(), 1);
 
                 //update database here
-                if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
-                itemSelector.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));
+                new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);
             });
 
             itemSelector.setOnCloseEvent(ee -> {
-                itemSelector.moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin));
+                new LootBoxGroupItemEditorMenu(player, shop, lootBox, groupId, plugin).open(player);
             });
 
-
-            moveToMenu(player, itemSelector);
+            itemSelector.open(player);
         });
 
 

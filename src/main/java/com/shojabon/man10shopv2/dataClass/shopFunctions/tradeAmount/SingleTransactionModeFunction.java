@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount;
 import ToolMenu.BooleanInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -30,7 +31,7 @@ import java.util.UUID;
 public class SingleTransactionModeFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<Boolean> enabled = new Man10ShopSetting<>("shop.transaction.single", false);
     //init
     public SingleTransactionModeFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -44,20 +45,6 @@ public class SingleTransactionModeFunction extends ShopFunction {
     // settings
     //====================
 
-    public boolean isSingleTransactionMode(){
-        String currentSetting = getSetting("shop.transaction.single");
-        if(!BaseUtils.isBoolean(currentSetting)) return false;
-        return Boolean.parseBoolean(currentSetting);
-    }
-
-    public boolean setSingleSellMode(boolean enabled){
-        if(isSingleTransactionMode() == enabled) return true;
-        if(!setSetting("shop.transaction.single", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-    
-
     @Override
     public boolean isAllowedToUseShop(Player p) {
         return true;
@@ -67,11 +54,11 @@ public class SingleTransactionModeFunction extends ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            BooleanInputMenu menu = new BooleanInputMenu(shop.singleTransactionMode.isSingleTransactionMode(), "単品取引モード", plugin);
+            BooleanInputMenu menu = new BooleanInputMenu(enabled.get(), "単品取引モード", plugin);
             menu.setOnClose(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnCancel(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(bool -> {
-                if(!shop.singleTransactionMode.setSingleSellMode(bool)){
+                if(!enabled.set(bool)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

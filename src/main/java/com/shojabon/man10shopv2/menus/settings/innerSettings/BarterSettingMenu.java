@@ -7,11 +7,13 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class BarterSettingMenu extends SInventory{
@@ -22,11 +24,11 @@ public class BarterSettingMenu extends SInventory{
     BannerDictionary banner = new BannerDictionary();
     int currentSelecting = 10;
     int[] slots = new int[]{10, 11, 12, 19, 20 ,21 ,28, 29, 30, 37, 38, 39, 34};
-    ItemStack[] current;
+    List<ItemStack> current;
 
-    Consumer<ItemStack[]> onConfirm = null;
+    Consumer<List<ItemStack>> onConfirm = null;
 
-    public BarterSettingMenu(Player p, Man10Shop shop, ItemStack[] currentItems, Man10ShopV2 plugin){
+    public BarterSettingMenu(Player p, Man10Shop shop, List<ItemStack> currentItems, Man10ShopV2 plugin){
         super("トレード設定",6, plugin);
         this.shop = shop;
         this.player = p;
@@ -37,12 +39,12 @@ public class BarterSettingMenu extends SInventory{
             if(e.getClickedInventory() == null) return;
             if(e.getClickedInventory().getType() != InventoryType.PLAYER) return;
             e.setCancelled(true);
-            current[ArrayUtils.indexOf(slots, currentSelecting)] = e.getCurrentItem();
+            current.set(ArrayUtils.indexOf(slots, currentSelecting), e.getCurrentItem());
             renderMenu();
         });
     }
 
-    public void setOnConfirm(Consumer<ItemStack[]> event){
+    public void setOnConfirm(Consumer<List<ItemStack>> event){
         this.onConfirm = event;
     }
 
@@ -59,7 +61,7 @@ public class BarterSettingMenu extends SInventory{
         SInventoryItem clearSlot = new SInventoryItem(new SItemStack(Material.BARRIER).setDisplayName("§c§l選択中のスロットをクリア").build());
         clearSlot.clickable(false);
         clearSlot.setAsyncEvent(e -> {
-            current[ArrayUtils.indexOf(slots, currentSelecting)] = null;
+            current.set(ArrayUtils.indexOf(slots, currentSelecting), null);
             player.sendMessage(Man10ShopV2.prefix + "§c§l" + e.getRawSlot() + "をクリアしました");
             renderMenu();
         });
@@ -73,9 +75,9 @@ public class BarterSettingMenu extends SInventory{
         });
         setItem(slots, noItem);
 
-        for(int i = 0; i < current.length; i++){
-            if(current[i] == null) continue;
-            SInventoryItem item = new SInventoryItem(current[i]);
+        for(int i = 0; i < current.size(); i++){
+            if(current.get(i) == null) continue;
+            SInventoryItem item = new SInventoryItem(current.get(i));
             item.clickable(false);
             item.setAsyncEvent(e -> {
                 currentSelecting = e.getRawSlot();

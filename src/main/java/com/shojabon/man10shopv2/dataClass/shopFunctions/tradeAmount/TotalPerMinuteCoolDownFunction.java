@@ -5,6 +5,7 @@ import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.dataClass.Man10ShopLogObject;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -15,6 +16,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -35,11 +37,13 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     //variables
 
     LinkedList<Man10ShopLogObject> perMinuteCoolDownMap = new LinkedList<>();
+    public Man10ShopSetting<Integer> time = new Man10ShopSetting<>("shop.total.perminute.cooldown.time", 0);
+    public Man10ShopSetting<Integer> amount = new Man10ShopSetting<>("shop.total.perminute.cooldown.amount", 0);
 
     //init
     public TotalPerMinuteCoolDownFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
-        loadTotalPerMinuteMap();
+        Bukkit.getScheduler().runTask(plugin, this::loadTotalPerMinuteMap);
     }
 
     //functions
@@ -50,7 +54,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
             return;
         }
 
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + getTotalPerMinuteCoolDownTime()*60L + " GROUP BY YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + time.get()*60L + " GROUP BY YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
         for(MySQLCachedResultSet rs: result){
             addTotalPerMinuteCoolDownLog(new Man10ShopLogObject(rs.getLong("time"), rs.getInt("amount")));
         }
@@ -71,14 +75,14 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
         //count amount
         for(int i = 0; i < perMinuteCoolDownMap.size(); i++){
             Man10ShopLogObject log = perMinuteCoolDownMap.get(i);
-            if(currentTime - log.time >= getTotalPerMinuteCoolDownTime()* 60L) continue;
+            if(currentTime - log.time >= time.get()* 60L) continue;
             totalAmountInTime += log.amount;
         }
 
         //delete unneeded logs
         for(int i = 0; i < perMinuteCoolDownMap.size(); i++){
             Man10ShopLogObject log = perMinuteCoolDownMap.getLast();
-            if(currentTime - log.time >= getTotalPerMinuteCoolDownTime()* 60L) {
+            if(currentTime - log.time >= time.get()* 60L) {
                 perMinuteCoolDownMap.removeLast();
             }else{
                 break;
@@ -91,47 +95,25 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
         if(!isFunctionEnabled()){
             return false;
         }
-        if(addingAmount > getTotalPerMinuteCoolDownAmount()) return true;
+        if(addingAmount > amount.get()) return true;
 
-        return totalPerMinuteCoolDownTotalAmountInTime() + addingAmount > getTotalPerMinuteCoolDownAmount();
+        return totalPerMinuteCoolDownTotalAmountInTime() + addingAmount > amount.get();
     }
 
     //====================
     // settings
     //====================
 
-    public int getTotalPerMinuteCoolDownTime(){
-        String currentSetting = getSetting("shop.total.perminute.cooldown.time");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setTotalPerMinuteCoolDownTime(int time){
-        if(getTotalPerMinuteCoolDownTime() == time) return true;
-        return setSetting("shop.total.perminute.cooldown.time", time);
-    }
-
-    public int getTotalPerMinuteCoolDownAmount(){
-        String currentSetting = getSetting("shop.total.perminute.cooldown.amount");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setTotalPerMinuteCoolDownAmount(int amount){
-        if(getTotalPerMinuteCoolDownAmount() == amount) return true;
-        return setSetting("shop.total.perminute.cooldown.amount", amount);
-    }
-
     @Override
     public boolean isFunctionEnabled() {
-        return getTotalPerMinuteCoolDownTime() != 0 && getTotalPerMinuteCoolDownAmount() != 0;
+        return time.get() != 0 && amount.get() != 0;
     }
 
     @Override
     public int itemCount(Player p) {
         if(!isFunctionEnabled()) return super.itemCount(p);
-        if(shop.isAdminShop()) return -(getTotalPerMinuteCoolDownAmount() - totalPerMinuteCoolDownTotalAmountInTime());
-        return getTotalPerMinuteCoolDownAmount() - totalPerMinuteCoolDownTotalAmountInTime();
+        if(shop.isAdminShop()) return -(amount.get() - totalPerMinuteCoolDownTotalAmountInTime());
+        return amount.get() - totalPerMinuteCoolDownTotalAmountInTime();
     }
 
     @Override
@@ -177,7 +159,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.totalPerMinuteCoolDown.setTotalPerMinuteCoolDownTime(number)){
+                if(!time.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
@@ -197,7 +179,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.totalPerMinuteCoolDown.setTotalPerMinuteCoolDownAmount(number)){
+                if(!amount.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

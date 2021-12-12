@@ -65,18 +65,18 @@ public class LootBoxBigWinSelectorMenu extends LargeSInventoryMenu {
             item.setAsyncEvent(e -> {
                 if(e.getClick() != ClickType.LEFT) return;
                 data.bigWin = !data.bigWin;
-                if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                     player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                     return;
                 }
-                moveToMenu(player, new LootBoxBigWinSelectorMenu(player, shop, lootBox, plugin));
+                new LootBoxBigWinSelectorMenu(player, shop, lootBox, plugin).open(player);
             });
 
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin)));
+        setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin).open(player));
     }
 
     public void afterRenderMenu() {

@@ -6,6 +6,7 @@ import ToolMenu.SingleItemStackSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -31,6 +32,9 @@ import java.util.UUID;
 )
 public class LootBoxPaymentFunction extends LootBoxFunction {
 
+    public Man10ShopSetting<Integer> balancePrice = new Man10ShopSetting<>("lootBox.payment.cash", 0);
+    public Man10ShopSetting<ItemStack> itemPayment = new Man10ShopSetting<>("lootBox.payment.item", null);
+
     //init
     public LootBoxPaymentFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -39,40 +43,17 @@ public class LootBoxPaymentFunction extends LootBoxFunction {
 
     //functions
 
-    public int getPrice(){
-        String currentSetting = getSetting("lootBox.payment.cash");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setPrice(int price){
-        if(getPrice() == price) return true;
-        return setSetting("lootBox.payment.cash", price);
-    }
-
-    public ItemStack getItem(){
-        String currentSetting = getSetting("lootBox.payment.item");
-        if(SItemStack.fromBase64(currentSetting) == null) return null;
-        return SItemStack.fromBase64(currentSetting).build();
-    }
-
-    public boolean setItem(ItemStack item){
-        if(getItem() == item) return true;
-        if(item == null) return deleteSetting("lootBox.payment.item");
-        return setSetting("lootBox.payment.item", new SItemStack(item.clone()).getBase64());
-    }
-
     //====================
     // settings
     //====================
 
     @Override
     public boolean performAction(Player p, int amount) {
-        if(getItem() != null){
-            p.getInventory().removeItemAnySlot(getItem().clone());
+        if(itemPayment.get() != null){
+            p.getInventory().removeItemAnySlot(itemPayment.get().clone());
         }
-        if(getPrice() != 0){
-            if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), getPrice())){
+        if(balancePrice.get() != 0){
+            if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), balancePrice.get())){
                 warn(p, "内部エラーが発生しました");
                 return false;
             }
@@ -83,15 +64,15 @@ public class LootBoxPaymentFunction extends LootBoxFunction {
     @Override
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
-            if(getItem() != null){
-                SItemStack item = new SItemStack(getItem().clone());
+            if(itemPayment.get() != null){
+                SItemStack item = new SItemStack(itemPayment.get().clone());
                 if(!p.getInventory().containsAtLeast(item.build(), item.getAmount())){
                     warn(p, "ガチャを回すためのアイテムがありません");
                     return false;
                 }
             }
-            if(getPrice() != 0){
-                if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < getPrice()){
+            if(balancePrice.get() != 0){
+                if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < balancePrice.get()){
                     warn(p, "残高が不足しています");
                     return false;
                 }
@@ -103,13 +84,13 @@ public class LootBoxPaymentFunction extends LootBoxFunction {
     @Override
     public String currentSettingString() {
         String result = "現在の設定\n";
-        if(getItem() != null || getPrice() != 0){
-            if(getPrice() != 0){
-                result += "現金 " + BaseUtils.priceString(getPrice()) + "円";
+        if(itemPayment.get() != null || balancePrice.get() != 0){
+            if(balancePrice.get() != 0){
+                result += "現金 " + BaseUtils.priceString(balancePrice.get()) + "円";
                 return result;
             }
-            if(getItem() != null){
-                result += "アイテム " + new SItemStack(getItem()).getDisplayName() + " " + new SItemStack(getItem()).getAmount();
+            if(itemPayment.get() != null){
+                result += "アイテム " + new SItemStack(itemPayment.get()).getDisplayName() + " " + new SItemStack(itemPayment.get()).getAmount();
                 return result;
             }
         }else{
@@ -136,34 +117,34 @@ public class LootBoxPaymentFunction extends LootBoxFunction {
 
             NumericInputMenu menu = new NumericInputMenu("金額を設定してください", plugin);
             menu.setOnConfirm(number -> {
-                if(!setPrice(number)){
+                if(!balancePrice.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
                 success(player, "値段を設定しました");
                 Man10ShopV2.api.updateAllSigns(shop);
-                menu.moveToMenu(player, getInnerSettingMenu(player, plugin));
+                getInnerSettingMenu(player, plugin).open(player);
             });
-            menu.setOnCancel(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
-            menu.setOnClose(eee -> menu.moveToMenu(player, getInnerSettingMenu(player, plugin)));
+            menu.setOnCancel(eee -> getInnerSettingMenu(player, plugin).open(player));
+            menu.setOnClose(eee -> getInnerSettingMenu(player, plugin).open(player));
 
-            autoScaledMenu.moveToMenu(player, menu);
+            menu.open(player);
         });
 
         ItemStack settingItem = new SItemStack(Material.BARRIER).setDisplayName(new SStringBuilder().green().text("アイテム設定").build()).build();
 
-        if(getItem() != null){
-            settingItem = new SItemStack(getItem().clone()).setDisplayName(new SStringBuilder().green().text("アイテム設定").build()).build();
+        if(itemPayment.get() != null){
+            settingItem = new SItemStack(itemPayment.get().clone()).setDisplayName(new SStringBuilder().green().text("アイテム設定").build()).build();
         }
 
         SInventoryItem itemSetting = new SInventoryItem(settingItem);
         itemSetting.clickable(false);
         itemSetting.setEvent(ee -> {
 
-            SingleItemStackSelectorMenu menu = new SingleItemStackSelectorMenu("支払いアイテム選択", getItem(), plugin);
+            SingleItemStackSelectorMenu menu = new SingleItemStackSelectorMenu("支払いアイテム選択", itemPayment.get(), plugin);
             menu.allowNullItem(true);
             menu.setOnConfirm(item -> {
-                if(!setItem(item)){
+                if(!itemPayment.set(item)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

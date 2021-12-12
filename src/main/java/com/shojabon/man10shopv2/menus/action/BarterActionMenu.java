@@ -14,6 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BarterActionMenu extends SInventory{
 
     Man10Shop shop;
@@ -21,7 +24,7 @@ public class BarterActionMenu extends SInventory{
     Player player;
     BannerDictionary banner = new BannerDictionary();
     int[] slots = new int[]{10, 11, 12, 19, 20 ,21 ,28, 29, 30, 37, 38, 39, 34};
-    ItemStack[] current;
+    List<ItemStack> current;
     boolean orderRequested = false;
 
 
@@ -30,9 +33,11 @@ public class BarterActionMenu extends SInventory{
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
-        this.current = (ItemStack[]) ArrayUtils.addAll(shop.setBarter.getRequiredItems(), shop.setBarter.getResultItems());
+        this.current = new ArrayList<>();
+        this.current.addAll(shop.setBarter.requiredItems.get());
+        this.current.addAll(shop.setBarter.resultItems.get());
 
-        SStringBuilder builder = new SStringBuilder().darkGray().text(new SItemStack(shop.setBarter.getResultItems()[0]).getDisplayName());
+        SStringBuilder builder = new SStringBuilder().darkGray().text(new SItemStack(shop.setBarter.resultItems.get().get(0)).getDisplayName());
 
         int maxTradeItemCount = shop.getPlayerAvailableTransactionCount(p);
         builder.text("§b§lにトレードする");
@@ -61,9 +66,9 @@ public class BarterActionMenu extends SInventory{
         noItem.clickable(false);
         setItem(slots, noItem);
 
-        for(int i = 0; i < current.length; i++){
-            if(current[i] == null) continue;
-            SInventoryItem item = new SInventoryItem(current[i]);
+        for(int i = 0; i < current.size(); i++){
+            if(current.get(i) == null) continue;
+            SInventoryItem item = new SInventoryItem(current.get(i));
             item.clickable(false);
             setItem(slots[i], item);
         }

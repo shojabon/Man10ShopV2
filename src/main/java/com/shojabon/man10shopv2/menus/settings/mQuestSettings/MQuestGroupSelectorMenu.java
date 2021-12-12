@@ -78,21 +78,21 @@ public class MQuestGroupSelectorMenu extends LargeSInventoryMenu {
                 ConfirmationMenu menu = new ConfirmationMenu("グループを消去しますか？", plugin);
                 menu.setOnConfirm(ee -> {
                     newData.remove(finalI);
-                    if(!shop.mQuestFunction.setQuest(quest)){
+                    if(!shop.mQuestFunction.quest.set(quest)){
                         player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    menu.moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin));
+                    new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player);
                 });
-                menu.setOnCancel(ee -> {menu.moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin));});
-                menu.setOnCloseEvent(ee -> {menu.moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin));});
-                moveToMenu(player, menu);
+                menu.setOnCancel(ee -> {new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player);});
+                menu.setOnCloseEvent(ee -> {new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player);});
+                menu.open(player);
             });
 
             item.setAsyncEvent(e -> {
                 if(e.getClick() != ClickType.LEFT) return;
 
-                moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, finalI, plugin));
+                new MQuestGroupShopEditorMenu(player, shop, quest, finalI, plugin).open(player);
             });
 
             item.setAsyncEvent(e -> {
@@ -106,22 +106,22 @@ public class MQuestGroupSelectorMenu extends LargeSInventoryMenu {
 
                 numberMenu.setOnConfirm(ee -> {
                     newData.get(finalI).percentageWeight = ee;
-                    if(!shop.mQuestFunction.setQuest(quest)){
+                    if(!shop.mQuestFunction.quest.set(quest)){
                         player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin));
+                    new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player);
                 });
-                numberMenu.setOnCancel(ee -> numberMenu.moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin)));
-                numberMenu.setOnCloseEvent(ee -> numberMenu.moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin)));
+                numberMenu.setOnCancel(ee -> new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player));
+                numberMenu.setOnCloseEvent(ee -> new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player));
 
-                moveToMenu(player, numberMenu);
+                numberMenu.open(player);
             });
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin)));
+        setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin).open(player));
     }
 
     public Material getRandomMaterial(){
@@ -160,12 +160,12 @@ public class MQuestGroupSelectorMenu extends LargeSInventoryMenu {
             if(addingMaterial == null) return;
             newItemGroups.add(new MQuestGroupData(addingMaterial, 0));
 
-            if(!shop.mQuestFunction.setQuest(quest)){
+            if(!shop.mQuestFunction.quest.set(quest)){
                 player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                 return;
             }
 
-            moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin));
+            new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player);
         });
 
 

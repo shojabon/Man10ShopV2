@@ -43,7 +43,7 @@ public class AdminShopSelectorMenu extends CategoricalSInventoryMenu {
                 if(onClick != null) onClick.accept(shop);
             });
 
-            addItem(shop.categoryFunction.getCategory(), item);
+            addItem(shop.categoryFunction.category.get(), item);
         }
     }
 

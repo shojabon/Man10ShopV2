@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class EnabledFromFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<Long> enabledFrom = new Man10ShopSetting<>("shop.enabledFrom", 0L);
     //init
     public EnabledFromFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -43,28 +44,15 @@ public class EnabledFromFunction extends ShopFunction {
     // settings
     //====================
 
-    public long getEnabledTime(){
-        String currentSetting = getSetting("shop.enabledFrom");
-        if(!BaseUtils.isLong(currentSetting)) return 0;
-        return Long.parseLong(currentSetting);
-    }
-
-    public boolean setEnabledTime(long enabled){
-        if(getEnabledTime() == enabled) return true;
-        if(!setSetting("shop.enabledFrom", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-
     @Override
     public boolean isFunctionEnabled() {
-        return getEnabledTime() != 0;
+        return enabledFrom.get() != 0;
     }
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(System.currentTimeMillis()/1000L < getEnabledTime()) {
-            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています、開始は " + BaseUtils.unixTimeToString(getEnabledTime()));
+        if(System.currentTimeMillis()/1000L < enabledFrom.get()) {
+            p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています、開始は " + BaseUtils.unixTimeToString(enabledFrom.get()));
             return false;
         }
         return true;
@@ -72,20 +60,20 @@ public class EnabledFromFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        return BaseUtils.unixTimeToString(getEnabledTime());
+        return BaseUtils.unixTimeToString(enabledFrom.get());
     }
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
 
-            TimeSelectorMenu menu = new TimeSelectorMenu(getEnabledTime(), "有効化開始時間を設定してください", plugin);
+            TimeSelectorMenu menu = new TimeSelectorMenu(enabledFrom.get(), "有効化開始時間を設定してください", plugin);
             menu.setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(time -> {
                 if (time == -1L) {
-                    deleteSetting("shop.enabledFrom");
+                    enabledFrom.delete();
                 } else {
-                    if (!setEnabledTime(time)) {
+                    if (!enabledFrom.set(time)) {
                         warn(player, "内部エラーが発生しました");
                         return;
                     }

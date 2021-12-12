@@ -48,7 +48,7 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
                 if(onClick != null) onClick.accept(shop);
             });
 
-            addItem(shop.categoryFunction.getCategory(), item);
+            addItem(shop.categoryFunction.getDefinition().category(), item);
         }
         //setItems(items);
     }

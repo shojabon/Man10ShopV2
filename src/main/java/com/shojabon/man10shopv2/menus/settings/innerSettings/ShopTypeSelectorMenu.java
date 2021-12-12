@@ -56,7 +56,7 @@ public class ShopTypeSelectorMenu extends AutoScaledMenu {
                 Man10ShopV2.api.updateAllSigns(shop);
             });
         });
-        setOnCloseEvent(e -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.shopType.getDefinition().category(), plugin)));
+        setOnCloseEvent(e -> new SettingsMainMenu(player, shop, shop.shopType.getDefinition().category(), plugin).open(player));
         addItem(buyMode);
 
         if(shop.isAdminShop()){

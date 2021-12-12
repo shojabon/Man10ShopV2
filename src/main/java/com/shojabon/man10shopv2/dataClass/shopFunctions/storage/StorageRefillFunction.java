@@ -5,6 +5,7 @@ import ToolMenu.NumericInputMenu;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -33,6 +34,11 @@ import java.util.UUID;
 public class StorageRefillFunction extends ShopFunction {
 
     //variables
+    public Man10ShopSetting<Integer> refillAmount = new Man10ShopSetting<>("storage.refill.amount", 0);
+    public Man10ShopSetting<Integer> refillMinutes = new Man10ShopSetting<>("storage.refill.time", 0);
+    public Man10ShopSetting<Long> lastRefillTime = new Man10ShopSetting<>("storage.refill.lastRefillTime", 0L);
+    public Man10ShopSetting<Integer> itemLeft = new Man10ShopSetting<>("storage.refill.itemFilled", 0);
+
 
     //init
     public StorageRefillFunction(Man10Shop shop, Man10ShopV2 plugin) {
@@ -49,25 +55,25 @@ public class StorageRefillFunction extends ShopFunction {
     }
 
     public int transactionsLeft(){
-        if(System.currentTimeMillis()/1000L - getLastRefillTime() >= getRefillTimeMinute()*60L){
+        if(System.currentTimeMillis()/1000L - lastRefillTime.get() >= refillMinutes.get()*60L){
             //refill
-            setLastRefillTime(calculateLastRefillTime());
-            setItemLeft(getRefillAmount());
+            lastRefillTime.set(calculateLastRefillTime());
+            itemLeft.set(refillAmount.get());
         }
-        return getItemLeft();
+        return itemLeft.get();
     }
 
     public long calculateLastRefillTime(){
-        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - getLastRefillTime();
-        long skippedRefills = secondsSinceLastRefill/(getRefillTimeMinute()*60L);
+        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - lastRefillTime.get();
+        long skippedRefills = secondsSinceLastRefill/(refillMinutes.get()*60L);
 
-        return getLastRefillTime() + skippedRefills*getRefillTimeMinute()*60L;
+        return lastRefillTime.get() + skippedRefills*refillMinutes.get()*60L;
     }
 
     public long getNextRefillTime(){
         if(!isFunctionEnabled()) return 0;
         if(checkCanTrade(1)) return 0;
-        return getLastRefillTime() + getRefillTimeMinute()*60L;
+        return lastRefillTime.get() + refillMinutes.get()*60L;
     }
 
     public String getNextRefillTimeString(){
@@ -82,61 +88,16 @@ public class StorageRefillFunction extends ShopFunction {
     // settings
     //====================
 
-    public int getRefillAmount(){
-        String currentSetting = getSetting("storage.refill.amount");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setRefillAmount(int amount){
-        if(getRefillAmount() == amount) return true;
-        return setSetting("storage.refill.amount", amount);
-    }
-
-    public int getRefillTimeMinute(){
-        String currentSetting = getSetting("storage.refill.time");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setRefillTimeMinute(int time){
-        if(getRefillTimeMinute() == time) return true;
-        return setSetting("storage.refill.time", time);
-    }
-
-    public long getLastRefillTime(){
-        String currentSetting = getSetting("storage.refill.lastRefillTime");
-        if(!BaseUtils.isLong(currentSetting)) return 0L;
-        return Long.parseLong(currentSetting);
-    }
-
-    public boolean setLastRefillTime(long time){
-        if(getLastRefillTime() == time) return true;
-        return setSetting("storage.refill.lastRefillTime", time);
-    }
-
-    public int getItemLeft(){
-        String currentSetting = getSetting("storage.refill.itemFilled");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setItemLeft(int storageCap){
-        if(getItemLeft() == storageCap) return true;
-        return setSetting("storage.refill.itemFilled", storageCap);
-    }
-    
-
     @Override
     public boolean isFunctionEnabled(){
-        return getRefillAmount() != 0 && getRefillTimeMinute() != 0;
+        return refillAmount.get() != 0 && refillMinutes.get() != 0;
     }
 
     @Override
     public int itemCount(Player p) {
         if(!isFunctionEnabled()) return super.itemCount(p);
-        if(shop.isAdminShop()) return -getItemLeft();
-        return getItemLeft();
+        if(shop.isAdminShop()) return -itemLeft.get();
+        return itemLeft.get();
     }
 
     @Override
@@ -164,12 +125,12 @@ public class StorageRefillFunction extends ShopFunction {
     @Override
     public boolean afterPerformAction(Player p, int amount) {
         if(!isFunctionEnabled()) return true;
-        return setItemLeft(getItemLeft()-amount);
+        return itemLeft.set(itemLeft.get()-amount);
     }
 
     @Override
     public String currentSettingString() {
-        return getRefillTimeMinute() + "分毎に" + getRefillAmount() + "個補充";
+        return refillMinutes.get() + "分毎に" + refillAmount.get() + "個補充";
     }
 
     @Override
@@ -190,7 +151,7 @@ public class StorageRefillFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.storageRefill.setRefillTimeMinute(number)){
+                if(!refillMinutes.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
@@ -200,22 +161,22 @@ public class StorageRefillFunction extends ShopFunction {
             menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin));
             menu.setOnClose(ee -> getInnerSettingMenu(player, plugin));
 
-            autoScaledMenu.moveToMenu(player, menu);
+            menu.open(player);
         });
 
 
         SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS)
                 .setDisplayName(new SStringBuilder().green().text("最終補充時間を設定する").build())
-                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.storageRefill.getLastRefillTime()*1000L)))
+                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.storageRefill.lastRefillTime.get()*1000L)))
                 .build());
         setRefillStartingTime.clickable(false);
         setRefillStartingTime.setEvent(e -> {
             TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終補充時間を設定してくださ", plugin);
-            menu.setOnConfirm(lastRefillTime -> {
-                if(lastRefillTime == -1L){
-                    shop.storageRefill.deleteSetting("storage.refill.lastRefillTime");
+            menu.setOnConfirm(lastRefillTimeLocal -> {
+                if(lastRefillTimeLocal == -1L){
+                    lastRefillTime.delete();
                 }else{
-                    if(!shop.storageRefill.setLastRefillTime(lastRefillTime)){
+                    if(!lastRefillTime.set(lastRefillTimeLocal)){
                         warn(player, "内部エラーが発生しました");
                         return;
                     }
@@ -224,7 +185,7 @@ public class StorageRefillFunction extends ShopFunction {
                 getInnerSettingMenu(player, plugin);
             });
             menu.setOnCloseEvent(ee -> getInnerSettingMenu(player, plugin));
-            autoScaledMenu.moveToMenu(player, menu);
+            menu.open(player);
         });
 
 
@@ -232,7 +193,7 @@ public class StorageRefillFunction extends ShopFunction {
                 .addLore("§f補充スケジュールは保持したままアイテムを補充する").build());
         forceRefill.clickable(false);
         forceRefill.setEvent(e -> {
-            if(!shop.storageRefill.setItemLeft(shop.storageRefill.getRefillAmount())){
+            if(!itemLeft.set(shop.storageRefill.refillAmount.get())){
                 warn(player, "内部エラーが発生しました");
                 return;
             }
@@ -246,7 +207,7 @@ public class StorageRefillFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("個数を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.storageRefill.setRefillAmount(number)){
+                if(!refillAmount.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
@@ -256,7 +217,7 @@ public class StorageRefillFunction extends ShopFunction {
             menu.setOnCancel(ee -> getInnerSettingMenu(player, plugin));
             menu.setOnClose(ee -> getInnerSettingMenu(player, plugin));
 
-            autoScaledMenu.moveToMenu(player, menu);
+            menu.open(player);
         });
 
         autoScaledMenu.setOnCloseEvent(e -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));

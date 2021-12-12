@@ -29,6 +29,10 @@ public class TargetItemFunction extends ShopFunction {
     //init
     public TargetItemFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
+
+        if(this.getTargetItem() == null){
+            this.targetItem = new SItemStack(Material.DIAMOND);
+        }
     }
 
 

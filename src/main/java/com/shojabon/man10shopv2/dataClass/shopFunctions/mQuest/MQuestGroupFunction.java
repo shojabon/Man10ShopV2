@@ -2,7 +2,9 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.mQuest;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
+import com.shojabon.man10shopv2.dataClass.lootBox.LootBox;
 import com.shojabon.man10shopv2.dataClass.quest.MQuest;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -30,8 +32,7 @@ import java.util.UUID;
 public class MQuestGroupFunction extends ShopFunction {
 
     //variables
-
-    MQuest quest = null;
+    public Man10ShopSetting<MQuest> quest = new Man10ShopSetting<>("mquest.data", new MQuest());
 
 
     //init
@@ -43,7 +44,7 @@ public class MQuestGroupFunction extends ShopFunction {
     //functions
 
     public void refreshQuests(int questCount){
-        getQuest().currentQuests = getQuest().getQuests(questCount);
+        quest.get().currentQuests = quest.get().getQuests(questCount);
         SInventory.closeInventoryGroup(shop.getShopId(), (JavaPlugin) shop.plugin);
     }
 
@@ -51,30 +52,9 @@ public class MQuestGroupFunction extends ShopFunction {
     // settings
     //====================
 
-    public MQuest getQuest(){
-        if(quest != null) return quest;
-        YamlConfiguration currentSetting = getSettingYaml("mquest.data");
-        if(currentSetting == null) return new MQuest();
-
-        //load groups
-        MQuest result = new MQuest();
-        result.loadLootBox(currentSetting);
-        quest = result;
-        return quest;
-    }
-
-    public boolean setQuest(MQuest box){
-        //save group
-        if(setSetting("mquest.data", box.exportQuest())){
-            quest = box;
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(!getQuest().isAvailable()){
+        if(!quest.get().isAvailable()){
             p.sendMessage(Man10ShopV2.prefix + "§c§lクエストの設定が終わっていません");
             return false;
         }
@@ -85,7 +65,7 @@ public class MQuestGroupFunction extends ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            new MQuestGroupSelectorMenu(player, shop, shop.mQuestFunction.getQuest(), plugin).open(player);
+            new MQuestGroupSelectorMenu(player, shop, shop.mQuestFunction.quest.get(), plugin).open(player);
 
         });
         return item;

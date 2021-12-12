@@ -64,14 +64,14 @@ public class PermissionSettingsMenu extends SInventory{
 
                     Man10ShopV2API.log(shop.shopId, "permissionChange." + target.uuid, permissions[finalI].name(), player.getName(), player.getUniqueId()); //log
                     player.sendMessage(Man10ShopV2.prefix + "§a§l権限を設定しました");
-                    menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin));
+                    new PermissionSettingsMenu(player, shop, target, plugin).open(player);
                 });
 
-                menu.setOnCancel(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
-                menu.setOnClose(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
+                menu.setOnCancel(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
+                menu.setOnClose(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
 
                 //open confirmation
-                moveToMenu(player, menu);
+                menu.open(player);
                 return;
             }
         };
@@ -146,13 +146,13 @@ public class PermissionSettingsMenu extends SInventory{
                     return;
                 }
                 Man10ShopV2API.log(shop.shopId, "permissionDelete", target.uuid, player.getName(), player.getUniqueId()); //log
-                menu.moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory());
+                new PermissionSettingsMainMenu(player, shop, plugin).renderInventory().open(player);
                 player.sendMessage(Man10ShopV2.prefix + "§c§a" + target.name + "を消去しました");
             });
 
-            menu.setOnCancel(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
-            menu.setOnClose(ee -> menu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
-            moveToMenu(player, menu);
+            menu.setOnCancel(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
+            menu.setOnClose(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
+            menu.open(player);
 
 
         });
@@ -199,12 +199,12 @@ public class PermissionSettingsMenu extends SInventory{
                     return;
                 }
                 player.sendMessage(Man10ShopV2.prefix + "§a§l通知設定を設定しました");
-                boolMenu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin));
+                new PermissionSettingsMenu(player, shop, target, plugin).open(player);
             });
-            boolMenu.setOnCancel(ee -> boolMenu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
-            boolMenu.setOnClose(ee -> boolMenu.moveToMenu(player, new PermissionSettingsMenu(player, shop, target, plugin)));
+            boolMenu.setOnCancel(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
+            boolMenu.setOnClose(ee -> new PermissionSettingsMenu(player, shop, target, plugin).open(player));
 
-            moveToMenu(player, boolMenu);
+            boolMenu.open(player);
 
         };
     }
@@ -219,7 +219,7 @@ public class PermissionSettingsMenu extends SInventory{
         renderIcons();
         renderNotification();
 
-        setOnCloseEvent(e -> moveToMenu(player, new PermissionSettingsMainMenu(player, shop, plugin).renderInventory()));
+        setOnCloseEvent(e -> new PermissionSettingsMainMenu(player, shop, plugin).renderInventory().open(player));
     }
 
 }

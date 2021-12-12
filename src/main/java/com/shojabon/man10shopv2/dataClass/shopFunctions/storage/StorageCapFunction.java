@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.storage;
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -30,7 +31,7 @@ import java.util.UUID;
 public class StorageCapFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<Integer> storageCap = new Man10ShopSetting<>("storage.sell.cap", 0);
     //init
     public StorageCapFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -44,27 +45,17 @@ public class StorageCapFunction extends ShopFunction {
     // settings
     //====================
 
-    public int getStorageCap(){
-        String currentSetting = getSetting("storage.sell.cap");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setStorageCap(int storageCap){
-        if(getStorageCap() == storageCap) return true;
-        return setSetting("storage.sell.cap", storageCap);
-    }
 
     @Override
     public boolean isFunctionEnabled() {
-        return getStorageCap() != 0;
+        return storageCap.get() != 0;
     }
 
     @Override
     public int itemCount(Player p) {
         if(!isFunctionEnabled()) return super.itemCount(p);
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
-            return getStorageCap();
+            return storageCap.get();
         }
         return super.itemCount(p);
     }
@@ -73,7 +64,7 @@ public class StorageCapFunction extends ShopFunction {
     public boolean isAllowedToUseShop(Player p) {
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
             //no money (sell)
-            if(getStorageCap() != 0 && shop.storage.itemCount >= getStorageCap()){
+            if(storageCap.get() != 0 && shop.storage.itemCount >= storageCap.get()){
                 p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは買取をしていません");
                 return false;
             }
@@ -85,7 +76,7 @@ public class StorageCapFunction extends ShopFunction {
     public boolean isAllowedToUseShopWithAmount(Player p, int amount) {
         //if item storage hits storage cap
         if(shop.shopType.getShopType() == Man10ShopType.SELL){
-            if(shop.storage.itemCount + amount > getStorageCap() && getStorageCap() != 0){
+            if(shop.storage.itemCount + amount > storageCap.get() && storageCap.get() != 0){
                 p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップは現在買取を行っていません");
                 return false;
             }
@@ -111,7 +102,7 @@ public class StorageCapFunction extends ShopFunction {
                     return;
                 }
 
-                if(!setStorageCap(newValue)){
+                if(!storageCap.set(newValue)){
                     warn(player, "内部エラーが発生しました");
                 }
                 new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);

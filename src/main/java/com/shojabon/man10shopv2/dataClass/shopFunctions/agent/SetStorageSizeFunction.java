@@ -48,11 +48,11 @@ public class SetStorageSizeFunction extends ShopFunction {
             menu.setOnClose(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnCancel(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(newValue -> {
-                if(!shop.storage.setBoughtStorageUnits(newValue)){
+                if(!shop.storage.boughtStorageUnits.set(newValue)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
-                menu.moveToMenu(player, new SettingsMainMenu(player, shop, getDefinition().category(), plugin));
+                new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);
                 player.sendMessage(Man10ShopV2.prefix + "§a§l倉庫サイズを" + newValue + "に設定しました");
             });
             menu.open(player);

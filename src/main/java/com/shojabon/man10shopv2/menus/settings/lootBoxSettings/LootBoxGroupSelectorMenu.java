@@ -82,21 +82,21 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
                 ConfirmationMenu menu = new ConfirmationMenu("グループを消去しますか？", plugin);
                 menu.setOnConfirm(ee -> {
                     newData.remove(finalI);
-                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                         player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    menu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));
+                    new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player);
                 });
-                menu.setOnCancel(ee -> {menu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));});
-                menu.setOnCloseEvent(ee -> {menu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));});
-                moveToMenu(player, menu);
+                menu.setOnCancel(ee -> {new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player);});
+                menu.setOnCloseEvent(ee -> {new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player);});
+                menu.open(player);
             });
 
             item.setAsyncEvent(e -> {
                 if(e.getClick() != ClickType.LEFT) return;
 
-                moveToMenu(player, new LootBoxGroupItemEditorMenu(player, shop, lootBox, finalI, plugin));
+                new LootBoxGroupItemEditorMenu(player, shop, lootBox, finalI, plugin).open(player);
             });
 
             item.setAsyncEvent(e -> {
@@ -110,22 +110,22 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
 
                 numberMenu.setOnConfirm(ee -> {
                     newData.get(finalI).percentageWeight = ee;
-                    if(!shop.lootBoxFunction.setLootBox(lootBox)){
+                    if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                         player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));
+                     new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player);
                 });
-                numberMenu.setOnCancel(ee -> numberMenu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin)));
-                numberMenu.setOnCloseEvent(ee -> numberMenu.moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin)));
+                numberMenu.setOnCancel(ee -> new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player));
+                numberMenu.setOnCloseEvent(ee -> new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player));
 
-                moveToMenu(player, numberMenu);
+                numberMenu.open(player);
             });
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin)));
+        setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, shop.lootBoxFunction.getDefinition().category(), plugin).open(player));
     }
 
     public Material getRandomMaterial(){
@@ -164,12 +164,12 @@ public class LootBoxGroupSelectorMenu extends LargeSInventoryMenu {
             if(addingMaterial == null) return;
             newItemGroups.add(new LootBoxGroupData(addingMaterial, 0));
 
-            if(!shop.lootBoxFunction.setLootBox(lootBox)){
+            if(!shop.lootBoxFunction.lootBox.set(lootBox)){
                 player.sendMessage(Man10ShopV2.gachaPrefix + "§c§l内部エラーが発生しました");
                 return;
             }
 
-            moveToMenu(player, new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin));
+             new LootBoxGroupSelectorMenu(player, shop, lootBox, plugin).open(player);
         });
 
 

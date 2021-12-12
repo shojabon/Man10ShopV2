@@ -226,7 +226,7 @@ public class SignListeners implements @NotNull Listener {
             sign.update();
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
-            if(shop.shopEnabled.getShopEnabled()){
+            if(shop.shopEnabled.enabled.get()){
                 if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
                     if(shop.secretPrice.isFunctionEnabled()){
                         sign.setLine(1, "§b??????円");
@@ -237,11 +237,11 @@ public class SignListeners implements @NotNull Listener {
                     sign.setLine(1, "");
                 }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
                     SStringBuilder priceString = new SStringBuilder().text("§b");
-                    if(shop.lootBoxPaymentFunction.getPrice() != 0){
-                        priceString.text(BaseUtils.priceString(shop.lootBoxPaymentFunction.getPrice()) + "円");
+                    if(shop.lootBoxPaymentFunction.balancePrice.get() != 0){
+                        priceString.text(BaseUtils.priceString(shop.lootBoxPaymentFunction.balancePrice.get()) + "円");
                     }
-                    if(shop.lootBoxPaymentFunction.getItem() != null){
-                        if(shop.lootBoxPaymentFunction.getPrice() != 0) priceString.text("+");
+                    if(shop.lootBoxPaymentFunction.itemPayment.get() != null){
+                        if(shop.lootBoxPaymentFunction.balancePrice.get() != 0) priceString.text("+");
                         priceString.text("アイテム");
                     }
                     sign.setLine(1, priceString.build());

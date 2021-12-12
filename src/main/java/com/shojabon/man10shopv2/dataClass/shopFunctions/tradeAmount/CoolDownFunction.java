@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.tradeAmount;
 import ToolMenu.NumericInputMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -32,6 +33,7 @@ public class CoolDownFunction extends ShopFunction {
 
     //variables
     public HashMap<UUID, Long> coolDownMap = new HashMap<>();
+    public Man10ShopSetting<Integer> time = new Man10ShopSetting<>("shop.coolDown", 0);
 
     //init
     public CoolDownFunction(Man10Shop shop, Man10ShopV2 plugin) {
@@ -40,7 +42,7 @@ public class CoolDownFunction extends ShopFunction {
 
 
     public boolean checkCoolDown(Player p){
-        int coolDown = getCoolDownTime();
+        int coolDown = time.get();
         if(coolDown == 0) return false;
         if(!coolDownMap.containsKey(p.getUniqueId())) coolDownMap.put(p.getUniqueId(), 0L);
         long currentTime = System.currentTimeMillis() / 1000L;
@@ -56,28 +58,17 @@ public class CoolDownFunction extends ShopFunction {
     //====================
     // settings
     //====================
-
-    public int getCoolDownTime(){
-        String currentSetting = getSetting("shop.coolDown");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setCoolDown(int time){
-        if(getCoolDownTime() == time) return true;
-        return setSetting("shop.coolDown", time);
-    }
     
     @Override
     public boolean isFunctionEnabled() {
-        return getCoolDownTime() != 0;
+        return time.get() != 0;
     }
     
     @Override
     public boolean isAllowedToUseShop(Player p) {
         //if player is in coolDown
         if(checkCoolDown(p)){
-            p.sendMessage(Man10ShopV2.prefix + "§c§l" + getCoolDownTime() + "秒の取引クールダウン中です");
+            p.sendMessage(Man10ShopV2.prefix + "§c§l" + time.get() + "秒の取引クールダウン中です");
             return false;
         }
         return true;
@@ -92,7 +83,7 @@ public class CoolDownFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        return getCoolDownTime() + "秒";
+        return time.get() + "秒";
     }
 
     @Override
@@ -108,7 +99,7 @@ public class CoolDownFunction extends ShopFunction {
                     return;
                 }
 
-                if(!shop.coolDown.setCoolDown(newValue)){
+                if(!time.set(newValue)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

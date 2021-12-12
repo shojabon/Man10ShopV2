@@ -63,15 +63,15 @@ public class MQuestGroupShopEditorMenu extends LargeSInventoryMenu {
                 ConfirmationMenu menu = new ConfirmationMenu("グループを消去しますか？", plugin);
                 menu.setOnConfirm(ee -> {
                     groupData.shopCountDictionary.remove(shopId);
-                    if(!shop.mQuestFunction.setQuest(quest)){
+                    if(!shop.mQuestFunction.quest.set(quest)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    menu.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));
+                    new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);
                 });
-                menu.setOnCancel(ee -> {menu.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));});
-                menu.setOnCloseEvent(ee -> {menu.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));});
-                moveToMenu(player, menu);
+                menu.setOnCancel(ee -> {new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);});
+                menu.setOnCloseEvent(ee -> {new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);});
+                menu.open(player);
             });
 
             item.setAsyncEvent(e -> {
@@ -83,22 +83,22 @@ public class MQuestGroupShopEditorMenu extends LargeSInventoryMenu {
 
                 numberMenu.setOnConfirm(ee -> {
                     groupData.shopCountDictionary.put(shopId, ee);
-                    if(!shop.mQuestFunction.setQuest(quest)){
+                    if(!shop.mQuestFunction.quest.set(quest)){
                         player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                         return;
                     }
-                    moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));
+                    new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);
                 });
-                numberMenu.setOnCancel(ee -> numberMenu.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin)));
-                numberMenu.setOnCloseEvent(ee -> numberMenu.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin)));
+                numberMenu.setOnCancel(ee -> new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player));
+                numberMenu.setOnCloseEvent(ee -> new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player));
 
-                moveToMenu(player, numberMenu);
+                numberMenu.open(player);
             });
 
             items.add(item);
         }
         setItems(items);
-        setOnCloseEvent(ee -> moveToMenu(player, new MQuestGroupSelectorMenu(player, shop, quest, plugin)));
+        setOnCloseEvent(ee -> new MQuestGroupSelectorMenu(player, shop, quest, plugin).open(player));
     }
 
     public void afterRenderMenu() {
@@ -117,25 +117,25 @@ public class MQuestGroupShopEditorMenu extends LargeSInventoryMenu {
             itemSelector.setOnClick(selectedShop -> {
                 if(groupData.shopCountDictionary.containsKey(selectedShop.shopId)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§lこのショップはすでに登録されています");
-                    itemSelector.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));
+                    new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);
                     return;
                 }
                 groupData.shopCountDictionary.put(selectedShop.shopId, 1);
 
                 //update database here
-                if(!shop.mQuestFunction.setQuest(quest)){
+                if(!shop.mQuestFunction.quest.set(quest)){
                     player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
                     return;
                 }
-                itemSelector.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));
+                new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);
             });
 
             itemSelector.setOnCloseEvent(ee -> {
-                itemSelector.moveToMenu(player, new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin));
+                new MQuestGroupShopEditorMenu(player, shop, quest, groupId, plugin).open(player);
             });
 
 
-            moveToMenu(player, itemSelector);
+            itemSelector.open(player);
         });
 
 

@@ -23,6 +23,7 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
 
     public SettingsMainMenu(Player p, Man10Shop shop, String startingCategory, Man10ShopV2 plugin) {
         super(new SStringBuilder().darkGray().text("ショップ設定").build(), startingCategory, plugin);
+        addInitializedCategory("一般設定");
         this.player = p;
         this.shop = shop;
         this.plugin = plugin;
@@ -59,6 +60,6 @@ public class SettingsMainMenu extends CategoricalSInventoryMenu {
             //items.add(item);
         }
 
-        setOnCloseEvent(e -> moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        setOnCloseEvent(e -> new ShopMainMenu(player, shop, plugin).open(player));
     }
 }

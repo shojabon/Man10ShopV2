@@ -122,8 +122,8 @@ public class BuySellActionMenu extends SInventory {
                 }
             }
             //transaction per day limit
-            if(shop.perMinuteCoolDown.getPerMinuteCoolDownAmount() != 0 && shop.perMinuteCoolDown.getPerMinuteCoolDownTime() != 0){
-                int itemsLeft = shop.perMinuteCoolDown.getPerMinuteCoolDownAmount() - itemsTradedPerMinute;
+            if(shop.perMinuteCoolDown.amount.get() != 0 && shop.perMinuteCoolDown.time.get() != 0){
+                int itemsLeft = shop.perMinuteCoolDown.amount.get() - itemsTradedPerMinute;
                 if(itemCount > itemsLeft) itemCount = itemsLeft;
             }
             renderMenu();
@@ -131,7 +131,7 @@ public class BuySellActionMenu extends SInventory {
     }
 
     public void renderButtons(){
-        if(shop.singleTransactionMode.isSingleTransactionMode()) return;
+        if(shop.singleTransactionMode.enabled.get()) return;
         SInventoryItem increase = new SInventoryItem(new SItemStack(dictionary.getSymbol("plus").clone())
                 .addLore("§f左クリックで取引数1増加")
                 .addLore("§fシフト+左クリックで取引数を最大まで増加")

@@ -28,7 +28,7 @@ public class LootBoxActionMenu extends SInventory{
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
-        this.box = shop.lootBoxFunction.getLootBox();
+        this.box = shop.lootBoxFunction.lootBox.get();
 
         SStringBuilder builder = new SStringBuilder().darkGray().text(shop.name.getName());
 
@@ -50,22 +50,22 @@ public class LootBoxActionMenu extends SInventory{
         background.clickable(false);
         fillItem(background);
 
-        SInventoryItem priceItem = new SInventoryItem(new SItemStack(Material.EMERALD).setDisplayName("§a§l" + BaseUtils.priceString(shop.lootBoxPaymentFunction.getPrice())  + "円").build());
+        SInventoryItem priceItem = new SInventoryItem(new SItemStack(Material.EMERALD).setDisplayName("§a§l" + BaseUtils.priceString(shop.lootBoxPaymentFunction.balancePrice.get())  + "円").build());
         priceItem.clickable(false);
 
 
-        if(shop.lootBoxPaymentFunction.getPrice() != 0 || shop.lootBoxPaymentFunction.getItem() != null){
-            if(shop.lootBoxPaymentFunction.getPrice() != 0 && shop.lootBoxPaymentFunction.getItem() != null){
-                SInventoryItem paymentItem = new SInventoryItem(shop.lootBoxPaymentFunction.getItem().clone());
+        if(shop.lootBoxPaymentFunction.balancePrice.get() != 0 || shop.lootBoxPaymentFunction.itemPayment.get() != null){
+            if(shop.lootBoxPaymentFunction.balancePrice.get() != 0 && shop.lootBoxPaymentFunction.itemPayment.get() != null){
+                SInventoryItem paymentItem = new SInventoryItem(shop.lootBoxPaymentFunction.itemPayment.get().clone());
                 paymentItem.clickable(false);
 
                 setItem(12, priceItem);
                 setItem(14, paymentItem);
             }else{
-                if(shop.lootBoxPaymentFunction.getPrice() != 0){
+                if(shop.lootBoxPaymentFunction.balancePrice.get() != 0){
                     setItem(13, priceItem);
                 }else{
-                    SInventoryItem paymentItem = new SInventoryItem(shop.lootBoxPaymentFunction.getItem().clone());
+                    SInventoryItem paymentItem = new SInventoryItem(shop.lootBoxPaymentFunction.itemPayment.get().clone());
                     paymentItem.clickable(false);
 
                     setItem(13, paymentItem);

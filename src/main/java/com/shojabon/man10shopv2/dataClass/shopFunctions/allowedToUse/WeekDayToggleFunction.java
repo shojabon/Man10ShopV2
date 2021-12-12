@@ -2,6 +2,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -15,9 +16,7 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.UUID;
+import java.util.*;
 
 @ShopFunctionDefinition(
         name = "曜日有効化設定",
@@ -31,7 +30,7 @@ import java.util.UUID;
 public class WeekDayToggleFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<List<Boolean>> enabledDays = new Man10ShopSetting<>("shop.weekday.toggle", new ArrayList<>(Arrays.asList(true, true, true, true, true, true, true)));
     //init
     public WeekDayToggleFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -49,38 +48,14 @@ public class WeekDayToggleFunction extends ShopFunction {
     //====================
 
 
-    public boolean[] getWeekdayShopToggle(){
-        String current = getSetting("shop.weekday.toggle");
-        boolean[] results = new boolean[7];
-        Arrays.fill(results, true);
-        if(current == null) return results;
-        for(int i = 0; i < current.length(); i++){
-            results[i] = current.charAt(i) == '1';
-        }
-        return results;
-    }
-
-    public boolean setWeekdayShopToggle(boolean[] results){
-        StringBuilder result = new StringBuilder();
-        for(boolean res: results){
-            if(res) {
-                result.append("1");
-            }else{
-                result.append("0");
-            }
-        }
-        if(Arrays.equals(getWeekdayShopToggle(), results)) return true;
-        return setSetting("shop.weekday.toggle", result.toString());
-    }
-
     @Override
     public boolean isAllowedToUseShop(Player p) {
         //weekday toggle
-        if(!getWeekdayShopToggle()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1]){
+        if(!enabledDays.get().get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)){
             p.sendMessage(Man10ShopV2.prefix + "§c§lこのショップを本日ご利用することはできません");
             StringBuilder availableWeekDays = new StringBuilder();
             int i = 0;
-            for(boolean enabled: getWeekdayShopToggle()){
+            for(boolean enabled: enabledDays.get()){
                 if(enabled){
                     availableWeekDays.append(weekToString(i)).append(" ");
                 }
@@ -99,7 +74,7 @@ public class WeekDayToggleFunction extends ShopFunction {
     public String currentSettingString() {
         String result = "";
         int i = 0;
-        for(boolean res: getWeekdayShopToggle()){
+        for(boolean res: enabledDays.get()){
             SStringBuilder builder = new SStringBuilder();
             builder.yellow().text(weekToString(i) + ": ");
             if(res){
@@ -120,7 +95,7 @@ public class WeekDayToggleFunction extends ShopFunction {
             WeekdayShopToggleMenu menu = new WeekdayShopToggleMenu(player, shop, plugin);
 
             menu.setAsyncOnCloseEvent(ee -> {
-                if(!setWeekdayShopToggle(menu.states)){
+                if(!enabledDays.set(menu.states)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }

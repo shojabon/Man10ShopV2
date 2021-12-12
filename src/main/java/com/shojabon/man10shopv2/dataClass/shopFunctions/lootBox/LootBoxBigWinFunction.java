@@ -49,7 +49,7 @@ public class LootBoxBigWinFunction extends LootBoxFunction {
 
     @Override
     public void afterLootBoxSpinFinished(Player player, ItemStack item, int groupId) {
-        if(!shop.lootBoxFunction.getLootBox().groupData.get(groupId).bigWin) return;
+        if(!shop.lootBoxFunction.lootBox.get().groupData.get(groupId).bigWin) return;
         Bukkit.broadcastMessage(Man10ShopV2.gachaPrefix + "§e§l" + player.getName() + "§a§lさんは" + shop.name.getName() + "で『" + new SItemStack(item).getDisplayName() + "§a§l』を当てました！");
 
         Bukkit.getScheduler().runTask(shop.plugin, ()->{
@@ -70,7 +70,7 @@ public class LootBoxBigWinFunction extends LootBoxFunction {
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
-            new LootBoxBigWinSelectorMenu(player, shop, shop.lootBoxFunction.getLootBox(), plugin).open(player);
+            new LootBoxBigWinSelectorMenu(player, shop, shop.lootBoxFunction.lootBox.get(), plugin).open(player);
         });
 
 

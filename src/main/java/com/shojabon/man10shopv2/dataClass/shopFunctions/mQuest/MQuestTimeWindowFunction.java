@@ -5,6 +5,7 @@ import ToolMenu.NumericInputMenu;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -33,7 +34,10 @@ import java.util.UUID;
 public class MQuestTimeWindowFunction extends ShopFunction {
 
     //variables
-
+    
+    public Man10ShopSetting<Integer> minutes = new Man10ShopSetting<>("quest.refresh.time", 0);
+    public Man10ShopSetting<Long> lastPickedTime = new Man10ShopSetting<>("quest.refresh.lastRefreshTime", 0L);
+    
     //init
     public MQuestTimeWindowFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
@@ -43,55 +47,34 @@ public class MQuestTimeWindowFunction extends ShopFunction {
     //functions
 
     public long calculateLastPickTime(){
-        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - getLastPickedTime();
-        long skippedRefills = secondsSinceLastRefill/(getRefreshMinutes()*60L);
+        long secondsSinceLastRefill = System.currentTimeMillis()/1000L - lastPickedTime.get();
+        long skippedRefills = secondsSinceLastRefill/(minutes.get()*60L);
 
-        return getLastPickedTime() + skippedRefills*getRefreshMinutes()*60L;
+        return lastPickedTime.get() + skippedRefills*minutes.get()*60L;
     }
 
     //====================
     // settings
     //====================
-
-    public int getRefreshMinutes(){
-        String currentSetting = getSetting("quest.refresh.time");
-        if(!BaseUtils.isInt(currentSetting)) return 0;
-        return Integer.parseInt(currentSetting);
-    }
-
-    public boolean setRefreshMinutes(int time){
-        if(getRefreshMinutes() == time) return true;
-        return setSetting("quest.refresh.time", time);
-    }
-
-    public long getLastPickedTime(){
-        String currentSetting = getSetting("quest.refresh.lastRefreshTime");
-        if(!BaseUtils.isLong(currentSetting)) return 0L;
-        return Long.parseLong(currentSetting);
-    }
-
-    public boolean setLastPickedTime(long time){
-        if(getLastPickedTime() == time) return true;
-        return setSetting("quest.refresh.lastRefreshTime", time);
-    }
+    
 
     @Override
     public boolean isFunctionEnabled(){
-        return getRefreshMinutes() != 0;
+        return minutes.get() != 0;
     }
 
     @Override
     public void perMinuteExecuteTask() {
-        if(System.currentTimeMillis()/1000L - getLastPickedTime() >= getRefreshMinutes()*60L){
+        if(System.currentTimeMillis()/1000L - lastPickedTime.get() >= minutes.get()*60L){
             //select random price
-            setLastPickedTime(calculateLastPickTime());
+            lastPickedTime.set(calculateLastPickTime());
             shop.mQuestFunction.refreshQuests(1);
         }
     }
 
     @Override
     public String currentSettingString() {
-        return getRefreshMinutes() + "分毎にクエスト更新";
+        return minutes.get() + "分毎にクエスト更新";
     }
 
     @Override
@@ -114,7 +97,7 @@ public class MQuestTimeWindowFunction extends ShopFunction {
 
             NumericInputMenu menu = new NumericInputMenu("時間を入力してください 0はoff", plugin);
             menu.setOnConfirm(number -> {
-                if(!shop.mQuestTimeWindowFunction.setRefreshMinutes(number)){
+                if(!minutes.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
@@ -131,16 +114,16 @@ public class MQuestTimeWindowFunction extends ShopFunction {
 
         SInventoryItem setRefillStartingTime = new SInventoryItem(new SItemStack(Material.COMPASS)
                 .setDisplayName(new SStringBuilder().green().text("最終値段選択時間を設定する").build())
-                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.mQuestTimeWindowFunction.getLastPickedTime()*1000L)))
+                .addLore("§d§l現在設定: §e§l" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(shop.mQuestTimeWindowFunction.lastPickedTime.get()*1000L)))
                 .build());
         setRefillStartingTime.clickable(false);
         setRefillStartingTime.setEvent(e -> {
             TimeSelectorMenu menu = new TimeSelectorMenu(System.currentTimeMillis()/1000L, "最終値段選択時間を設定してくださ", plugin);
             menu.setOnConfirm(lastRefillTime -> {
                 if(lastRefillTime == -1L){
-                    shop.mQuestTimeWindowFunction.deleteSetting("quest.refresh.lastRefreshTime");
+                    lastPickedTime.delete();
                 }else{
-                    if(!shop.mQuestTimeWindowFunction.setLastPickedTime(lastRefillTime)){
+                    if(!lastPickedTime.set(lastRefillTime)){
                         warn(player, "内部エラーが発生しました");
                         return;
                     }

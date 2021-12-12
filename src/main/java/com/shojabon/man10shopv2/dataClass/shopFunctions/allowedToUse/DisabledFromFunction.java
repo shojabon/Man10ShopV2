@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.allowedToUse;
 import ToolMenu.TimeSelectorMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.Man10ShopV2;
@@ -30,41 +31,20 @@ import java.util.UUID;
 public class DisabledFromFunction extends ShopFunction {
 
     //variables
-
+    public Man10ShopSetting<Long> disabledFrom = new Man10ShopSetting<>("shop.disabledFrom", 0L);
     //init
     public DisabledFromFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
     }
 
-
-    //functions
-
-
-    //====================
-    // settings
-    //====================
-
-    public long getDisabledTime(){
-        String currentSetting = getSetting("shop.disabledFrom");
-        if(!BaseUtils.isLong(currentSetting)) return 0;
-        return Long.parseLong(currentSetting);
-    }
-
-    public boolean setDisabledTime(long enabled){
-        if(getDisabledTime() == enabled) return true;
-        if(!setSetting("shop.disabledFrom", enabled)) return false;
-        Man10ShopV2API.closeInventoryGroup(shop.getShopId());
-        return true;
-    }
-
     @Override
     public boolean isFunctionEnabled() {
-        return getDisabledTime() != 0;
+        return disabledFrom.get() != 0;
     }
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(System.currentTimeMillis()/1000L >= getDisabledTime()) {
+        if(System.currentTimeMillis()/1000L >= disabledFrom.get()) {
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています");
             return false;
         }
@@ -73,20 +53,20 @@ public class DisabledFromFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        return BaseUtils.unixTimeToString(getDisabledTime());
+        return BaseUtils.unixTimeToString(disabledFrom.get());
     }
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
 
-            TimeSelectorMenu menu = new TimeSelectorMenu(getDisabledTime(), "無効化開始時間を設定してください", plugin);
+            TimeSelectorMenu menu = new TimeSelectorMenu(disabledFrom.get(), "無効化開始時間を設定してください", plugin);
             menu.setOnCloseEvent(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
             menu.setOnConfirm(time -> {
                 if(time == -1L){
-                    deleteSetting("shop.disabledFrom");
+                    disabledFrom.delete();
                 }else{
-                    if(!setDisabledTime(time)){
+                    if(!disabledFrom.set(time)){
                         warn(player, "内部エラーが発生しました");
                         return;
                     }

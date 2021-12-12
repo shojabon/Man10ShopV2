@@ -8,12 +8,15 @@ import com.shojabon.mcutils.Utils.SItemStack;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WeekdayShopToggleMenu extends SInventory{
 
     Man10Shop shop;
     Man10ShopV2 plugin;
     Player player;
-    public boolean[] states = new boolean[7];
+    public List<Boolean> states = new ArrayList<>();
 
     public WeekdayShopToggleMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
         super("曜日有効化設定",4, plugin);
@@ -26,11 +29,11 @@ public class WeekdayShopToggleMenu extends SInventory{
         //change toggle
         setOnClickEvent(e -> {
             if(!(19 <= e.getRawSlot() && e.getRawSlot() <= 26)) return;
-            states[e.getRawSlot()-19] = !states[e.getRawSlot()-19];
+            states.set(e.getRawSlot()-19, !states.get(e.getRawSlot()-19));
             renderSelector();
         });
 
-        states = shop.weekDayToggle.getWeekdayShopToggle();
+        states = shop.weekDayToggle.enabledDays.get();
 
     }
 
@@ -46,7 +49,7 @@ public class WeekdayShopToggleMenu extends SInventory{
 
     public void renderSelector(){
         for(int i = 19; i < 26; i++){
-            if(states[i-19]){
+            if(states.get(i-19)){
                 //if on
                 setItem(i, new SInventoryItem(new SItemStack(Material.LIME_STAINED_GLASS_PANE).setDisplayName("§a§l有効").build()).clickable(false));
             }else{

@@ -43,7 +43,7 @@ public class PermissionSettingsMainMenu {
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);
             item.setEvent(e -> {
-                renderedCore.moveToMenu(player, new PermissionSettingsMenu(player, shop, mod, plugin));
+                new PermissionSettingsMenu(player, shop, mod, plugin).open(player);
             });
             items.add(item);
 
@@ -53,7 +53,7 @@ public class PermissionSettingsMainMenu {
 
         renderedCore.setItems(items);
 
-        renderedCore.setOnCloseEvent(e -> renderedCore.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+        renderedCore.setOnCloseEvent(e -> new ShopMainMenu(player, shop, plugin).open(player));
         return renderedCore;
     }
 
@@ -84,13 +84,13 @@ public class PermissionSettingsMainMenu {
                     menu.close(player);
                 });
 
-                playerSelectorMenu.moveToMenu(player, menu);
+                menu.open(player);
 
 
             });
-            playerSelectorMenu.setOnCloseEvent(ee -> playerSelectorMenu.moveToMenu(player, new ShopMainMenu(player, shop, plugin)));
+            playerSelectorMenu.setOnCloseEvent(ee -> new ShopMainMenu(player, shop, plugin).open(player));
 
-            inventory.moveToMenu(player, playerSelectorMenu);
+            playerSelectorMenu.open(player);
         });
         return item;
     }

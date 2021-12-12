@@ -3,6 +3,7 @@ package com.shojabon.man10shopv2.dataClass.shopFunctions.lootBox;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
+import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.lootBox.LootBox;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
@@ -29,6 +30,7 @@ import java.util.*;
 public class LootBoxGroupFunction extends LootBoxFunction {
 
     //variables
+    public Man10ShopSetting<LootBox> lootBox = new Man10ShopSetting<>("lootbox.data", new LootBox());
 
 
     //init
@@ -43,26 +45,9 @@ public class LootBoxGroupFunction extends LootBoxFunction {
     // settings
     //====================
 
-    public LootBox getLootBox(){
-        YamlConfiguration currentSetting = getSettingYaml("lootbox.data");
-        if(currentSetting == null) return new LootBox();
-
-        //load groups
-        LootBox result = new LootBox();
-        result.loadLootBox(currentSetting);
-
-        return result;
-    }
-
-    public boolean setLootBox(LootBox box){
-        //save group
-        if(getLootBox() == box) return true;
-        return setSetting("lootbox.data", box.exportLootBox());
-    }
-
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(!getLootBox().canPlay()){
+        if(!lootBox.get().canPlay()){
             p.sendMessage(Man10ShopV2.prefix + "§c§lガチャの設定が完了してません");
             return false;
         }
@@ -73,7 +58,7 @@ public class LootBoxGroupFunction extends LootBoxFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            new LootBoxGroupSelectorMenu(player, shop, shop.lootBoxFunction.getLootBox(), plugin).open(player);
+            new LootBoxGroupSelectorMenu(player, shop, lootBox.get(), plugin).open(player);
 
         });
         return item;
