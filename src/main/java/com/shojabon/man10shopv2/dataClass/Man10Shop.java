@@ -2,12 +2,10 @@ package com.shojabon.man10shopv2.dataClass;
 
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.shopFunctions.*;
+import com.shojabon.man10shopv2.shopFunctions.agent.MoneyRefillFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
-import com.shojabon.man10shopv2.shopFunctions.allowedToUse.AllowedPermissionFunction;
-import com.shojabon.man10shopv2.shopFunctions.allowedToUse.DisabledFromFunction;
-import com.shojabon.man10shopv2.shopFunctions.allowedToUse.EnabledFromFunction;
-import com.shojabon.man10shopv2.shopFunctions.allowedToUse.WeekDayToggleFunction;
+import com.shojabon.man10shopv2.shopFunctions.allowedToUse.*;
 import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.shopFunctions.general.*;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxBigWinFunction;
@@ -61,6 +59,7 @@ public class Man10Shop {
     public EnabledFromFunction enabledFrom;
     public DisabledFromFunction disabledFrom;
     public WeekDayToggleFunction weekDayToggle;
+    public ProximityFriendshipAllowFunction proximityFriendshipAllowFunction;
 
     //general
     public SetPriceFunction price;
@@ -82,6 +81,7 @@ public class Man10Shop {
     //agent
     public SetStorageSizeFunction setStorageSizeFunction;
     public SetItemCountFunction setItemCountFunction;
+    public MoneyRefillFunction moneyRefillFunction;
 
     //tradeAmount
     public CoolDownFunction coolDown;

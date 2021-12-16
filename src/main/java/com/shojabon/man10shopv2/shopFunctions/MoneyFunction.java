@@ -49,6 +49,14 @@ public class MoneyFunction extends ShopFunction {
         return true;
     }
 
+    public boolean setMoney(int value){
+        money = value;
+        boolean result = Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET money = " + value + " WHERE shop_id = '" + shop.getShopId() + "'");
+        if(!result) return false;
+        //log here
+        return true;
+    }
+
     //====================
     // settings
     //====================
