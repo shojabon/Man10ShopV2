@@ -51,9 +51,9 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
     public void loadTotalPerMinuteMap(){
         perMinuteCoolDownMap.clear();
-        if(!isFunctionEnabled()){
-            return;
-        }
+//        if(!isFunctionEnabled()){
+//            return;
+//        }
 
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + time.get()*60L + " GROUP BY YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
         for(MySQLCachedResultSet rs: result){
@@ -66,9 +66,9 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public int totalPerMinuteCoolDownTotalAmountInTime(){
-        if(!isFunctionEnabled()){
-            return 0;
-        }
+//        if(!isFunctionEnabled()){
+//            return 0;
+//        }
 
         int totalAmountInTime = 0;
 
@@ -93,9 +93,9 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public boolean checkTotalPerMinuteCoolDown(int addingAmount){
-        if(!isFunctionEnabled()){
-            return false;
-        }
+//        if(!isFunctionEnabled()){
+//            return false;
+//        }
         if(addingAmount > amount.get()) return true;
 
         return totalPerMinuteCoolDownTotalAmountInTime() + addingAmount > amount.get();
@@ -106,13 +106,8 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
     //====================
 
     @Override
-    public boolean isFunctionEnabled() {
-        return time.get() != 0 && amount.get() != 0;
-    }
-
-    @Override
     public int itemCount(Player p) {
-        if(!isFunctionEnabled()) return super.itemCount(p);
+        //if(!isFunctionEnabled()) return super.itemCount(p);
         if(shop.isAdminShop()) return -(amount.get() - totalPerMinuteCoolDownTotalAmountInTime());
         return amount.get() - totalPerMinuteCoolDownTotalAmountInTime();
     }
@@ -137,7 +132,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
 
     @Override
     public boolean afterPerformAction(Player p, int amount) {
-        if(!isFunctionEnabled()) return true;
+        //if(!isFunctionEnabled()) return true;
         addTotalPerMinuteCoolDownLog(new Man10ShopLogObject(System.currentTimeMillis() / 1000L, amount));
         return true;
     }

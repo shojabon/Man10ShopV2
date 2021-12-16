@@ -42,11 +42,6 @@ public class StorageCapFunction extends ShopFunction {
 
 
     @Override
-    public boolean isFunctionEnabled() {
-        return storageCap.get() != 0;
-    }
-
-    @Override
     public int itemCount(Player p) {
         if(!isFunctionEnabled()) return super.itemCount(p);
         if(shop.shopType.getShopType() == Man10ShopType.SELL){

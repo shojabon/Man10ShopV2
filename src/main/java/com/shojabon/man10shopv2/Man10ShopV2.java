@@ -27,10 +27,10 @@ public final class Man10ShopV2 extends JavaPlugin {
         saveDefaultConfig();
         mysql = new ThreadedMySQLAPI(this);
         config = getConfig();
-        Man10ShopV2.api = new Man10ShopV2API(this);
         prefix = getConfig().getString("prefix");
         vault = new VaultAPI();
         getServer().getPluginManager().registerEvents(new SignListeners(this), this);
+        Man10ShopV2.api = new Man10ShopV2API(this);
 
 
         Man10ShopV2Command command = new Man10ShopV2Command(this);

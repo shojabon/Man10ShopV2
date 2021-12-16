@@ -57,11 +57,6 @@ public class RandomPriceFunction extends ShopFunction {
 
 
     @Override
-    public boolean isFunctionEnabled(){
-        return randomPickMinute.get() != 0 && prices.get().size() != 0;
-    }
-
-    @Override
     public void perMinuteExecuteTask() {
         if(System.currentTimeMillis()/1000L - lastRefillTime.get() >= randomPickMinute.get()*60L){
             //select random price

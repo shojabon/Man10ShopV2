@@ -271,7 +271,7 @@ public class ShopMainMenu extends AutoScaledMenu {
             menu.setOutText("口座から出金をする");
 
             menu.setOnInClicked(ee -> generateMoneyEvent(true).open(player));
-            menu.setOnOutClicked(ee -> generateMoneyEvent(true).open(player));
+            menu.setOnOutClicked(ee -> generateMoneyEvent(false).open(player));
 
             menu.setOnClose(ee -> new ShopMainMenu(player, shop, plugin).open(player));
 

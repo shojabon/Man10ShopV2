@@ -13,10 +13,7 @@ import com.shojabon.man10shopv2.shopFunctions.general.*;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxBigWinFunction;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxGroupFunction;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxPaymentFunction;
-import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestGroupFunction;
-import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestQuestCountFunction;
-import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestRefreshQuest;
-import com.shojabon.man10shopv2.shopFunctions.mQuest.MQuestTimeWindowFunction;
+import com.shojabon.man10shopv2.shopFunctions.mQuest.*;
 import com.shojabon.man10shopv2.shopFunctions.storage.StorageCapFunction;
 import com.shojabon.man10shopv2.shopFunctions.storage.StorageFunction;
 import com.shojabon.man10shopv2.shopFunctions.storage.StorageRefillFunction;
@@ -106,6 +103,7 @@ public class Man10Shop {
     public MQuestTimeWindowFunction mQuestTimeWindowFunction;
     public MQuestQuestCountFunction mQuestCountFunction;
     public MQuestRefreshQuest mQuestForceRefreshButton;
+    public MQuestDialogue mQuestDialogue;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -141,6 +139,7 @@ public class Man10Shop {
                             //setting.typeMap = settingTypeMap;
                         }
                     }
+
                 }
             } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
                 e.printStackTrace();
@@ -248,7 +247,10 @@ public class Man10Shop {
 
     public void performAction(Player p, int amount){
 
-        if(!allowedToUseShop(p)) return;
+        if(!allowedToUseShop(p)) {
+            SInventory.closeNoEvent(p, plugin);
+            return;
+        }
 
         //all function check
         for(ShopFunction func: functions){

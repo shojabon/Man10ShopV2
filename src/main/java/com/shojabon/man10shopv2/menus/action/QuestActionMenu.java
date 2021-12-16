@@ -36,9 +36,14 @@ public class QuestActionMenu extends LargeSInventoryMenu {
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
-
             icon.addLore("");
-            icon.addLore("§d§l残り取引数:" + shop.getPlayerAvailableTransactionCount(player));
+            if(shop.mQuestDialogue.dialogue.get() != null){
+                for(String message: shop.mQuestDialogue.dialogue.get().split("\\|")){
+                    icon.addLore("§e" + message);
+                }
+            }
+
+            if(shop.getPlayerAvailableTransactionCount(player) != 0) icon.addLore("§d§l残り取引数:" + shop.getPlayerAvailableTransactionCount(player));
             long time = (this.shop.mQuestTimeWindowFunction.lastPickedTime.get() + Long.parseLong(this.shop.mQuestTimeWindowFunction.minutes.get().toString())*60);
             String timeUntilString = BaseUtils.unixTimeToString(time);
             icon.addLore("§c" + timeUntilString + "まで");

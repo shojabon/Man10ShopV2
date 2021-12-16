@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -86,7 +87,19 @@ public abstract class ShopFunction {
         }
     }
 
-    public boolean isFunctionEnabled(){return true;}
+    public boolean isFunctionEnabled() {
+        try{
+            for(Field innerField: getClass().getFields()){
+                if(Man10ShopSetting.class.isAssignableFrom(innerField.getType())) {
+                    Man10ShopSetting setting = ((Man10ShopSetting) innerField.get(this));
+                    if(setting.get() == setting.defaultValue) return false;
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
     public boolean performAction(Player p, int amount){return true;}
 

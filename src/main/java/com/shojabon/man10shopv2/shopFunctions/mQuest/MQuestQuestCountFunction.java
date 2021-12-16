@@ -48,11 +48,6 @@ public class MQuestQuestCountFunction extends ShopFunction{
 
 
     @Override
-    public boolean isFunctionEnabled() {
-        return questCount.get() != 0;
-    }
-
-    @Override
     public String currentSettingString() {
         return questCount.get() + "個";
     }

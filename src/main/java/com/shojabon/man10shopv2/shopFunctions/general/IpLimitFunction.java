@@ -61,7 +61,7 @@ public class IpLimitFunction extends ShopFunction{
 
     @Override
     public boolean isAllowedToUseShop(Player p) {
-        if(!isFunctionEnabled()) return true;
+        //if(!isFunctionEnabled()) return true;
         if(p.getAddress() == null) {
             warn(p, "IP内部エラーが発生しました");
             return false;
@@ -86,11 +86,6 @@ public class IpLimitFunction extends ShopFunction{
         warn(p, accounts.substring(0, accounts.length()-1) + "です");
 
         return false;
-    }
-
-    @Override
-    public boolean isFunctionEnabled() {
-        return accountCount.get() != 0;
     }
 
     @Override

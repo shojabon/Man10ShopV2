@@ -41,11 +41,6 @@ public class SecretPriceModeFunction extends ShopFunction {
     //====================
 
     @Override
-    public boolean isFunctionEnabled() {
-        return enabled.get();
-    }
-
-    @Override
     public String currentSettingString() {
         return BaseUtils.booleanToJapaneseText(enabled.get());
     }

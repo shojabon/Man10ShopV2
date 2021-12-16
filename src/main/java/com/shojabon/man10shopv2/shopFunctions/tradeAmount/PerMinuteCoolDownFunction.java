@@ -51,7 +51,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
 
     public void loadPerMinuteMap(){
         perMinuteCoolDownMap.clear();
-        if(!isFunctionEnabled()) return;
+        //if(!isFunctionEnabled()) return;
 
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT SUM(amount) AS amount,uuid,UNIX_TIMESTAMP(date_time) AS time FROM man10shop_trade_log WHERE shop_id = \"" + shop.getShopId() + "\" and UNIX_TIMESTAMP(date_time) >= UNIX_TIMESTAMP(CURRENT_TIMESTAMP()) - " + time.get()*60L + " GROUP BY UUID, YEAR(date_time), MONTH(date_time), DATE(date_time), HOUR(date_time), MINUTE(date_time) ORDER BY date_time DESC");
         for(MySQLCachedResultSet rs: result){
@@ -67,7 +67,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public int perMinuteCoolDownAmountInTime(Player p){
-        if(!isFunctionEnabled())return 0;
+        //if(!isFunctionEnabled())return 0;
 
         if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
             return 0;
@@ -96,7 +96,7 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
     }
 
     public boolean checkPerMinuteCoolDown(Player p, int addingAmount){
-        if(!isFunctionEnabled())return false;
+        //if(!isFunctionEnabled())return false;
 
         if(!perMinuteCoolDownMap.containsKey(p.getUniqueId())){
             if(addingAmount > amount.get()) return true;//if not trade within time and amount is bigger than limit
@@ -112,13 +112,8 @@ public class PerMinuteCoolDownFunction extends ShopFunction {
 
 
     @Override
-    public boolean isFunctionEnabled() {
-        return time.get() != 0 && amount.get() != 0;
-    }
-
-    @Override
     public int itemCount(Player p) {
-        if(!isFunctionEnabled()) return super.itemCount(p);
+        //if(!isFunctionEnabled()) return super.itemCount(p);
         if(shop.isAdminShop()) return -(amount.get() - perMinuteCoolDownAmountInTime(p));
         return amount.get() - perMinuteCoolDownAmountInTime(p);
 

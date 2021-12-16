@@ -17,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class Man10ShopV2API {
     public static HashMap<UUID, Man10Shop> shopCache = new HashMap<>();
     public static HashMap<UUID, ArrayList<UUID>> userModeratingShopList = new HashMap<>();
     public static HashMap<String, Man10ShopSign> signs = new HashMap<>();
+    public static BukkitTask perMinuteExecutionTask;
 
     public Man10ShopV2API(Man10ShopV2 plugin){
         Man10ShopV2API.plugin = plugin;
@@ -61,10 +63,8 @@ public class Man10ShopV2API {
             return null;
         }
 
-
-
         shopCache.put(shop.shopId, shop);
-        return shop;
+        return shopCache.get(shop.shopId);
     }
 
     public ArrayList<Man10Shop> getShops(ArrayList<UUID> ids){
@@ -134,7 +134,8 @@ public class Man10ShopV2API {
 
     //per minute task
     public void startPerMinuteExecutionTask(){
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, ()->{
+        if(perMinuteExecutionTask != null) return;
+        perMinuteExecutionTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, ()->{
             for(Man10Shop shop: shopCache.values()){
                 shop.perMinuteExecuteTask();
             }
@@ -346,5 +347,8 @@ public class Man10ShopV2API {
         userModeratingShopList.clear();
         signs.clear();
         orders.clear();
+        perMinuteExecutionTask.cancel();
+        perMinuteExecutionTask = null;
+        startPerMinuteExecutionTask();
     }
 }

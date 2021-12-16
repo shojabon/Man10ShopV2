@@ -40,11 +40,6 @@ public class EnabledFromFunction extends ShopFunction {
     //====================
 
     @Override
-    public boolean isFunctionEnabled() {
-        return enabledFrom.get() != 0;
-    }
-
-    @Override
     public boolean isAllowedToUseShop(Player p) {
         if(System.currentTimeMillis()/1000L < enabledFrom.get()) {
             p.sendMessage(Man10ShopV2.prefix + "§c§l現在このショップは停止しています、開始は " + BaseUtils.unixTimeToString(enabledFrom.get()));
