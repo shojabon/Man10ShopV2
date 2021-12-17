@@ -54,8 +54,9 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
         boolean result = currentTransactionCount.get() + addingAmount > amount.get();
         if(result){
             if(oldestTransactionTime.get() + time.get()*60 <= System.currentTimeMillis()/1000L){
-                oldestTransactionTime.set(System.currentTimeMillis()/1000L);
-                currentTransactionCount.set(0);
+                oldestTransactionTime.delete();
+                currentTransactionCount.delete();
+                return false;
             }
         }
 

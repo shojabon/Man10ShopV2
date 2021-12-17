@@ -88,7 +88,7 @@ public class Man10Shop {
 
     //tradeAmount
     public CoolDownFunction coolDown;
-    //public PerMinuteCoolDownFunction perMinuteCoolDown;
+    public PerMinuteCoolDownFunction perMinuteCoolDown;
     public SingleTransactionModeFunction singleTransactionMode;
     public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
 

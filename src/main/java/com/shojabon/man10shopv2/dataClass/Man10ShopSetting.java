@@ -87,35 +87,25 @@ public class Man10ShopSetting <T>{
         payload.put("key", settingId);
         payload.put("value", parser.toString(this, value));
         this.value = value;
-        if(this.value == this.defaultValue){
-            return delete();
-        }
+//        if(this.value == this.defaultValue){
+//            return delete();
+//        }
         return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
     }
 
     public T get(){
         if(value != null) return value;
         Parser parser = Parser.getParser(getType());
-        //ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_settings WHERE shop_id = '" + shopId + "' AND `key` = '" + settingId + "' LIMIT 1;");
-        //if(result.size() == 0) {
-        if(!Man10Shop.settingValueMap.containsKey(shopId.toString() + "." + settingId)){
+        if(!Man10Shop.settingValueMap.containsKey(shopId + "." + settingId)){
             value = defaultValue;
             return value;
         }
-        Object object = parser.parse(this, Man10Shop.settingValueMap.get(shopId.toString() + "." + settingId));
+        Object object = parser.parse(this, Man10Shop.settingValueMap.get(shopId + "." + settingId));
         if(!getValueClass().isInstance(object)){
             return null;
         }
         // noinspection unchecked
         value = (T) object;
-//        for(MySQLCachedResultSet rs: result){
-//            Object parsed = parser.parse(this, rs.getString("value"));
-//            if(!getValueClass().isInstance(parsed)){
-//                return null;
-//            }
-//            // noinspection unchecked
-//            value = (T) parsed;
-//        }
 
         return value;
     }
@@ -127,6 +117,7 @@ public class Man10ShopSetting <T>{
         FLOAT(Float.class, Float::parseFloat),
         LONG(Long.class, Long::parseLong),
         STRING(String.class, String::new),
+        UUID(UUID.class, java.util.UUID::fromString),
         LIST() {
             public Object parse(Man10ShopSetting context, String raw) {
                 Type type = ((ParameterizedType) context.getType()).getActualTypeArguments()[0];
@@ -204,6 +195,33 @@ public class Man10ShopSetting <T>{
 
             public boolean accepts(Type type) {
                 return MQuest.class.isAssignableFrom(resolveBaseClass(type));
+            }
+        },
+        MAPPING() {
+            public Object parse(Man10ShopSetting context, String raw) {
+                Type keyType = ((ParameterizedType) context.getType()).getActualTypeArguments()[0];
+                Type valueType = ((ParameterizedType) context.getType()).getActualTypeArguments()[1];
+                Parser keyParser = Parser.getParser(keyType);
+                Parser valueParser = Parser.getParser(valueType);
+
+                return Stream.of(raw.split(",(?=[^,]*->)"))
+                        .map(s -> s.split("->"))
+                        .collect(Collectors.toMap(s -> keyParser.parse(context, s[0]), s -> valueParser.parse(context, s[1])));
+            }
+
+            public String toString(Man10ShopSetting context, Object value) {
+                Type keyType = ((ParameterizedType) context.getType()).getActualTypeArguments()[0];
+                Type valueType = ((ParameterizedType) context.getType()).getActualTypeArguments()[1];
+                Parser keyParser = Parser.getParser(keyType);
+                Parser valueParser = Parser.getParser(valueType);
+
+                return ((Map<?,?>) value).entrySet().stream()
+                        .map(o -> keyParser.toString(context, o.getKey()) + "->" + valueParser.toString(context, o.getValue()))
+                        .collect(Collectors.joining(","));
+            }
+
+            public boolean accepts(Type type) {
+                return Map.class.isAssignableFrom(resolveBaseClass(type));
             }
         };
 
