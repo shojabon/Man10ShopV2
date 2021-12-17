@@ -92,7 +92,7 @@ public abstract class ShopFunction {
             for(Field innerField: getClass().getFields()){
                 if(Man10ShopSetting.class.isAssignableFrom(innerField.getType())) {
                     Man10ShopSetting setting = ((Man10ShopSetting) innerField.get(this));
-                    if(setting.get() == setting.defaultValue) return false;
+                    if(setting.get() == setting.defaultValue && !setting.ignoredOnFunctionEnabled) return false;
                 }
             }
         } catch (IllegalAccessException e) {

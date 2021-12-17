@@ -48,9 +48,9 @@ public class Man10Shop {
 
     public boolean admin = false;
 
-    public HashMap<String, Man10ShopSign> signs = new HashMap<>();
+    //public HashMap<String, Man10ShopSign> signs = new HashMap<>();
     public static ConcurrentHashMap<String, Type> settingTypeMap = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, Man10ShopSetting<?>> settingMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, String> settingValueMap = new ConcurrentHashMap<>();
 
     //functions
 
@@ -88,7 +88,7 @@ public class Man10Shop {
 
     //tradeAmount
     public CoolDownFunction coolDown;
-    public PerMinuteCoolDownFunction perMinuteCoolDown;
+    //public PerMinuteCoolDownFunction perMinuteCoolDown;
     public SingleTransactionModeFunction singleTransactionMode;
     public TotalPerMinuteCoolDownFunction totalPerMinuteCoolDown;
 
@@ -124,7 +124,7 @@ public class Man10Shop {
         this.shopId = shopId;
         this.admin = admin;
 
-        loadSigns();
+        //loadSigns();
 
         //load functions
         for(Field field: getClass().getFields()){
@@ -140,7 +140,6 @@ public class Man10Shop {
                             settingTypeMap.put(setting.settingId, ((ParameterizedType) innerField.getGenericType()).getActualTypeArguments()[0]);
                             setting.shopId = shopId;
 
-                            settingMap.put(setting.settingId, setting);
                             //setting.typeMap = settingTypeMap;
                         }
                     }
@@ -318,18 +317,18 @@ public class Man10Shop {
     }
 
     //signs
-    public void loadSigns(){
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE shop_id = '" + shopId + "'");
-        for(MySQLCachedResultSet rs: result){
-            Man10ShopSign sign = new Man10ShopSign(shopId,
-                    rs.getString("world"),
-                    rs.getInt("x"),
-                    rs.getInt("y"),
-                    rs.getInt("z"));
-            signs.put(rs.getString("locationId"), sign);
-            signs.put("locationId", sign);
-        }
-    }
+//    public void loadSigns(){
+//        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE shop_id = '" + shopId + "'");
+//        for(MySQLCachedResultSet rs: result){
+//            Man10ShopSign sign = new Man10ShopSign(shopId,
+//                    rs.getString("world"),
+//                    rs.getInt("x"),
+//                    rs.getInt("y"),
+//                    rs.getInt("z"));
+//            signs.put(rs.getString("locationId"), sign);
+//            signs.put("locationId", sign);
+//        }
+//    }
 
     public SInventory getActionMenu(Player p){
         if(shopType.getShopType() == Man10ShopType.BUY || shopType.getShopType() == Man10ShopType.SELL){

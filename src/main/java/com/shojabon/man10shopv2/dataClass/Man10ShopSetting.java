@@ -32,11 +32,19 @@ public class Man10ShopSetting <T>{
     T value;
     public final T defaultValue;
     public UUID shopId;
+    public boolean ignoredOnFunctionEnabled;
 
 
     public Man10ShopSetting(String settingId, T defaultValue){
         this.defaultValue = defaultValue;
         this.settingId = settingId;
+        ignoredOnFunctionEnabled = false;
+    }
+
+    public Man10ShopSetting(String settingId, T defaultValue, boolean ignoreOnFunctionEnabled){
+        this.defaultValue = defaultValue;
+        this.settingId = settingId;
+        this.ignoredOnFunctionEnabled = ignoreOnFunctionEnabled;
     }
 
     private String calculateUniqueSettingsHash(String key){
@@ -57,7 +65,6 @@ public class Man10ShopSetting <T>{
     }
 
     public Type getType(){
-        if (Man10Shop.settingTypeMap.get(settingId) == null) Bukkit.broadcastMessage("getting type for " + shopId + " " + settingId );
         return Man10Shop.settingTypeMap.get(settingId);
     }
 
@@ -80,36 +87,36 @@ public class Man10ShopSetting <T>{
         payload.put("key", settingId);
         payload.put("value", parser.toString(this, value));
         this.value = value;
-        return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
-    }
-
-    public void setLocal(String value){
-        if(value == null) this.value = defaultValue;
-        Parser parser = Parser.getParser(getType());
-        Object parsed = parser.parse(this, value);
-        if(!getValueClass().isInstance(parsed)){
-            return;
+        if(this.value == this.defaultValue){
+            return delete();
         }
-        // noinspection unchecked
-        this.value = (T) parsed;
+        return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
     }
 
     public T get(){
         if(value != null) return value;
         Parser parser = Parser.getParser(getType());
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_settings WHERE shop_id = '" + shopId + "' AND `key` = '" + settingId + "' LIMIT 1;");
-        if(result.size() == 0) {
+        //ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_settings WHERE shop_id = '" + shopId + "' AND `key` = '" + settingId + "' LIMIT 1;");
+        //if(result.size() == 0) {
+        if(!Man10Shop.settingValueMap.containsKey(shopId.toString() + "." + settingId)){
             value = defaultValue;
             return value;
         }
-        for(MySQLCachedResultSet rs: result){
-            Object parsed = parser.parse(this, rs.getString("value"));
-            if(!getValueClass().isInstance(parsed)){
-                return null;
-            }
-            // noinspection unchecked
-            value = (T) parsed;
+        Object object = parser.parse(this, Man10Shop.settingValueMap.get(shopId.toString() + "." + settingId));
+        if(!getValueClass().isInstance(object)){
+            return null;
         }
+        // noinspection unchecked
+        value = (T) object;
+//        for(MySQLCachedResultSet rs: result){
+//            Object parsed = parser.parse(this, rs.getString("value"));
+//            if(!getValueClass().isInstance(parsed)){
+//                return null;
+//            }
+//            // noinspection unchecked
+//            value = (T) parsed;
+//        }
+
         return value;
     }
 

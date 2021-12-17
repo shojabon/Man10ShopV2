@@ -31,14 +31,18 @@ public class Man10ShopV2API {
 
     public static ConcurrentHashMap<UUID, Man10Shop> shopCache = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<UUID, ArrayList<UUID>> userModeratingShopList = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, Man10ShopSign> signs = new ConcurrentHashMap<>();
+    public static HashMap<String, Man10ShopSign> signs = new HashMap<>();
     public static BukkitTask perMinuteExecutionTask;
     public static ArrayList<UUID> adminShopIds = new ArrayList<>();
 
     public Man10ShopV2API(Man10ShopV2 plugin){
         Man10ShopV2API.plugin = plugin;
-        //loadAllShops();
-        getAdminShops();
+        preLoadSettingData();
+        loadAllShopsWithPermission();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, ()->{
+            getAdminShops();
+            loadAllShops();
+        }, 0);
         startTransactionThread();
         startPerMinuteExecutionTask();
     }
@@ -78,6 +82,24 @@ public class Man10ShopV2API {
         return shops;
     }
 
+    public void loadAllShops(){
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_shops WHERE deleted = 0;");
+        for(MySQLCachedResultSet rs: result){
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, ()-> {
+                Man10Shop shop = new Man10Shop(UUID.fromString(rs.getString("shop_id")),
+                        rs.getString("name"),
+                        rs.getInt("item_count"),
+                        rs.getInt("price"),
+                        rs.getInt("money"),
+                        SItemStack.fromBase64(rs.getString("target_item")),
+                        Man10ShopType.valueOf(rs.getString("shop_type")),
+                        rs.getBoolean("admin"));
+                shopCache.put(shop.shopId, shop);
+            });
+        }
+    }
+
+
     public UUID createShop(Player p, String name, int price, SItemStack targetItem, Man10ShopType shopType, boolean admin){
         UUID shopId = UUID.randomUUID();
         Man10Shop shop = new Man10Shop(shopId, name, 0, price, 0, targetItem, shopType, admin);
@@ -102,6 +124,8 @@ public class Man10ShopV2API {
         return shopId;
     }
 
+
+
     public ArrayList<Man10Shop> getShopsWithPermission(UUID uuid){
         if(userModeratingShopList.containsKey(uuid)){
             ArrayList<UUID> shopIds = userModeratingShopList.get(uuid);
@@ -117,6 +141,14 @@ public class Man10ShopV2API {
         return getShops(ids);
     }
 
+    public void loadAllShopsWithPermission(){
+        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT `uuid`,`shop_id` FROM man10shop_permissions");
+        for(MySQLCachedResultSet rs: results){
+            if(!userModeratingShopList.containsKey(UUID.fromString(rs.getString("uuid")))) userModeratingShopList.put(UUID.fromString(rs.getString("uuid")), new ArrayList<>());
+            userModeratingShopList.get(UUID.fromString(rs.getString("uuid"))).add(UUID.fromString(rs.getString("shop_id")));
+        }
+    }
+
     public ArrayList<Man10Shop> getAdminShops(){
     if(adminShopIds.size() != 0) return getShops(adminShopIds);
         ArrayList<UUID> ids = new ArrayList<>();
@@ -128,27 +160,12 @@ public class Man10ShopV2API {
         return getShops(ids);
     }
 
-    public void loadAllShops(){
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_shops WHERE deleted = 0;");
-        for(MySQLCachedResultSet rs: result){
-            System.out.println("loading " + rs.getString("shop_id"));
-            Man10ShopV2.threadPool.execute(()-> {getShop(UUID.fromString(rs.getString("shop_id")));});
-        }
-        //preLoadSettingData();
-    }
-
     public void preLoadSettingData(){
-        HashMap<String, String> cachedSettingsMap = new HashMap<>();
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT `shop_id`,`key`,`value` FROM man10shop_settings");
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT `shop_id`,`key`,`value` FROM man10shop_settings ORDER BY `shop_id` DESC");
         for(MySQLCachedResultSet rs: result){
-            cachedSettingsMap.put(rs.getString("shop_id") + "." + rs.getString("key"), rs.getString("value"));
+            Man10Shop.settingValueMap.put(rs.getString("shop_id") + "." + rs.getString("key"), rs.getString("value"));
         }
 
-        for(Man10Shop shop: shopCache.values()){
-            for(Man10ShopSetting<?> setting: shop.settingMap.values()){
-                setting.setLocal(cachedSettingsMap.get(shop.shopId + "." + setting.settingId));
-            }
-        }
     }
 
     //per minute task
@@ -217,7 +234,7 @@ public class Man10ShopV2API {
             return false;
         }
         signs.put(sign.generateLocationId(), sign);
-        shop.signs.put(sign.generateLocationId(), sign);
+        //shop.signs.put(sign.generateLocationId(), sign);
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("shop_id", shop.shopId);
         payload.put("location_id", sign.generateLocationId());
@@ -244,7 +261,7 @@ public class Man10ShopV2API {
                     rs.getInt("x"),
                     rs.getInt("y"),
                     rs.getInt("z"));
-            shop.signs.put(locationId, sign);
+            //shop.signs.put(locationId, sign);
             signs.put(locationId, sign);
             return signs.get(locationId);
         }
@@ -260,12 +277,13 @@ public class Man10ShopV2API {
         signs.remove(sign.generateLocationId());
         Man10Shop shop = getShop(sign.shopId);
         if(shop == null) return false;
-        shop.signs.remove(sign.generateLocationId());
+        //shop.signs.remove(sign.generateLocationId());
         return true;
     }
 
     public void destroyAllSigns(Man10Shop shop){
-        for(Man10ShopSign sign: shop.signs.values()){
+        for(Man10ShopSign sign: signs.values()){
+            if(shop.getShopId() != sign.shopId) continue;
             Location l = sign.getLocation();
             Block b = l.getBlock();
             deleteSign(sign);
@@ -278,7 +296,8 @@ public class Man10ShopV2API {
 
     public void updateAllSigns(Man10Shop shop){
         plugin.getServer().getScheduler().runTask(plugin, ()->{
-            for(Man10ShopSign signObject: shop.signs.values()){
+            for(Man10ShopSign signObject: signs.values()){
+                if(shop.getShopId() != signObject.shopId) continue;
                 Location l = signObject.getLocation();
                 if(l == null) continue;
                 if(!(l.getBlock().getState() instanceof Sign)){

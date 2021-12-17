@@ -64,10 +64,10 @@ public class SignListeners implements @NotNull Listener {
 
             menu.setOnClick(shop -> {
 
-                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
-                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
-                    return;
-                }
+//                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
+//                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
+//                    return;
+//                }
 
                 if(Man10ShopV2.config.getInt("sign.price") != 0){
                     ConfirmationMenu confirmationMenu = new ConfirmationMenu(BaseUtils.priceString(signPrice)+ "円支払いますか？", plugin);
@@ -105,10 +105,10 @@ public class SignListeners implements @NotNull Listener {
 
             menu.setOnClick(shop -> {
 
-                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
-                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
-                    return;
-                }
+//                if(shop.signs.size() + 1 > Man10ShopV2.config.getInt("sign.maxSignsPerShop")){
+//                    e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l設置できる看板の量を越しました");
+//                    return;
+//                }
 
                 if(Man10ShopV2.config.getInt("sign.price") != 0){
                     ConfirmationMenu confirmationMenu = new ConfirmationMenu(BaseUtils.priceString(signPrice)+ "円支払いますか？", plugin);
@@ -140,11 +140,11 @@ public class SignListeners implements @NotNull Listener {
         if(!(e.getBlock().getState() instanceof Sign)){
             return;
         }
-        Man10ShopSign sign = plugin.api.getSign(e.getBlock().getLocation());
+        Man10ShopSign sign = Man10ShopV2.api.getSign(e.getBlock().getLocation());
         if(sign == null) return;
-        Man10Shop shop = plugin.api.getShop(sign.shopId);
+        Man10Shop shop = Man10ShopV2.api.getShop(sign.shopId);
         if(shop == null) {
-            plugin.api.deleteSign(sign);
+            Man10ShopV2.api.deleteSign(sign);
             return;
         }
         if(!shop.permission.hasPermissionAtLeast(e.getPlayer().getUniqueId(), Man10ShopPermission.MODERATOR) && !e.getPlayer().hasPermission("man10shopv2.sign.break.bypass")){
@@ -153,7 +153,7 @@ public class SignListeners implements @NotNull Listener {
             return;
         }
         SInventory.threadPool.execute(()-> {
-            plugin.api.deleteSign(sign);
+            Man10ShopV2.api.deleteSign(sign);
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を破壊しました");
         });
     }

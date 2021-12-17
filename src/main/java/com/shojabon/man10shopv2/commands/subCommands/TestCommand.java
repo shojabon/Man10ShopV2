@@ -30,9 +30,9 @@ public class TestCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 //        Man10Shop shop = Man10ShopV2.api.getShop(UUID.fromString("47909d51-5ecd-4c68-bbb8-7660ee59b240"));
 //        shop.mQuestFunction.refreshQuests(2);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Man10ShopV2.api.loadAllShops();
-        });
+//        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+//            Man10ShopV2.api.loadAllShops();
+//        });
         return true;
     }
 }
