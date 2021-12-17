@@ -1,9 +1,6 @@
 package com.shojabon.man10shopv2;
 
-import com.shojabon.man10shopv2.dataClass.Man10Shop;
-import com.shojabon.man10shopv2.dataClass.Man10ShopModerator;
-import com.shojabon.man10shopv2.dataClass.Man10ShopOrder;
-import com.shojabon.man10shopv2.dataClass.Man10ShopSign;
+import com.shojabon.man10shopv2.dataClass.*;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.mcutils.Utils.BaseUtils;
@@ -12,6 +9,7 @@ import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -24,20 +22,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Man10ShopV2API {
 
     public static Man10ShopV2 plugin;
 
-    public static HashMap<UUID, Man10Shop> shopCache = new HashMap<>();
-    public static HashMap<UUID, ArrayList<UUID>> userModeratingShopList = new HashMap<>();
-    public static HashMap<String, Man10ShopSign> signs = new HashMap<>();
+    public static ConcurrentHashMap<UUID, Man10Shop> shopCache = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, ArrayList<UUID>> userModeratingShopList = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, Man10ShopSign> signs = new ConcurrentHashMap<>();
     public static BukkitTask perMinuteExecutionTask;
+    public static ArrayList<UUID> adminShopIds = new ArrayList<>();
 
     public Man10ShopV2API(Man10ShopV2 plugin){
         Man10ShopV2API.plugin = plugin;
-        loadAllShops();
+        //loadAllShops();
+        getAdminShops();
         startTransactionThread();
         startPerMinuteExecutionTask();
     }
@@ -108,7 +109,7 @@ public class Man10ShopV2API {
         }
 
         ArrayList<UUID> ids = new ArrayList<>();
-        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT * FROM man10shop_permissions WHERE UUID ='" + uuid.toString() + "'");
+        ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_permissions WHERE UUID ='" + uuid.toString() + "'");
         for(MySQLCachedResultSet rs: results){
             ids.add(UUID.fromString(rs.getString("shop_id")));
         }
@@ -117,18 +118,36 @@ public class Man10ShopV2API {
     }
 
     public ArrayList<Man10Shop> getAdminShops(){
+    if(adminShopIds.size() != 0) return getShops(adminShopIds);
         ArrayList<UUID> ids = new ArrayList<>();
         ArrayList<MySQLCachedResultSet> results = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_shops WHERE admin = 'true'");
         for(MySQLCachedResultSet rs: results){
             ids.add(UUID.fromString(rs.getString("shop_id")));
         }
+        adminShopIds = new ArrayList<>(ids);
         return getShops(ids);
     }
 
     public void loadAllShops(){
         ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT shop_id FROM man10shop_shops WHERE deleted = 0;");
         for(MySQLCachedResultSet rs: result){
+            System.out.println("loading " + rs.getString("shop_id"));
             Man10ShopV2.threadPool.execute(()-> {getShop(UUID.fromString(rs.getString("shop_id")));});
+        }
+        //preLoadSettingData();
+    }
+
+    public void preLoadSettingData(){
+        HashMap<String, String> cachedSettingsMap = new HashMap<>();
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT `shop_id`,`key`,`value` FROM man10shop_settings");
+        for(MySQLCachedResultSet rs: result){
+            cachedSettingsMap.put(rs.getString("shop_id") + "." + rs.getString("key"), rs.getString("value"));
+        }
+
+        for(Man10Shop shop: shopCache.values()){
+            for(Man10ShopSetting<?> setting: shop.settingMap.values()){
+                setting.setLocal(cachedSettingsMap.get(shop.shopId + "." + setting.settingId));
+            }
         }
     }
 
@@ -137,7 +156,11 @@ public class Man10ShopV2API {
         if(perMinuteExecutionTask != null) return;
         perMinuteExecutionTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, ()->{
             for(Man10Shop shop: shopCache.values()){
-                shop.perMinuteExecuteTask();
+                try{
+                    shop.perMinuteExecuteTask();
+                }catch (Exception e){
+                    System.out.println("error on " + shop.shopId);
+                }
             }
         }, (60- LocalDateTime.now().getSecond())*20, 20*60L);
     }

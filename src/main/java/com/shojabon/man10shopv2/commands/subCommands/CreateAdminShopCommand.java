@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.commands.subCommands;
 
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.SItemStack;
@@ -34,6 +35,7 @@ public class CreateAdminShopCommand implements CommandExecutor {
             sender.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
             return false;
         }
+        Man10ShopV2API.adminShopIds.add(shopId);
         sender.sendMessage(Man10ShopV2.prefix + "§a§l管理者ショップを作りました");
         return true;
     }

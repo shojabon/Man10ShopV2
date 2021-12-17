@@ -26,6 +26,7 @@ import com.shojabon.man10shopv2.menus.action.*;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
+import it.unimi.dsi.fastutil.Hash;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Man10Shop {
 
@@ -47,7 +49,8 @@ public class Man10Shop {
     public boolean admin = false;
 
     public HashMap<String, Man10ShopSign> signs = new HashMap<>();
-    public static HashMap<Man10ShopSetting<?>, Type> settingTypeMap = new HashMap<>();
+    public static ConcurrentHashMap<String, Type> settingTypeMap = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, Man10ShopSetting<?>> settingMap = new ConcurrentHashMap<>();
 
     //functions
 
@@ -134,8 +137,10 @@ public class Man10Shop {
                     for(Field innerField: func.getClass().getFields()){
                         if(Man10ShopSetting.class.isAssignableFrom(innerField.getType())) {
                             Man10ShopSetting setting = ((Man10ShopSetting) innerField.get(func));
-                            settingTypeMap.put(setting, ((ParameterizedType) innerField.getGenericType()).getActualTypeArguments()[0]);
+                            settingTypeMap.put(setting.settingId, ((ParameterizedType) innerField.getGenericType()).getActualTypeArguments()[0]);
                             setting.shopId = shopId;
+
+                            settingMap.put(setting.settingId, setting);
                             //setting.typeMap = settingTypeMap;
                         }
                     }
@@ -308,6 +313,7 @@ public class Man10Shop {
     public void deleteShop(){
         Man10ShopV2.mysql.execute("UPDATE man10shop_shops SET `deleted` = 1 WHERE shop_id = '" + shopId + "'");
         Man10ShopV2API.shopCache.remove(shopId);
+        if(admin) Man10ShopV2API.adminShopIds.remove(shopId);
         Man10ShopV2API.closeInventoryGroup(shopId);
     }
 

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 public class Man10ShopSetting <T>{
 
-    String settingId;
+    public String settingId;
     T value;
     public final T defaultValue;
     public UUID shopId;
@@ -57,7 +57,8 @@ public class Man10ShopSetting <T>{
     }
 
     public Type getType(){
-        return Man10Shop.settingTypeMap.get(this);
+        if (Man10Shop.settingTypeMap.get(settingId) == null) Bukkit.broadcastMessage("getting type for " + shopId + " " + settingId );
+        return Man10Shop.settingTypeMap.get(settingId);
     }
 
     public static Class<?> resolveBaseClass(Type type) {
@@ -82,6 +83,17 @@ public class Man10ShopSetting <T>{
         return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
     }
 
+    public void setLocal(String value){
+        if(value == null) this.value = defaultValue;
+        Parser parser = Parser.getParser(getType());
+        Object parsed = parser.parse(this, value);
+        if(!getValueClass().isInstance(parsed)){
+            return;
+        }
+        // noinspection unchecked
+        this.value = (T) parsed;
+    }
+
     public T get(){
         if(value != null) return value;
         Parser parser = Parser.getParser(getType());
@@ -101,7 +113,7 @@ public class Man10ShopSetting <T>{
         return value;
     }
 
-    enum Parser {
+    public enum Parser {
         DOUBLE(Double.class, Double::parseDouble),
         BOOLEAN(Boolean.class, Boolean::parseBoolean),
         INTEGER(Integer.class, Integer::parseInt),
@@ -224,9 +236,14 @@ public class Man10ShopSetting <T>{
         }
 
         public static Parser getParser(Type type) {
-            return Stream.of(values())
-                    .filter(parser -> parser.accepts(type))
-                    .findFirst().orElse(null);
+            try{
+                return Stream.of(values())
+                        .filter(parser -> parser.accepts(type))
+                        .findFirst().orElse(null);
+            }catch (Exception e){
+                System.out.println(e + " " + type.getTypeName());
+            }
+            return null;
         }
     }
 }

@@ -27,11 +27,13 @@ public class ShopsCommand implements CommandExecutor {
             return false;
         }
 
-        Player p = ((Player)sender);
+        new Thread(() -> {
+            Player p = ((Player)sender);
 
-        EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, "その他", plugin);
-        menu.setOnClick(shop -> new ShopMainMenu(p, Man10ShopV2.api.getShop(shop.shopId), plugin).open(p));
-        menu.open(p);
+            EditableShopSelectorMenu menu = new EditableShopSelectorMenu(p, "その他", plugin);
+            menu.setOnClick(shop -> new ShopMainMenu(p, Man10ShopV2.api.getShop(shop.shopId), plugin).open(p));
+            menu.open(p);
+        }).start();
         return true;
     }
 }
