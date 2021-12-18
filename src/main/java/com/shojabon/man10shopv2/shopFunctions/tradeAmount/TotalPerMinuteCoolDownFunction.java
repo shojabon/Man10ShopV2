@@ -73,8 +73,7 @@ public class TotalPerMinuteCoolDownFunction extends ShopFunction {
         return time.get() + "分" + amount.get() + "まで";
     }
 
-    @Override
-    public int itemCount(Player p) {
+    public int itemCount(Player p, int currentItemCount) {
         //if(!isFunctionEnabled()) return super.itemCount(p);
         if(shop.isAdminShop()) return -(amount.get() - currentTransactionCount.get());
         return amount.get() - currentTransactionCount.get();

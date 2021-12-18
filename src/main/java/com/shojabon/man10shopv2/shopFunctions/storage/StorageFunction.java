@@ -29,7 +29,7 @@ import org.bukkit.event.inventory.ClickType;
 )
 public class StorageFunction extends ShopFunction {
     //variables
-    public Man10ShopSetting<Integer> boughtStorageUnits = new Man10ShopSetting<>("storage.bought", Man10ShopV2.config.getInt("itemStorage.defaultUnits"));
+    public Man10ShopSetting<Integer> boughtStorageUnits = new Man10ShopSetting<>("storage.bought", Man10ShopV2.config.getInt("itemStorage.defaultUnits"), true);
 
     public int storageSize;
     public int itemCount;

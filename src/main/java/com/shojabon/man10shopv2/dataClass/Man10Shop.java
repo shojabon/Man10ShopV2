@@ -79,6 +79,7 @@ public class Man10Shop {
     public SecretPriceModeFunction secretPrice;
     public CategoryFunction categoryFunction;
     public IpLimitFunction ipLimitFunction;
+    public LimitUseFunction limitUseFunction;
 
     //storage
     public StorageRefillFunction storageRefill;
