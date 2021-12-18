@@ -35,7 +35,7 @@ public class StorageRefillFunction extends ShopFunction {
     public Man10ShopSetting<Integer> refillAmount = new Man10ShopSetting<>("storage.refill.amount", 0);
     public Man10ShopSetting<Integer> refillMinutes = new Man10ShopSetting<>("storage.refill.time", 0);
     public Man10ShopSetting<Long> lastRefillTime = new Man10ShopSetting<>("storage.refill.lastRefillTime", 0L);
-    public Man10ShopSetting<Integer> itemLeft = new Man10ShopSetting<>("storage.refill.itemFilled", 0);
+    public Man10ShopSetting<Integer> itemLeft = new Man10ShopSetting<>("storage.refill.itemFilled", 0, true);
 
 
     //init

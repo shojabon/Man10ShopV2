@@ -49,15 +49,6 @@ public class ShopTypeFunction extends ShopFunction {
 
     //functions
 
-    public String shopTypeToString(Man10ShopType type){
-        if(type == Man10ShopType.BUY) return "販売ショップ";
-        if(type == Man10ShopType.SELL) return "買取ショップ";
-        if(type == Man10ShopType.BARTER) return "トレードショップ";
-        if(type == Man10ShopType.LOOT_BOX) return "ガチャ";
-        if(type == Man10ShopType.QUEST) return "クエスト";
-        return "不明";
-    }
-
     //====================
     // settings
     //====================
@@ -75,7 +66,7 @@ public class ShopTypeFunction extends ShopFunction {
 
     @Override
     public String currentSettingString() {
-        return shopTypeToString(getShopType());
+        return getShopType().displayName;
     }
 
     @Override

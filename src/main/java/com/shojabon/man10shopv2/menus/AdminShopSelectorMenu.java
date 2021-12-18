@@ -35,7 +35,7 @@ public class AdminShopSelectorMenu extends CategoricalSInventoryMenu {
 
             SItemStack icon = new SItemStack(shop.targetItem.getTargetItem().getTypeItem());
             icon.setDisplayName(new SStringBuilder().green().bold().text(shop.name.getName()).build());
-            icon.addLore("§d§lショップタイプ: " + shop.shopType.shopTypeToString(shop.shopType.getShopType()));
+            icon.addLore("§d§lショップタイプ: " + shop.shopType.getShopType().displayName);
 
             SInventoryItem item = new SInventoryItem(icon.build());
             item.clickable(false);

@@ -306,44 +306,13 @@ public class Man10ShopV2API {
                 }
                 Sign sign = (Sign) l.getBlock().getState();
 
-                if(shop.shopType.getShopType() == Man10ShopType.BUY){
-                    sign.setLine(0, "§a§l販売ショップ");
-                }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
-                    sign.setLine(0, "§c§l買取ショップ");
-                }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
-                    sign.setLine(0, "§b§lトレードショップ");
-                }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
-                    sign.setLine(0, "§d§lガチャ");
-                }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
-                    sign.setLine(0, "§6§lクエスト");
+                ArrayList<String> data = shop.getSignData();
+
+                for(int i = 0; i < data.size(); i++){
+                    if(data.get(i).equalsIgnoreCase("")) continue;
+                    sign.setLine(i, data.get(i));
                 }
 
-                if(shop.shopEnabled.enabled.get()){
-                    if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
-                        if(shop.secretPrice.isFunctionEnabled()){
-                            sign.setLine(1, "§b??????円");
-                        }else{
-                            sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
-                        }
-                    }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
-                        sign.setLine(1, "");
-                    }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
-                        SStringBuilder priceString = new SStringBuilder().text("§b");
-                        if(shop.lootBoxPaymentFunction.balancePrice.get() != 0){
-                            priceString.text(BaseUtils.priceString(shop.lootBoxPaymentFunction.balancePrice.get()) + "円");
-                        }
-                        if(shop.lootBoxPaymentFunction.itemPayment.get() != null){
-                            if(shop.lootBoxPaymentFunction.balancePrice.get() != 0) priceString.text("+");
-                            priceString.text("アイテム");
-                        }
-                        sign.setLine(1, priceString.build());
-                    }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
-                        sign.setLine(1, "");
-                    }
-
-                }else{
-                    sign.setLine(1, "§c取引停止中");
-                }
                 sign.update();
 
 

@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 @ShopFunctionDefinition(
         name = "取引価格設定",
         explanation = {},
-        enabledShopType = {Man10ShopType.BUY, Man10ShopType.SELL},
+        enabledShopType = {Man10ShopType.BUY, Man10ShopType.SELL, Man10ShopType.COMMAND},
         iconMaterial = Material.EMERALD,
         category = "一般設定",
         allowedPermission = Man10ShopPermission.MODERATOR,
@@ -52,7 +52,7 @@ public class SetPriceFunction extends ShopFunction {
 
     @Override
     public boolean performAction(Player p, int amount) {
-        if(shop.shopType.getShopType() == Man10ShopType.BUY){
+        if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.COMMAND){
             int totalPrice = getPrice()*amount;
             if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
                 warn(p, "内部エラーが発生しました");

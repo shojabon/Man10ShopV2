@@ -7,6 +7,8 @@ import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
 import com.shojabon.man10shopv2.shopFunctions.allowedToUse.*;
 import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
+import com.shojabon.man10shopv2.shopFunctions.commandShop.CommandShopExplanationFunction;
+import com.shojabon.man10shopv2.shopFunctions.commandShop.CommandShopSetCommandFunction;
 import com.shojabon.man10shopv2.shopFunctions.general.*;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxBigWinFunction;
 import com.shojabon.man10shopv2.shopFunctions.lootBox.LootBoxGroupFunction;
@@ -23,9 +25,11 @@ import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.menus.action.*;
+import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.MySQL.MySQLCachedResultSet;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
+import com.shojabon.mcutils.Utils.SStringBuilder;
 import it.unimi.dsi.fastutil.Hash;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -107,6 +111,10 @@ public class Man10Shop {
     public MQuestQuestCountFunction mQuestCountFunction;
     public MQuestRefreshQuest mQuestForceRefreshButton;
     public MQuestDialogue mQuestDialogue;
+
+    //command shop
+    public CommandShopSetCommandFunction commandShopSetCommandFunction;
+    public CommandShopExplanationFunction commandShopExplanationFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -305,6 +313,9 @@ public class Man10Shop {
                 LootBoxPlayMenu menu = new LootBoxPlayMenu(p, this, (Man10ShopV2) plugin);
                 menu.open(p);
             });
+        }else if(shopType.getShopType() == Man10ShopType.COMMAND){
+            Man10ShopV2API.tradeLog(shopId, "COMMAND", 1, price.getPrice(), p.getName(), p.getUniqueId()); //log
+            p.sendMessage(Man10ShopV2.prefix + "§a§l購入しました");
         }
 
     }
@@ -332,11 +343,65 @@ public class Man10Shop {
         if(shopType.getShopType() == Man10ShopType.QUEST){
             return new QuestActionMenu(p, this, plugin);
         }
+
+        if(shopType.getShopType() == Man10ShopType.COMMAND){
+            return new CommandActionMenu(p, this, plugin);
+        }
         return null;
     }
 
     public void openActionMenu(Player p){
         Bukkit.getScheduler().runTask(plugin, ()->{getActionMenu(p).open(p);});
+    }
+    
+    public ArrayList<String> getSignData(){
+        ArrayList<String> result = new ArrayList<>();
+        result.add("");
+        result.add("");
+        result.add("");
+        result.add("");
+
+        if(shopType.getShopType() == Man10ShopType.BUY){
+            result.set(0, "§a§l販売ショップ");
+        }else if(shopType.getShopType() == Man10ShopType.SELL){
+            result.set(0, "§c§l買取ショップ");
+        }else if(shopType.getShopType() == Man10ShopType.BARTER){
+            result.set(0, "§b§lトレードショップ");
+        }else if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
+            result.set(0, "§d§lガチャ");
+        }else if(shopType.getShopType() == Man10ShopType.QUEST){
+            result.set(0, "§6§lクエスト");
+        }else if(shopType.getShopType() == Man10ShopType.COMMAND){
+            result.set(0, "§e§lコマンドショップ");
+        }
+
+        if(shopEnabled.enabled.get()){
+            if(shopType.getShopType() == Man10ShopType.BUY || shopType.getShopType() == Man10ShopType.SELL || shopType.getShopType() == Man10ShopType.COMMAND){
+                if(secretPrice.isFunctionEnabled()){
+                    result.set(1, "§b??????円");
+                }else{
+                    result.set(1, "§b" + BaseUtils.priceString(price.getPrice()) + "円");
+                }
+            }else if(shopType.getShopType() == Man10ShopType.BARTER){
+                result.set(1, "");
+            }else if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
+                SStringBuilder priceString = new SStringBuilder().text("§b");
+                if(lootBoxPaymentFunction.balancePrice.get() != 0){
+                    priceString.text(BaseUtils.priceString(lootBoxPaymentFunction.balancePrice.get()) + "円");
+                }
+                if(lootBoxPaymentFunction.itemPayment.get() != null){
+                    if(lootBoxPaymentFunction.balancePrice.get() != 0) priceString.text("+");
+                    priceString.text("アイテム");
+                }
+                result.set(1, priceString.build());
+            }else if(shopType.getShopType() == Man10ShopType.QUEST){
+                result.set(1, "");
+            }
+
+        }else{
+            result.set(1, "§c取引停止中");
+        }
+        return result;
     }
 
 

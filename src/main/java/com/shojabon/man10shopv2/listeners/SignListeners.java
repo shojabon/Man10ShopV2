@@ -25,6 +25,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -213,46 +214,15 @@ public class SignListeners implements @NotNull Listener {
     public void buySign(Man10Shop shop, SignChangeEvent e){
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Sign sign = ((Sign) e.getBlock().getState());
-            if(shop.shopType.getShopType() == Man10ShopType.BUY){
-                sign.setLine(0, "§a§l販売ショップ");
-            }else if(shop.shopType.getShopType() == Man10ShopType.SELL){
-                sign.setLine(0, "§c§l買取ショップ");
-            }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
-                sign.setLine(0, "§b§lトレードショップ");
-            }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
-                sign.setLine(0, "§d§lガチャ");
-            }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
-                sign.setLine(0, "§6§lクエスト");
-            }
 
-            sign.update();
+            ArrayList<String> lineData = shop.getSignData();
+
             sign.setLine(3, formatSignString(sign.getLine(2), shop));
             sign.setLine(2, formatSignString(sign.getLine(1), shop));
-            if(shop.shopEnabled.enabled.get()){
-                if(shop.shopType.getShopType() == Man10ShopType.BUY || shop.shopType.getShopType() == Man10ShopType.SELL){
-                    if(shop.secretPrice.isFunctionEnabled()){
-                        sign.setLine(1, "§b??????円");
-                    }else{
-                        sign.setLine(1, "§b" + BaseUtils.priceString(shop.price.getPrice()) + "円");
-                    }
-                }else if(shop.shopType.getShopType() == Man10ShopType.BARTER){
-                    sign.setLine(1, "");
-                }else if(shop.shopType.getShopType() == Man10ShopType.LOOT_BOX){
-                    SStringBuilder priceString = new SStringBuilder().text("§b");
-                    if(shop.lootBoxPaymentFunction.balancePrice.get() != 0){
-                        priceString.text(BaseUtils.priceString(shop.lootBoxPaymentFunction.balancePrice.get()) + "円");
-                    }
-                    if(shop.lootBoxPaymentFunction.itemPayment.get() != null){
-                        if(shop.lootBoxPaymentFunction.balancePrice.get() != 0) priceString.text("+");
-                        priceString.text("アイテム");
-                    }
-                    sign.setLine(1, priceString.build());
-                }else if(shop.shopType.getShopType() == Man10ShopType.QUEST){
-                    sign.setLine(1, "");
-                }
 
-            }else{
-                sign.setLine(1, "§c取引停止中");
+            for(int i = 0; i < lineData.size(); i++){
+                if(lineData.get(i).equalsIgnoreCase("")) continue;
+                sign.setLine(i, lineData.get(i));
             }
 
             sign.update(true);
@@ -264,10 +234,6 @@ public class SignListeners implements @NotNull Listener {
             e.getPlayer().sendMessage(Man10ShopV2.prefix + "§a§l看板を作成しました");
             e.getPlayer().closeInventory();
         });
-    }
-
-    public boolean containsPrice(String original){
-        return original.contains("{price}");
     }
 
     public String formatSignString(String original, Man10Shop shop){

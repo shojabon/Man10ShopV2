@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 @ShopFunctionDefinition(
         name = "値段非表示モード",
         explanation = {"設定した分間毎に値段を設定する", "どちらかが0の場合設定は無効化"},
-        enabledShopType = {Man10ShopType.BUY, Man10ShopType.SELL},
+        enabledShopType = {Man10ShopType.BUY, Man10ShopType.SELL, Man10ShopType.COMMAND},
         iconMaterial = Material.POISONOUS_POTATO,
         category = "一般設定",
         allowedPermission = Man10ShopPermission.MODERATOR,
