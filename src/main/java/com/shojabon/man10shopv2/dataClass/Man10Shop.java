@@ -316,35 +316,21 @@ public class Man10Shop {
         Man10ShopV2API.closeInventoryGroup(shopId);
     }
 
-    //signs
-//    public void loadSigns(){
-//        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs WHERE shop_id = '" + shopId + "'");
-//        for(MySQLCachedResultSet rs: result){
-//            Man10ShopSign sign = new Man10ShopSign(shopId,
-//                    rs.getString("world"),
-//                    rs.getInt("x"),
-//                    rs.getInt("y"),
-//                    rs.getInt("z"));
-//            signs.put(rs.getString("locationId"), sign);
-//            signs.put("locationId", sign);
-//        }
-//    }
-
     public SInventory getActionMenu(Player p){
         if(shopType.getShopType() == Man10ShopType.BUY || shopType.getShopType() == Man10ShopType.SELL){
-            return new BuySellActionMenu(p, this, (JavaPlugin) plugin);
+            return new BuySellActionMenu(p, this, plugin);
         }
 
         if(shopType.getShopType() == Man10ShopType.BARTER){
-            return new BarterActionMenu(p, this, (Man10ShopV2) plugin);
+            return new BarterActionMenu(p, this, plugin);
         }
 
         if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
-            return new LootBoxActionMenu(p, this, (Man10ShopV2) plugin);
+            return new LootBoxActionMenu(p, this, plugin);
         }
 
         if(shopType.getShopType() == Man10ShopType.QUEST){
-            return new QuestActionMenu(p, this, (Man10ShopV2) plugin);
+            return new QuestActionMenu(p, this, plugin);
         }
         return null;
     }

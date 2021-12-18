@@ -33,8 +33,8 @@ public class MQuestTimeWindowFunction extends ShopFunction {
 
     //variables
     
-    public Man10ShopSetting<Integer> minutes = new Man10ShopSetting<>("quest.refresh.time", 0);
-    public Man10ShopSetting<Long> lastPickedTime = new Man10ShopSetting<>("quest.refresh.lastRefreshTime", 0L);
+    public Man10ShopSetting<Integer> minutes = new Man10ShopSetting<>("quest.refresh.time", 0, true);
+    public Man10ShopSetting<Long> lastPickedTime = new Man10ShopSetting<>("quest.refresh.lastRefreshTime", 0L, true);
     
     //init
     public MQuestTimeWindowFunction(Man10Shop shop, Man10ShopV2 plugin) {
@@ -55,11 +55,15 @@ public class MQuestTimeWindowFunction extends ShopFunction {
     //====================
     // settings
     //====================
-    
+
 
     @Override
-    public boolean isFunctionEnabled(){
-        return minutes.get() != 0;
+    public boolean isAllowedToUseShop(Player p) {
+        if(minutes.get() == 0 || lastPickedTime.get() == 0){
+            warn(p, "クエストの設定が完了していません");
+            return false;
+        }
+        return true;
     }
 
     @Override

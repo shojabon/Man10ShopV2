@@ -1,6 +1,6 @@
 package com.shojabon.man10shopv2.menus.action;
 
-import ToolMenu.LargeSInventoryMenu;
+import ToolMenu.AutoScaledMenu;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.mcutils.Utils.BaseUtils;
@@ -8,28 +8,24 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
-public class QuestActionMenu extends LargeSInventoryMenu {
+public class QuestActionMenu extends AutoScaledMenu {
 
     Man10ShopV2 plugin;
     Player player;
     Man10Shop shop;
     public QuestActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), plugin);
+        super("§b§l管理可能ショップ一覧", plugin);
         this.player = p;
         this.plugin = plugin;
         this.shop = shop;
+        render();
     }
 
-    public void renderMenu(){
-        ArrayList<SInventoryItem> items = new ArrayList<>();
-
-
+    public void render(){
         setAfterInventoryOpenEvents(e -> inventoryGroup.put(player.getUniqueId(), shop.shopId));
         ArrayList<Man10Shop> shops = Man10ShopV2.api.getShops(shop.mQuestFunction.quest.get().currentQuests);
         for(Man10Shop shop: shops){
@@ -61,12 +57,9 @@ public class QuestActionMenu extends LargeSInventoryMenu {
                 }
             });
 
-            items.add(item);
+            addItem(item);
 
         }
-
-        setItems(items);
-        renderInventory();
         //setItems(items);
     }
 }

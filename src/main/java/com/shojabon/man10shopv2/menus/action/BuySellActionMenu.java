@@ -26,10 +26,6 @@ public class BuySellActionMenu extends SInventory {
     boolean orderRequested = false;
     BannerDictionary dictionary = new BannerDictionary();
 
-    //per minute cool down counter
-    int itemsTradedPerMinute = 0;
-
-
     public BuySellActionMenu(Player p, Man10Shop shop, JavaPlugin plugin){
         super(shop.name.getName(), 6, plugin);
         this.player = p;

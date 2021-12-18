@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.shopFunctions.general;
 
+import ToolMenu.AutoScaledMenu;
 import com.shojabon.man10shopv2.annotations.ShopFunctionDefinition;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.dataClass.ShopFunction;
@@ -7,8 +8,10 @@ import com.shojabon.man10shopv2.enums.Man10ShopPermission;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.Man10ShopV2;
 import com.shojabon.man10shopv2.Man10ShopV2API;
-import com.shojabon.man10shopv2.menus.settings.innerSettings.ShopTypeSelectorMenu;
+import com.shojabon.man10shopv2.menus.settings.SettingsMainMenu;
+import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
+import com.shojabon.mcutils.Utils.SItemStack;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -79,11 +82,36 @@ public class ShopTypeFunction extends ShopFunction {
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            new ShopTypeSelectorMenu(player, shop, plugin).open(player);
+            getInnerSettingMenu(player, plugin).open(player);
 
         });
 
 
         return item;
+    }
+
+    public AutoScaledMenu getInnerSettingMenu(Player player, Man10ShopV2 plugin){
+        AutoScaledMenu menu = new AutoScaledMenu("ショップタイプ選択", plugin);
+        for(Man10ShopType type: Man10ShopType.values()){
+            SInventoryItem mode = new SInventoryItem(new SItemStack(type.settingItem).setDisplayName("§a§l" + type.displayName).build());
+            mode.clickable(false);
+            mode.setAsyncEvent(e -> {
+                if(!shop.shopType.setShopType(type)){
+                    player.sendMessage(Man10ShopV2.prefix + "§c§l内部エラーが発生しました");
+                    return;
+                }
+
+                Man10ShopV2API.log(shop.shopId, "setShopType", type.name(), player.getName(), player.getUniqueId()); //log
+                player.sendMessage(Man10ShopV2.prefix + "§a§lショップタイプが設定されました");
+                player.getServer().getScheduler().runTask(plugin, ()-> {
+                    SInventory.closeInventoryGroup(shop.shopId, plugin);
+                    Man10ShopV2.api.updateAllSigns(shop);
+                });
+                new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);
+            });
+            menu.addItem(mode);
+        }
+
+        return menu;
     }
 }

@@ -12,6 +12,7 @@ import com.shojabon.man10shopv2.menus.settings.innerSettings.BarterSettingMenu;
 import com.shojabon.man10shopv2.menus.settings.SettingsMainMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,8 +32,8 @@ public class SetBarterFunction extends ShopFunction {
 
     //variables
 
-    public Man10ShopSetting<List<ItemStack>> requiredItems = new Man10ShopSetting<>("shop.barter.required", new ArrayList<>(Arrays.asList(null,null,null,null,null,null,null,null,null,null,null,null)));
-    public Man10ShopSetting<List<ItemStack>> resultItems = new Man10ShopSetting<>("shop.barter.result", Arrays.asList(new ItemStack[]{null}));
+    public Man10ShopSetting<List<ItemStack>> requiredItems = new Man10ShopSetting<>("shop.barter.required", new ArrayList<>(Arrays.asList(null,null,null,null,null,null,null,null,null,null,null,null)),  true);
+    public Man10ShopSetting<List<ItemStack>> resultItems = new Man10ShopSetting<>("shop.barter.result", Arrays.asList(new ItemStack[]{null}), true);
     //init
     public SetBarterFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);

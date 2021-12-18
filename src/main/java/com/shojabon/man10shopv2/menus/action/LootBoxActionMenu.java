@@ -13,7 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
-public class LootBoxActionMenu extends SInventory{
+public class LootBoxActionMenu extends SInventory {
 
     Man10Shop shop;
     Man10ShopV2 plugin;

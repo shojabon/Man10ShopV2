@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class LootBoxPlayMenu extends SInventory{
+public class LootBoxPlayMenu extends SInventory {
 
     Man10Shop shop;
     Man10ShopV2 plugin;
