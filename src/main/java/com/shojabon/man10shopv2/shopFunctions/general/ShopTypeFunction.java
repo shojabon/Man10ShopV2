@@ -84,6 +84,7 @@ public class ShopTypeFunction extends ShopFunction {
     public AutoScaledMenu getInnerSettingMenu(Player player, Man10ShopV2 plugin){
         AutoScaledMenu menu = new AutoScaledMenu("ショップタイプ選択", plugin);
         for(Man10ShopType type: Man10ShopType.values()){
+            if(type.admin && !shop.admin) continue;
             SInventoryItem mode = new SInventoryItem(new SItemStack(type.settingItem).setDisplayName("§a§l" + type.displayName).build());
             mode.clickable(false);
             mode.setAsyncEvent(e -> {

@@ -42,6 +42,7 @@ public class Man10ShopV2API {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, ()->{
             getAdminShops();
             loadAllShops();
+            loadAllSigns();
         }, 0);
         startTransactionThread();
         startPerMinuteExecutionTask();
@@ -146,6 +147,25 @@ public class Man10ShopV2API {
         for(MySQLCachedResultSet rs: results){
             if(!userModeratingShopList.containsKey(UUID.fromString(rs.getString("uuid")))) userModeratingShopList.put(UUID.fromString(rs.getString("uuid")), new ArrayList<>());
             userModeratingShopList.get(UUID.fromString(rs.getString("uuid"))).add(UUID.fromString(rs.getString("shop_id")));
+        }
+    }
+
+    public void loadAllSigns(){
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT * FROM man10shop_signs");
+        if(result.size() == 0){
+            return;
+        }
+        for(MySQLCachedResultSet rs: result){
+            Man10Shop shop = getShop(UUID.fromString(rs.getString("shop_id")));
+            if(shop == null) continue;
+            Man10ShopSign sign = new Man10ShopSign(shop.shopId,
+                    rs.getString("world"),
+                    rs.getInt("x"),
+                    rs.getInt("y"),
+                    rs.getInt("z"));
+            String locationId = generateLocationId(sign.getLocation());
+            //shop.signs.put(locationId, sign);
+            signs.put(locationId, sign);
         }
     }
 
@@ -269,7 +289,6 @@ public class Man10ShopV2API {
     }
 
     public boolean deleteSign(Man10ShopSign sign){
-        System.out.println("DELETING " + sign.generateLocationId());
 
         boolean result = Man10ShopV2.mysql.execute("DELETE FROM man10shop_signs WHERE location_id = '" + sign.generateLocationId() + "'");
         if(!result) return false;
@@ -312,6 +331,7 @@ public class Man10ShopV2API {
                     if(data.get(i).equalsIgnoreCase("")) continue;
                     sign.setLine(i, data.get(i));
                 }
+
 
                 sign.update();
 
@@ -361,5 +381,14 @@ public class Man10ShopV2API {
         perMinuteExecutionTask.cancel();
         perMinuteExecutionTask = null;
         startPerMinuteExecutionTask();
+
+        Man10Shop.settingValueMap.clear();
+        preLoadSettingData();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, ()->{
+            loadAllShopsWithPermission();
+            getAdminShops();
+            loadAllShops();
+            loadAllSigns();
+        }, 0);
     }
 }
