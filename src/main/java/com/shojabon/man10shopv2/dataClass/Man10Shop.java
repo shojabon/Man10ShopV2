@@ -145,7 +145,7 @@ public class Man10Shop {
                     ShopFunction func = (ShopFunction) field.get(this);
                     for(Field innerField: func.getClass().getFields()){
                         if(Man10ShopSetting.class.isAssignableFrom(innerField.getType())) {
-                            Man10ShopSetting setting = ((Man10ShopSetting) innerField.get(func));
+                            Man10ShopSetting<?> setting = ((Man10ShopSetting) innerField.get(func));
                             settingTypeMap.put(setting.settingId, ((ParameterizedType) innerField.getGenericType()).getActualTypeArguments()[0]);
                             setting.shopId = shopId;
 

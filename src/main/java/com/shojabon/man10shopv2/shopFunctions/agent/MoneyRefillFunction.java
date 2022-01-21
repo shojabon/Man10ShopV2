@@ -74,6 +74,7 @@ public class MoneyRefillFunction extends ShopFunction {
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
+        if(!player.hasPermission("man10shopv2.admin.agent")) return null;
         item.setEvent(e -> {
             //confirmation menu
             getInnerSettingMenu(player, plugin).open(player);

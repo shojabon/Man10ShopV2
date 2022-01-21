@@ -158,6 +158,7 @@ public class Man10ShopV2API {
         for(MySQLCachedResultSet rs: result){
             Man10Shop shop = getShop(UUID.fromString(rs.getString("shop_id")));
             if(shop == null) continue;
+            if(Bukkit.getWorld(rs.getString("world")) == null) continue;
             Man10ShopSign sign = new Man10ShopSign(shop.shopId,
                     rs.getString("world"),
                     rs.getInt("x"),
@@ -302,6 +303,7 @@ public class Man10ShopV2API {
 
     public void destroyAllSigns(Man10Shop shop){
         for(Man10ShopSign sign: signs.values()){
+            if(sign == null) continue;
             if(shop.getShopId() != sign.shopId) continue;
             Location l = sign.getLocation();
             Block b = l.getBlock();
@@ -316,6 +318,7 @@ public class Man10ShopV2API {
     public void updateAllSigns(Man10Shop shop){
         plugin.getServer().getScheduler().runTask(plugin, ()->{
             for(Man10ShopSign signObject: signs.values()){
+                if(signObject == null) continue;
                 if(shop.getShopId() != signObject.shopId) continue;
                 Location l = signObject.getLocation();
                 if(l == null) continue;
