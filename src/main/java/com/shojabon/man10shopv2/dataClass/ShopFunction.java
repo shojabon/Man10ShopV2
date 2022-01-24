@@ -69,6 +69,8 @@ public abstract class ShopFunction {
 
 
     // override functions
+    public void onUnload(){}
+
     public boolean isAllowedToUseShop(Player p){
         return true;
     }

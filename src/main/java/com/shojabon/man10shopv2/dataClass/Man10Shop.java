@@ -5,10 +5,7 @@ import com.shojabon.man10shopv2.shopFunctions.*;
 import com.shojabon.man10shopv2.shopFunctions.agent.MoneyRefillFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
-import com.shojabon.man10shopv2.shopFunctions.ai.AITargetItemFunction;
-import com.shojabon.man10shopv2.shopFunctions.ai.LearningRateFunction;
-import com.shojabon.man10shopv2.shopFunctions.ai.PriceUnitFunction;
-import com.shojabon.man10shopv2.shopFunctions.ai.SetTargetItemCountFunction;
+import com.shojabon.man10shopv2.shopFunctions.ai.*;
 import com.shojabon.man10shopv2.shopFunctions.allowedToUse.*;
 import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.shopFunctions.commandShop.CommandShopExplanationFunction;
@@ -122,10 +119,11 @@ public class Man10Shop {
     public CommandShopExplanationFunction commandShopExplanationFunction;
 
     //ai
-    public LearningRateFunction learningRateFunction;
-    public PriceUnitFunction priceUnitFunction;
-    public SetTargetItemCountFunction setTargetItemCountFunction;
+    public LearningRateFunction aiLearningRateFunction;
+    public PriceUnitFunction aiPriceUnitFunction;
+    public SetTargetItemCountFunction aiSetTargetItemCountFunction;
     public AITargetItemFunction aiTargetItemFunction;
+    public MinimumPriceUnitFunction aiMinimumPriceUnitFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
@@ -413,6 +411,14 @@ public class Man10Shop {
             result.set(1, "§c取引停止中");
         }
         return result;
+    }
+
+    public void executeUnload(){
+        try{
+            for(ShopFunction function: functions){
+                function.onUnload();
+            }
+        }catch (Exception e){}
     }
 
 

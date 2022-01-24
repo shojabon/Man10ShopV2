@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +35,11 @@ public class Man10ShopSetting <T>{
     public UUID shopId;
     public boolean ignoredOnFunctionEnabled;
 
+    public ArrayList<Consumer<T>> onStateChangeEvents = new ArrayList<>();
+
+    public void addOnStateChangeEvent(Consumer<T> event){
+        onStateChangeEvents.add(event);
+    }
 
     public Man10ShopSetting(String settingId, T defaultValue){
         this.defaultValue = defaultValue;
@@ -90,6 +96,13 @@ public class Man10ShopSetting <T>{
 //        if(this.value == this.defaultValue){
 //            return delete();
 //        }
+        try{
+            for(Consumer<T> event : onStateChangeEvents){
+                event.accept(value);
+
+            }
+        }catch (Exception e){}
+
         return Man10ShopV2.mysql.execute(MySQLAPI.buildReplaceQuery(payload, "man10shop_settings"));
     }
 

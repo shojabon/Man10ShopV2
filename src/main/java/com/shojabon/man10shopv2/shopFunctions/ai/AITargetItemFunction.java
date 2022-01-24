@@ -33,6 +33,29 @@ public class AITargetItemFunction extends ShopFunction{
         super(shop, plugin);
     }
 
+    @Override
+    public boolean isAllowedToUseShop(Player p) {
+        if(item.get() == null){
+            if(Man10ShopV2.vault.getBalance(p.getUniqueId()) < shop.aiPriceUnitFunction.price.get()){
+                warn(p, "残高が不足しています");
+                return false;
+            }
+        }else{
+            return p.getInventory().containsAtLeast(item.get(), shop.aiPriceUnitFunction.price.get());
+        }
+        return true;
+    }
+
+    @Override
+    public boolean performAction(Player p, int amount) {
+        int totalPrice = shop.aiPriceUnitFunction.price.get();
+        if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
+            warn(p, "内部エラーが発生しました");
+            return false;
+        }
+        shop.money.addMoney(totalPrice);
+        return true;
+    }
 
     @Override
     public String currentSettingString() {

@@ -14,41 +14,39 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 @ShopFunctionDefinition(
-        name = "販売目標設定(24時間)",
+        name = "最低価格設定",
         explanation = {},
         enabledShopType = {Man10ShopType.AI},
-        iconMaterial = Material.TARGET,
+        iconMaterial = Material.ANVIL,
         category = "一般設定",
         allowedPermission = Man10ShopPermission.MODERATOR,
         isAdminSetting = true
 )
-public class SetTargetItemCountFunction extends ShopFunction{
+public class MinimumPriceUnitFunction extends ShopFunction{
 
-    public Man10ShopSetting<Integer> count = new Man10ShopSetting<>("shop.ai.target.count", 0, true);
+    public Man10ShopSetting<Integer> price = new Man10ShopSetting<>("shop.ai.learningrate", 0, true);
 
-    public SetTargetItemCountFunction(Man10Shop shop, Man10ShopV2 plugin) {
+    public MinimumPriceUnitFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
     }
 
 
-
     @Override
     public String currentSettingString() {
-        if(!isFunctionEnabled()) return "なし";
-        return "24時間で" + count.get() + "個販売目標";
+        return price.get() + "円";
     }
 
     @Override
     public SInventoryItem getSettingItem(Player player, SInventoryItem item) {
         item.setEvent(e -> {
             //confirmation menu
-            NumericInputMenu menu = new NumericInputMenu("24時間での販売個数目標を設定してください", plugin);
+            NumericInputMenu menu = new NumericInputMenu("最低金額ユニットを設定してください", plugin);
             menu.setOnConfirm(number -> {
-                if(!count.set(number)){
+                if(!price.set(number)){
                     warn(player, "内部エラーが発生しました");
                     return;
                 }
-                success(player, "個数を設定しました");
+                success(player, "最低金額ユニットを設定しましたを設定しました");
                 new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player);
             });
             menu.setOnCancel(ee -> new SettingsMainMenu(player, shop, getDefinition().category(), plugin).open(player));
