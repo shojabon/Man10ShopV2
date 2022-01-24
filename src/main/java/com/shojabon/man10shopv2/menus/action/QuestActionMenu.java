@@ -18,7 +18,7 @@ public class QuestActionMenu extends AutoScaledMenu {
     Player player;
     Man10Shop shop;
     public QuestActionMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super("§b§l管理可能ショップ一覧", plugin);
+        super("§b§l可能ショップ一覧", plugin);
         this.player = p;
         this.plugin = plugin;
         this.shop = shop;

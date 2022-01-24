@@ -1,6 +1,7 @@
 package com.shojabon.man10shopv2;
 
 import com.shojabon.man10shopv2.commands.Man10ShopV2Command;
+import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.listeners.SignListeners;
 import com.shojabon.mcutils.Utils.MySQL.ThreadedMySQLAPI;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
@@ -42,6 +43,9 @@ public final class Man10ShopV2 extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         Man10ShopV2.api.stopTransactionThread();
+        for(Man10Shop shop : Man10ShopV2API.shopCache.values()){
+            shop.executeUnload();
+        }
         SInventory.closeAllSInventories();
     }
 

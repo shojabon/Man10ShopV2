@@ -382,6 +382,8 @@ public class Man10Shop {
             result.set(0, "§6§lクエスト");
         }else if(shopType.getShopType() == Man10ShopType.COMMAND){
             result.set(0, "§e§lコマンドショップ");
+        }else if(shopType.getShopType() == Man10ShopType.AI){
+            result.set(0, "§4§l商人販売");
         }
 
         if(shopEnabled.enabled.get()){
