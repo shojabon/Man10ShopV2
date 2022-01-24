@@ -5,6 +5,10 @@ import com.shojabon.man10shopv2.shopFunctions.*;
 import com.shojabon.man10shopv2.shopFunctions.agent.MoneyRefillFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
+import com.shojabon.man10shopv2.shopFunctions.ai.AITargetItemFunction;
+import com.shojabon.man10shopv2.shopFunctions.ai.LearningRateFunction;
+import com.shojabon.man10shopv2.shopFunctions.ai.PriceUnitFunction;
+import com.shojabon.man10shopv2.shopFunctions.ai.SetTargetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.allowedToUse.*;
 import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
 import com.shojabon.man10shopv2.shopFunctions.commandShop.CommandShopExplanationFunction;
@@ -116,6 +120,12 @@ public class Man10Shop {
     //command shop
     public CommandShopSetCommandFunction commandShopSetCommandFunction;
     public CommandShopExplanationFunction commandShopExplanationFunction;
+
+    //ai
+    public LearningRateFunction learningRateFunction;
+    public PriceUnitFunction priceUnitFunction;
+    public SetTargetItemCountFunction setTargetItemCountFunction;
+    public AITargetItemFunction aiTargetItemFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;

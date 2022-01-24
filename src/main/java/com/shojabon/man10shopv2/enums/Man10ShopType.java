@@ -8,7 +8,8 @@ public enum Man10ShopType {
     BARTER("トレードショップ", true, Material.VILLAGER_SPAWN_EGG),
     LOOT_BOX("ガチャ", true, Material.CHEST),
     QUEST("クエストショップ", true, Material.OAK_SIGN),
-    COMMAND("コマンドショップ", true, Material.COMMAND_BLOCK);
+    COMMAND("コマンドショップ", true, Material.COMMAND_BLOCK),
+    AI("AIショップ", true, Material.OBSERVER);
 
     public String displayName;
     public boolean admin;
