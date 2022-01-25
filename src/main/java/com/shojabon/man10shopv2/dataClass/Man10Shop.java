@@ -325,6 +325,12 @@ public class Man10Shop {
         }else if(shopType.getShopType() == Man10ShopType.COMMAND){
             Man10ShopV2API.tradeLog(shopId, "COMMAND", 1, price.getPrice(), p.getName(), p.getUniqueId()); //log
             p.sendMessage(Man10ShopV2.prefix + "§a§l購入しました");
+        }else if(shopType.getShopType() == Man10ShopType.AI){
+            //remove items from shop storage
+            int totalPrice = price.getPrice()*amount;
+            Man10ShopV2API.tradeLog(shopId,"AI_BUY", amount , totalPrice, p.getName(), p.getUniqueId()); //log
+            p.sendMessage(Man10ShopV2.prefix + "§a§l" + targetItem.getTargetItem().getDisplayName() + "§a§lを" + amount + "個購入しました");
+
         }
 
     }
@@ -355,6 +361,10 @@ public class Man10Shop {
 
         if(shopType.getShopType() == Man10ShopType.COMMAND){
             return new CommandActionMenu(p, this, plugin);
+        }
+
+        if(shopType.getShopType() == Man10ShopType.AI){
+            return new AIActionMenu(p, this, plugin);
         }
         return null;
     }
