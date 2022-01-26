@@ -9,6 +9,7 @@ import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -40,8 +41,6 @@ public class AIActionMenu extends SInventory {
         SInventoryItem targetItem = new SInventoryItem(shop.targetItem.getTargetItem().build()).clickable(false);
         setItem(13, targetItem);
 
-
-
         renderConfirmButton();
         renderRequiredItem();
         renderPriceUnit();
@@ -67,7 +66,8 @@ public class AIActionMenu extends SInventory {
         String priceString = shop.aiPriceUnitFunction.price.get().toString();
         int starting = startingIndex[priceString.length()-1];
         for(int i = starting; i < starting + priceString.length(); i++){
-            setItem(i, dictionary.getItem(i));
+            int charInt = priceString.charAt(i - starting);
+            setItem(i, dictionary.getItem(Character.getNumericValue(charInt)));
         }
     }
 

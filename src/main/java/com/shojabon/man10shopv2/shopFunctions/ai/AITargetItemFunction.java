@@ -12,9 +12,12 @@ import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.menus.settings.SettingsMainMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
 
 @ShopFunctionDefinition(
         name = "対象アイテム設定",
@@ -40,20 +43,52 @@ public class AITargetItemFunction extends ShopFunction{
                 warn(p, "残高が不足しています");
                 return false;
             }
-        }else{
-            return p.getInventory().containsAtLeast(item.get(), shop.aiPriceUnitFunction.price.get());
         }
         return true;
     }
 
     @Override
     public boolean performAction(Player p, int amount) {
-        int totalPrice = shop.aiPriceUnitFunction.price.get();
-        if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
-            warn(p, "内部エラーが発生しました");
-            return false;
+        if(item.get() == null){
+            int totalPrice = shop.aiPriceUnitFunction.price.get();
+            if(!Man10ShopV2.vault.withdraw(p.getUniqueId(), totalPrice)){
+                warn(p, "内部エラーが発生しました");
+                return false;
+            }
+            shop.money.addMoney(totalPrice);
+        }else{
+            ItemStack requiredItem = item.get();
+            if(requiredItem == null) {
+                warn(p, "内部エラーが発生しました");
+                return false;
+            }
+            if(!p.getInventory().containsAtLeast(requiredItem, shop.aiPriceUnitFunction.price.get())){
+                p.sendMessage(Man10ShopV2.prefix + "§c§lトレードのためのアイテムが不足しています");
+                return false;
+            }
+
+            int paymentLeft = shop.aiPriceUnitFunction.price.get();
+            ItemStack[] items = p.getInventory().getContents();
+            for(int i = 0; i < items.length; i++){
+                if(paymentLeft == 0) break;
+                if(items[i] == null) continue;
+                if(!new SItemStack(items[i]).getItemTypeMD5(true).equalsIgnoreCase(new SItemStack(requiredItem).getItemTypeMD5(true))) continue;
+                int removing = requiredItem.getMaxStackSize();
+                if(removing > items[i].getAmount()) removing = items[i].getAmount();
+                if(paymentLeft < removing) removing = paymentLeft;
+
+                //delete process
+                if(removing == requiredItem.getMaxStackSize()){
+                    items[i] = null;
+                }else{
+                    items[i] = new SItemStack(items[i].clone()).setAmount(items[i].clone().getAmount() - removing).build();
+                }
+                paymentLeft -= removing;
+            }
+
+            p.getInventory().setContents(items);
+
         }
-        shop.money.addMoney(totalPrice);
         return true;
     }
 

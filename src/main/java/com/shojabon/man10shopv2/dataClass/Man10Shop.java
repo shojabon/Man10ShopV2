@@ -124,6 +124,7 @@ public class Man10Shop {
     public SetTargetItemCountFunction aiSetTargetItemCountFunction;
     public AITargetItemFunction aiTargetItemFunction;
     public MinimumPriceUnitFunction aiMinimumPriceUnitFunction;
+    public AILogicFunction aiLogicFunction;
 
     public PermissionFunction permission;
     public MoneyFunction money;
