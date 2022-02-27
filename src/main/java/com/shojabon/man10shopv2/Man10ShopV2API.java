@@ -12,9 +12,11 @@ import com.shojabon.mcutils.Utils.SStringBuilder;
 import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.time.LocalDateTime;
@@ -70,6 +72,8 @@ public class Man10ShopV2API {
         }
 
         shopCache.put(shop.shopId, shop);
+
+
         return shopCache.get(shop.shopId);
     }
 

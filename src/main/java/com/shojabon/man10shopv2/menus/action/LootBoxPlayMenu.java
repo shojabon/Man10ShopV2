@@ -33,17 +33,17 @@ public class LootBoxPlayMenu extends SInventory {
 
 
     public LootBoxPlayMenu(Player p, Man10Shop shop, Man10ShopV2 plugin){
-        super(shop.name.getName() + " 残り " + shop.getPlayerAvailableTransactionCount(p) + "回",3, plugin);
+        super(shop.name.getName(),3, plugin);
         this.shop = shop;
         this.player = p;
         this.plugin = plugin;
         this.box = shop.lootBoxFunction.lootBox.get();
 
-        SStringBuilder builder = new SStringBuilder().darkGray().text(new SItemStack(shop.setBarter.resultItems.get().get(0)).getDisplayName());
-
-
-        setTitle(builder.build());
-
+        if(shop.getPlayerAvailableTransactionCount(p) > 0){
+            this.setTitle(shop.name.getName() +" 残り " + shop.getPlayerAvailableTransactionCount(p) + "回");
+        }else{
+            this.setTitle(shop.name.getName());
+        }
         setOnClickEvent(e -> {
             if(e.getClickedInventory() == null) return;
             if(e.getClickedInventory().getType() == InventoryType.PLAYER)e.setCancelled(true);
