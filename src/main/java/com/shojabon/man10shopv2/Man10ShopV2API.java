@@ -378,6 +378,17 @@ public class Man10ShopV2API {
         Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_trade_log"));
     }
 
+    public static void logLootBox(UUID shopId, String winItemHash, String winItemName, String winnerName, UUID winnerUUID){
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("shop_id", shopId);
+        payload.put("win_item_hash", winItemHash);
+        payload.put("win_item_name", winItemName);
+        payload.put("winner_name", winnerName);
+        payload.put("winner_uuid", winnerUUID);
+
+        Man10ShopV2.mysql.futureExecute(MySQLAPI.buildInsertQuery(payload, "man10shop_lootbox_log"));
+    }
+
     //cache clear
 
     public void clearCache(){

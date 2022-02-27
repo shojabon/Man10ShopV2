@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2.menus.action;
 
+import com.shojabon.man10shopv2.Man10ShopV2API;
 import com.shojabon.man10shopv2.dataClass.LootBoxFunction;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.dataClass.lootBox.LootBox;
@@ -113,6 +114,8 @@ public class LootBoxPlayMenu extends SInventory {
             }
             player.getInventory().addItem(items[4].item);
             player.sendMessage(Man10ShopV2.prefix + "§a§lおめでとうございます『" + new SItemStack(items[4].item).getDisplayName() + "』§a§lが当たりました!");
+            SItemStack item = new SItemStack(items[4].item);
+            Man10ShopV2API.logLootBox(shop.shopId, item.getMD5(), item.getDisplayName(), player.getName(), player.getUniqueId());
             playerInGame.remove(player.getUniqueId());
         };
         SInventory.threadPool.execute(r);
