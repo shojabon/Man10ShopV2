@@ -15,6 +15,7 @@ import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,8 +31,8 @@ import org.bukkit.inventory.ItemStack;
 )
 public class LootBoxPaymentFunction extends LootBoxFunction {
 
-    public Man10ShopSetting<Integer> balancePrice = new Man10ShopSetting<>("lootBox.payment.cash", 0);
-    public Man10ShopSetting<ItemStack> itemPayment = new Man10ShopSetting<>("lootBox.payment.item", null);
+    public Man10ShopSetting<Integer> balancePrice = new Man10ShopSetting<>("lootBox.payment.cash", 0, true);
+    public Man10ShopSetting<ItemStack> itemPayment = new Man10ShopSetting<>("lootBox.payment.item", null, true);
 
     //init
     public LootBoxPaymentFunction(Man10Shop shop, Man10ShopV2 plugin) {
