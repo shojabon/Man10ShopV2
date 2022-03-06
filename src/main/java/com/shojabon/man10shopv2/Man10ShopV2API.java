@@ -323,7 +323,7 @@ public class Man10ShopV2API {
         plugin.getServer().getScheduler().runTask(plugin, ()->{
             for(Man10ShopSign signObject: signs.values()){
                 if(signObject == null) continue;
-                if(shop.getShopId() != signObject.shopId) continue;
+                if(!shop.getShopId().toString().equals(signObject.shopId.toString())) continue;
                 Location l = signObject.getLocation();
                 if(l == null) continue;
                 if(!(l.getBlock().getState() instanceof Sign)){
@@ -338,7 +338,6 @@ public class Man10ShopV2API {
                     if(data.get(i).equalsIgnoreCase("")) continue;
                     sign.setLine(i, data.get(i));
                 }
-
 
                 sign.update();
 
