@@ -38,8 +38,9 @@ public class BarterSettingMenu extends SInventory{
         setOnClickEvent(e -> {
             if(e.getClickedInventory() == null) return;
             if(e.getClickedInventory().getType() != InventoryType.PLAYER) return;
+            if(e.getCurrentItem() == null) return;
             e.setCancelled(true);
-            current.set(ArrayUtils.indexOf(slots, currentSelecting), e.getCurrentItem());
+            current.set(ArrayUtils.indexOf(slots, currentSelecting), e.getCurrentItem().clone());
             renderMenu();
         });
     }
@@ -77,7 +78,7 @@ public class BarterSettingMenu extends SInventory{
 
         for(int i = 0; i < current.size(); i++){
             if(current.get(i) == null) continue;
-            SInventoryItem item = new SInventoryItem(current.get(i));
+            SInventoryItem item = new SInventoryItem(current.get(i).clone());
             item.clickable(false);
             item.setAsyncEvent(e -> {
                 currentSelecting = e.getRawSlot();

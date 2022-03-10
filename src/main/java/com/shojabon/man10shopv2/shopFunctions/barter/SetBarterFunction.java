@@ -68,12 +68,12 @@ public class SetBarterFunction extends ShopFunction {
         }
         for(ItemStack requiredItem: requiredItems.get()){
             if(requiredItem == null) continue;
-            p.getInventory().removeItemAnySlot(requiredItem);
+            p.getInventory().removeItemAnySlot(requiredItem.clone());
         }
         //give item
         for(ItemStack resultItem: resultItems.get()){
             if(resultItem == null) continue;
-            p.getInventory().addItem(resultItem);
+            p.getInventory().addItem(resultItem.clone());
         }
         return true;
     }
@@ -100,9 +100,7 @@ public class SetBarterFunction extends ShopFunction {
         item.setEvent(e -> {
             //required
             List<ItemStack> required = requiredItems.get();
-            System.out.println("a");
             List<ItemStack> result = resultItems.get();
-            System.out.println("b");
             List<ItemStack> both = new ArrayList<>();
             both.addAll(required);
             both.addAll(result);
