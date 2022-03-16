@@ -8,6 +8,7 @@ import com.shojabon.man10shopv2.menus.ShopMainMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventory;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -67,6 +68,10 @@ public class ItemStorageMenu extends SInventory{
 
     public void registerEvents(){
         setOnClickEvent(e -> {
+            if(e.getAction() == InventoryAction.HOTBAR_SWAP){
+                e.setCancelled(true);
+                return;
+            }
             if(e.getCurrentItem() == null) return;
             if(e.getClickedInventory() == null) return;
             SItemStack item = new SItemStack(e.getCurrentItem());
