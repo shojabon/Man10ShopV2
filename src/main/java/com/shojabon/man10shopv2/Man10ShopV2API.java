@@ -1,5 +1,6 @@
 package com.shojabon.man10shopv2;
 
+import com.google.gson.JsonParser;
 import com.shojabon.man10shopv2.dataClass.*;
 import com.shojabon.man10shopv2.enums.Man10ShopType;
 import com.shojabon.man10shopv2.enums.Man10ShopPermission;
@@ -18,7 +19,16 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +47,9 @@ public class Man10ShopV2API {
     public static BukkitTask perMinuteExecutionTask;
     public static ArrayList<UUID> adminShopIds = new ArrayList<>();
 
+    public static long lastBitcoinPrice = -1;
+    public static long lastBitcoinPriceFetch = -1;
+
     public Man10ShopV2API(Man10ShopV2 plugin){
         Man10ShopV2API.plugin = plugin;
         preLoadSettingData();
@@ -48,6 +61,7 @@ public class Man10ShopV2API {
         }, 0);
         startTransactionThread();
         startPerMinuteExecutionTask();
+        getBitcoinPrice();
     }
 
     public Man10Shop getShop(UUID shopId){
@@ -407,5 +421,28 @@ public class Man10ShopV2API {
             loadAllShops();
             loadAllSigns();
         }, 0);
+    }
+
+    //bitcoin
+
+    public long getBitcoinPrice(){
+        if(System.currentTimeMillis()/1000L - Man10ShopV2API.lastBitcoinPriceFetch <= 60 * 60){
+            return Man10ShopV2API.lastBitcoinPrice;
+        }
+        try {
+            HttpRequest request = HttpRequest
+                    .newBuilder(URI.create("https://bitflyer.com/api/echo/price"))
+                    .build();
+            HttpResponse.BodyHandler<String> bodyHandler = HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8);
+            HttpResponse<String> response;
+            response = HttpClient.newBuilder().build().send(request, bodyHandler);
+            JSONObject jsonObj = (JSONObject) new JSONParser().parse(response.body());
+            Man10ShopV2API.lastBitcoinPrice = (long) Double.parseDouble(String.valueOf(jsonObj.get("mid")));
+            Man10ShopV2API.lastBitcoinPriceFetch = System.currentTimeMillis()/1000L;
+            return Man10ShopV2API.lastBitcoinPrice;
+        } catch (IOException | InterruptedException | ParseException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

@@ -81,6 +81,7 @@ public class Man10Shop {
     public CategoryFunction categoryFunction;
     public IpLimitFunction ipLimitFunction;
     public LimitUseFunction limitUseFunction;
+    public BitcoinPriceFunction bitcoinPriceFunction;
 
     //storage
     public StorageRefillFunction storageRefill;
