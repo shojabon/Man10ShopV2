@@ -3,10 +3,13 @@ package com.shojabon.man10shopv2.menus;
 import ToolMenu.CategoricalSInventoryMenu;
 import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.Man10ShopV2;
+import com.shojabon.man10shopv2.menus.action.AgentActionMenu;
 import com.shojabon.mcutils.Utils.BaseUtils;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import com.shojabon.mcutils.Utils.SItemStack;
 import com.shojabon.mcutils.Utils.SStringBuilder;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
     public void renderMenu(){
         addInitializedCategory("その他");
 
+
         ArrayList<Man10Shop> shops = Man10ShopV2.api.getShopsWithPermission(player.getUniqueId());
         for(Man10Shop shop: shops){
 
@@ -53,7 +57,15 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
         //setItems(items);
     }
 
-//    public void afterRenderMenu() {
-//        renderInventory();
-//    }
+    public void afterRenderMenu() {
+        super.afterRenderMenu();
+        if(player.hasPermission("mshopv2.admin.agent") && !player.hasPermission("mshopv2.admin.debug")){
+            SInventoryItem debug = new SInventoryItem(new SItemStack(Material.COMMAND_BLOCK).setDisplayName("§c§lデバッグ").build()).clickable(false);
+            debug.setEvent(e -> {
+                new AgentActionMenu(player, plugin).open(player);
+            });
+            setItem(47, debug);
+            renderInventory();
+        }
+    }
 }

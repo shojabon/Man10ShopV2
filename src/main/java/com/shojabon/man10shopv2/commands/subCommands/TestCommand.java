@@ -7,6 +7,7 @@ import com.shojabon.man10shopv2.dataClass.Man10Shop;
 import com.shojabon.man10shopv2.dataClass.Man10ShopSetting;
 import com.shojabon.man10shopv2.dataClass.lootBox.LootBox;
 import com.shojabon.man10shopv2.dataClass.quest.MQuest;
+import com.shojabon.man10shopv2.menus.action.AgentActionMenu;
 import com.shojabon.mcutils.Utils.SInventory.SInventoryItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

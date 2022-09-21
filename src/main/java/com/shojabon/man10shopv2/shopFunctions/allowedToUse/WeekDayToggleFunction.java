@@ -27,7 +27,7 @@ import java.util.*;
 public class WeekDayToggleFunction extends ShopFunction {
 
     //variables
-    public Man10ShopSetting<List<Boolean>> enabledDays = new Man10ShopSetting<>("shop.weekday.toggle", new ArrayList<>(Arrays.asList(true, true, true, true, true, true, true)));
+    public Man10ShopSetting<List<Boolean>> enabledDays = new Man10ShopSetting<>("shop.weekday.toggle", new ArrayList<>(Arrays.asList(true, true, true, true, true, true, true)), true);
     //init
     public WeekDayToggleFunction(Man10Shop shop, Man10ShopV2 plugin) {
         super(shop, plugin);
