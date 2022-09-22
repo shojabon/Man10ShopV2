@@ -5,6 +5,7 @@ import com.shojabon.man10shopv2.shopFunctions.*;
 import com.shojabon.man10shopv2.shopFunctions.agent.MoneyRefillFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetItemCountFunction;
 import com.shojabon.man10shopv2.shopFunctions.agent.SetStorageSizeFunction;
+import com.shojabon.man10shopv2.shopFunctions.agent.ShopReloadSubsetTargetFunction;
 import com.shojabon.man10shopv2.shopFunctions.ai.*;
 import com.shojabon.man10shopv2.shopFunctions.allowedToUse.*;
 import com.shojabon.man10shopv2.shopFunctions.barter.SetBarterFunction;
@@ -92,6 +93,7 @@ public class Man10Shop {
     public SetStorageSizeFunction setStorageSizeFunction;
     public SetItemCountFunction setItemCountFunction;
     public MoneyRefillFunction moneyRefillFunction;
+    public ShopReloadSubsetTargetFunction reloadSubsetTargetFunction;
 
     //tradeAmount
     public CoolDownFunction coolDown;

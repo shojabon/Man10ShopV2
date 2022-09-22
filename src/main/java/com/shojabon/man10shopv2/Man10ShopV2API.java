@@ -30,10 +30,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -199,12 +196,24 @@ public class Man10ShopV2API {
         return getShops(ids);
     }
 
-    public void preLoadSettingData(){
-        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT `shop_id`,`key`,`value` FROM man10shop_settings ORDER BY `shop_id` DESC");
+    public void preLoadSettingData(ArrayList<String> shopIds){
+        StringBuilder sub = new StringBuilder();
+        if(shopIds != null && shopIds.size() != 0){
+            sub = new StringBuilder("WHERE shop_id IN (");
+            for(String id : shopIds){
+                sub.append("'").append(id).append("',");
+            }
+            sub = new StringBuilder(sub.substring(0, sub.length()-1));
+            sub.append(")");
+        }
+        ArrayList<MySQLCachedResultSet> result = Man10ShopV2.mysql.query("SELECT `shop_id`,`key`,`value` FROM man10shop_settings " + sub +  " ORDER BY `shop_id` DESC");
         for(MySQLCachedResultSet rs: result){
             Man10Shop.settingValueMap.put(rs.getString("shop_id") + "." + rs.getString("key"), rs.getString("value"));
         }
 
+    }
+    public void preLoadSettingData(){
+        preLoadSettingData(null);
     }
 
     //per minute task
@@ -421,6 +430,35 @@ public class Man10ShopV2API {
             loadAllShops();
             loadAllSigns();
         }, 0);
+    }
+
+    public void clearSubset(){
+        ArrayList<String> subsetShops = new ArrayList<>();
+        for(UUID shopId: shopCache.keySet()){
+            Man10Shop shop = getShop(shopId);
+            if(!shop.reloadSubsetTargetFunction.enabled.get()) continue;
+            subsetShops.add(shop.getShopId().toString());
+            shopCache.remove(shop.getShopId());
+        }
+        userModeratingShopList.clear();
+        for(String key: Man10Shop.settingValueMap.keySet()){
+            if(subsetShops.contains(key.split("\\.")[0])){
+                Man10Shop.settingValueMap.remove(key);
+            }
+        }
+
+        preLoadSettingData(subsetShops);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, ()->{
+            loadAllShopsWithPermission();
+
+            for(String shopId: subsetShops){
+                Man10Shop shop = getShop(UUID.fromString(shopId));
+                updateAllSigns(shop);
+            }
+        }, 0);
+
+
+
     }
 
     //bitcoin

@@ -120,6 +120,15 @@ public class Man10ShopV2Command extends SCommandRouter {
                         .setExecutor(new ReloadConfigCommand(plugin))
         );
 
+
+        addCommand(
+                new SCommandObject()
+                        .addArgument(new SCommandArgument().addAllowedString("subset-reload")).
+                        addRequiredPermission("man10shopv2.reload.subset")
+                        .addExplanation("サブセットをリロードする")
+                        .setExecutor(new ReloadSubsetCommand(plugin))
+        );
+
         addCommand(
                 new SCommandObject()
                         .addArgument(new SCommandArgument().addAllowedString("test"))
