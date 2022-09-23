@@ -60,11 +60,11 @@ public class ShopMainMenu extends AutoScaledMenu {
 
         setOnCloseEvent(e -> {
             if(shop.admin){
-                AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, shop.categoryFunction.getDefinition().category(), plugin);
+                AdminShopSelectorMenu menu = new AdminShopSelectorMenu(player, shop.categoryFunction.category.get(), plugin);
                 menu.setOnClick(selectedShop -> new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin).open(player));
                 menu.open(player);
             }else{
-                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.getDefinition().category(), plugin);
+                EditableShopSelectorMenu menu = new EditableShopSelectorMenu(player, shop.categoryFunction.category.get(), plugin);
                 menu.setOnClick(selectedShop -> new ShopMainMenu(player, plugin.api.getShop(selectedShop.shopId), plugin).open(player));
                 menu.open(player);
             }

@@ -26,6 +26,7 @@ public class EditableShopSelectorMenu extends CategoricalSInventoryMenu {
         super(new SStringBuilder().aqua().bold().text("管理可能ショップ一覧").build(), startingCategory, plugin);
         this.player = p;
         this.plugin = plugin;
+        sort(true);
     }
 
     public void setOnClick(Consumer<Man10Shop> event){

@@ -42,7 +42,7 @@ public class AllowedPermissionFunction extends ShopFunction {
     @Override
     public boolean isAllowedToUseShop(Player p) {
         //if player has permission
-        if(permission.get() != null && !p.hasPermission("man10shopv2.use." + permission.get())){
+        if(permission.get() != null && !permission.get().equals("") && !p.hasPermission("man10shopv2.use." + permission.get())){
             p.sendMessage(Man10ShopV2.prefix + "§c§lあなたはこのショップを使う権限がありません");
             return false;
         }
