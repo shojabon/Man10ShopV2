@@ -408,7 +408,7 @@ public class Man10Shop {
                     result.set(1, "§b" + BaseUtils.priceString(price.getPrice()) + "円");
                 }
             }else if(shopType.getShopType() == Man10ShopType.BARTER){
-                result.set(1, "");
+                result.set(1, " ");
             }else if(shopType.getShopType() == Man10ShopType.LOOT_BOX){
                 SStringBuilder priceString = new SStringBuilder().text("§b");
                 if(lootBoxPaymentFunction.balancePrice.get() != 0){
@@ -420,7 +420,7 @@ public class Man10Shop {
                 }
                 result.set(1, priceString.build());
             }else if(shopType.getShopType() == Man10ShopType.QUEST){
-                result.set(1, "");
+                result.set(1, " ");
             }
 
         }else{

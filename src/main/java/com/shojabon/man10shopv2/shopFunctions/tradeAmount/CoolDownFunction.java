@@ -28,7 +28,7 @@ import java.util.UUID;
 public class CoolDownFunction extends ShopFunction {
 
     //variables
-    public HashMap<UUID, Long> coolDownMap = new HashMap<>();
+    public HashMap<UUID, Double> coolDownMap = new HashMap<>();
     public Man10ShopSetting<Integer> time = new Man10ShopSetting<>("shop.coolDown", 0);
 
     //init
@@ -40,14 +40,14 @@ public class CoolDownFunction extends ShopFunction {
     public boolean checkCoolDown(Player p){
         int coolDown = time.get();
         if(coolDown == 0) return false;
-        if(!coolDownMap.containsKey(p.getUniqueId())) coolDownMap.put(p.getUniqueId(), 0L);
-        long currentTime = System.currentTimeMillis() / 1000L;
+        if(!coolDownMap.containsKey(p.getUniqueId())) coolDownMap.put(p.getUniqueId(), 0d);
+        double currentTime = (double) System.currentTimeMillis() / 1000L;
 
         return currentTime - coolDownMap.get(p.getUniqueId()) < coolDown;
     }
 
     public void setCoolDown(Player p){
-        long currentTime = System.currentTimeMillis() / 1000L;
+        double currentTime = (double) System.currentTimeMillis() / 1000L;
         coolDownMap.put(p.getUniqueId(), currentTime);
     }
 
